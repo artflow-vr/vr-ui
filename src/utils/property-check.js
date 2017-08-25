@@ -25,10 +25,41 @@
 * SOFTWARE.
 */
 
-import VerticalLayout from './vertical-layout';
-import GridLayout from './grid-layout';
+let checkFloatInRange = ( min, max, propID, value ) => {
 
-export {
-    VerticalLayout,
-    GridLayout
+    if ( value < min || value > max ) {
+        let errorMsg = `Element property ${propID} should be in the range `;
+        errorMsg += `[${min}, ${max}]`;
+        console.error( errorMsg );
+        return false;
+    }
+
+    return true;
+
 };
+
+let PROP_CHECK = {
+    width: checkFloatInRange.bind( 0.0, 1.0 ),
+    height: checkFloatInRange.bind( 0.0, 1.0 ),
+    depth: checkFloatInRange.bind( 0.0, 1.0 ),
+    paddingTop: checkFloatInRange.bind( 0.0, 0.49 ),
+    paddingBottom: checkFloatInRange.bind( 0.0, 0.49 ),
+    paddingLeft: checkFloatInRange.bind( 0.0, 0.49 ),
+    paddingRight: checkFloatInRange.bind( 0.0, 0.49 ),
+    background: function() {
+        return true;
+    }
+};
+
+export default function checkProperty( propID, value ) {
+
+    if ( !( propID in PROP_CHECK ) ) {
+        let warnMsg = `property ${propID} is not recognized. Please take a `;
+        warnMsg += `look at the documentation to see the complete set.`;
+        console.warn( `checkProperty(): ` + warnMsg );
+        return false;
+    }
+
+    return PROP_CHECK[ propID ]( propID, value );
+
+}

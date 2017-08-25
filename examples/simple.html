@@ -23,13 +23,13 @@
 
             renderer = new THREE.WebGLRenderer();
             renderer.setSize( window.innerWidth, window.innerHeight );
-            renderer.setClearColor(0xecf0f1);
+            renderer.setClearColor(0x000000);
             document.body.appendChild( renderer.domElement );
 
             scene = new THREE.Scene();
 
-            let gui = setupGUI();
-            scene.add(gui.root());
+            let gui = null;
+            setupGUI();
 
             animate();
             function animate() {
@@ -41,26 +41,33 @@
 
             function setupGUI() {
                 
-                let layout = new VRUI.layout.VerticalLayout(/*{
-                    background: {
-                        depth: false
-                    }
-                }*/);
-                let tex = new THREE.TextureLoader().load('assets/background.png',
-                                                                function(tex) {
+                let loader = new THREE.TextureLoader();
+                loader.setPath('assets/');
+                let tex = loader.load('background.png', function(tex) {
                     
-                    let button = new VRUI.view.ButtonView({image: tex});
-                    layout.add(button);
+                    let layout = new VRUI.layout.VerticalLayout({
+                        background: {
+                            material: null
+                        }
+                    });
+                    //let button = new VRUI.view.ButtonView(tex);
+                    let button1 = new VRUI.view.ButtonView(0xFF0000, {
+                        width: 0.5
+                    });
+                    let button2 = new VRUI.view.ButtonView(0x00FF00);
+                    layout.add(button1);
+                    layout.add(button2);
+
+                    gui = new VRUI.VRUI(0.2, 0.35);
+                    gui.addLayout(layout);
+
+                    scene.add(gui.root());
+
+                    gui.refreshLayout();
+                    
 
                 });
                 
-
-                //layout.add(button);
-
-                let gui = new VRUI.VRUI(layout);
-
-                return gui;
-
             }
 
             // Registers global events

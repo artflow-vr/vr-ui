@@ -49,10 +49,9 @@ export default class AbstractLayout extends Element {
      *
      * @memberof AbstractLayout
      */
-    perform() {
+    _refreshLayout( maxWidth, maxHeight, offset ) {
 
-        let errorMsg = `method should be implemented in child prototype.`;
-        throw new TypeError( `AbstractLayout: perform(): ` + errorMsg );
+        super._refreshLayout( maxWidth, maxHeight, offset );
 
     }
 

@@ -28,6 +28,8 @@
 import { PLANE_GEOM, BOX_GEOM } from './utils/geometry-factory';
 import { MAT_DEFAULT } from './utils/material-factory';
 
+import checkProperty from './utils/property-check';
+
 /**
  *
  * Abstract class describing an element: layout, view, ...
@@ -42,7 +44,7 @@ export default class Element {
 
         this.style = {};
         if ( style )
-            for ( let k in style ) this.style[ k ] = style[ k ];
+            this.set( style );
 
         this._setIfUndefined( {
             width: 1.0,
@@ -63,16 +65,22 @@ export default class Element {
         let background = this.style.background;
         if ( background ) {
             let material = background.material || MAT_DEFAULT.clone();
-            let geom = background.depth ? PLANE_GEOM : BOX_GEOM;
+            let geom = this.style.depth <= 0.0001 ? PLANE_GEOM : BOX_GEOM;
             let mesh = new THREE.Mesh( geom, material );
             mesh.scale.x = this.style.width;
             mesh.scale.y = this.style.height;
-            if ( background.depth && this.style.depth !== 0.0 )
+            if ( this.style.depth > 0.0001 )
                 mesh.scale.z = this.style.depth;
-
+            mesh.position.z = -0.05;
             this.group.add( mesh );
         }
 
+        this._dimensions = {
+            maxWidth: 0.0,
+            maxHeight: 0.0,
+            halfWidth: 0.0,
+            halfHeight: 0.0
+        };
     }
 
     /**
@@ -81,10 +89,32 @@ export default class Element {
      *
      * @memberof Element
      */
-    perform() {
+    _refreshLayout( maxWidth, maxHeight, offset ) {
 
-        let errorMsg = `method should be implemented in child prototype.`;
-        throw new TypeError( `Element: perform(): ` + errorMsg );
+        this._dimensions.maxWidth = this.style.width * maxWidth;
+        this._dimensions.maxHeight = this.style.height * maxHeight;
+        this._dimensions.halfWidth = this._dimensions.maxWidth / 2.0;
+        this._dimensions.halfHeight = this._dimensions.halfHeight / 2.0;
+
+        if ( offset ) {
+            let { x, y, z } = offset;
+            this.group.position.x += x || 0;
+            this.group.position.y += y || 0;
+            this.group.position.z += z || 0;
+        }
+
+        /*let horizontalPad = this.style.paddingLeft + this.style.paddingRight;
+        let verticalPad = this.style.paddingTop + this.style.paddingBottom;
+
+        this._width = maxWidth * ( this.style.width - horizontalPad );
+        this._height = maxHeight * ( this.style.height - verticalPad );*/
+
+    }
+
+    set( style ) {
+
+        for ( let k in style )
+            if ( checkProperty( k, style[ k ] ) ) this.style[ k ] = style[ k ];
 
     }
 

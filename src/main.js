@@ -29,17 +29,54 @@ import Element from './element';
 
 export default class VRUI {
 
-    constructor( layout ) {
+    constructor( widthUnit, heightUnit, depthUnit = 0.0 ) {
+
+        if ( !widthUnit || widthUnit <= 0 ) {
+            let errorMsg = `parent layout should have a width specified `;
+            errorMsg += `in Three.js world units, non-negative nor null.`;
+            throw new TypeError( `VRUI.ctor(): ` + errorMsg );
+        }
+        if ( !heightUnit || heightUnit <= 0 ) {
+            let errorMsg = `parent layout should have a height specified `;
+            errorMsg += `in Three.js world units, non-negative nor null.`;
+            throw new TypeError( `VRUI.ctor(): ` + errorMsg );
+        }
+
+        this._root = null;
+        this._initWidth = widthUnit;
+        this._initHeight = heightUnit;
+        this._initDepth = depthUnit;
+
+    }
+
+    refreshLayout() {
+
+        if ( !this._root ) {
+            let errorMsg = `you must add a default layout working as a root.`;
+            console.error( `VRUI.root(): ` + errorMsg );
+            return;
+        }
+
+        this._root._refreshLayout( this._initWidth, this._initHeight );
+
+    }
+
+    addLayout( layout ) {
 
         if ( !layout ) {
             let errorMsg = `VRUI should be provided either a layout or a view.`;
-            throw new TypeError( `VRUI: ctor(): ` + errorMsg );
+            throw new TypeError( `VRUI.ctor(): ` + errorMsg );
         }
 
         if ( !( layout instanceof Element ) ) {
             let errorMsg = `the provided 'layout' does not inherit from `;
             errorMsg += `VRUI.Element.`;
-            throw new TypeError( `VRUI: ctor(): ` + errorMsg );
+            throw new TypeError( `VRUI.ctor(): ` + errorMsg );
+        }
+
+        if ( this._root ) {
+            let warnMsg = `you overrided the previously added root layout`;
+            console.warn( `VRUI.addLayout(): ` + warnMsg );
         }
 
         this._root = layout;
@@ -47,6 +84,12 @@ export default class VRUI {
     }
 
     root() {
+
+        if ( !this._root ) {
+            let errorMsg = `you must add a default layout working as a root.`;
+            console.error( `VRUI.root(): ` + errorMsg );
+            return null;
+        }
 
         return this._root.group;
 
