@@ -44,7 +44,8 @@
     "equal": false,
     "start": false,
     "deepEqual": false,
-    "__dirname": false
+    "__dirname": false,
+    "THREE": true
   },
 
   "rules": {
@@ -210,7 +211,7 @@
     "quote-props": [ 2, "consistent-as-needed", { "keywords": true }],               // require quotes around object literal property names (off by default)
     "quotes": [
       2,
-      "single"
+      "backtick"
     ],                    // specify whether double or single quotes should be used
     "semi": 2,                      // require or disallow use of semicolons instead of ASI
     "semi-spacing": 2,

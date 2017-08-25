@@ -27,12 +27,14 @@
 
 'use strict';
 
+import VRUI from './main';
+import Element from './element';
 import * as layout from './layout/layout';
 import * as view from './view/view';
-import Element from './element';
 
 export {
+    VRUI,
+    Element,
     layout,
-    view,
-    Element
+    view
 };

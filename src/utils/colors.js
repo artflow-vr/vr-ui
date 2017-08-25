@@ -25,22 +25,4 @@
 * SOFTWARE.
 */
 
-import AbstractLayout from './abstract-layout';
-
-export default class GridLayout extends AbstractLayout {
-
-    constructor( options ) {
-
-        super( options );
-        this.setIfUndefined( {
-            rows: 4,
-            columns: 4
-        } );
-
-    }
-
-    perform() {
-
-    }
-
-}
+export const DEFAULT = 0x2C3E50;

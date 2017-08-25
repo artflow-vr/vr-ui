@@ -25,21 +25,20 @@
 * SOFTWARE.
 */
 
-import AbstractLayout from './abstract-layout';
+import Element from "../element";
 
-export default class GridLayout extends AbstractLayout {
+export default class AbstractView extends Element {
 
     constructor( options ) {
 
         super( options );
-        this.setIfUndefined( {
-            rows: 4,
-            columns: 4
-        } );
 
     }
 
     perform() {
+
+        let errorMsg = `method should be implemented in child prototype.`;
+        throw new TypeError( `AbstractView: perform(): ` + errorMsg );
 
     }
 

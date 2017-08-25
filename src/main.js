@@ -25,21 +25,30 @@
 * SOFTWARE.
 */
 
-import AbstractLayout from './abstract-layout';
+import Element from './element';
 
-export default class GridLayout extends AbstractLayout {
+export default class VRUI {
 
-    constructor( options ) {
+    constructor( layout ) {
 
-        super( options );
-        this.setIfUndefined( {
-            rows: 4,
-            columns: 4
-        } );
+        if ( !layout ) {
+            let errorMsg = `VRUI should be provided either a layout or a view.`;
+            throw new TypeError( `VRUI: ctor(): ` + errorMsg );
+        }
+
+        if ( !( layout instanceof Element ) ) {
+            let errorMsg = `the provided 'layout' does not inherit from `;
+            errorMsg += `VRUI.Element.`;
+            throw new TypeError( `VRUI: ctor(): ` + errorMsg );
+        }
+
+        this._root = layout;
 
     }
 
-    perform() {
+    root() {
+
+        return this._root.group;
 
     }
 

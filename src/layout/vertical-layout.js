@@ -25,21 +25,21 @@
 * SOFTWARE.
 */
 
-import AbstractLayout from './abstract-layout';
+import LinearLayout from './linear-layout';
 
-export default class GridLayout extends AbstractLayout {
+export default class VerticalLayout extends LinearLayout {
 
-    constructor( options ) {
+    constructor( style ) {
 
-        super( options );
-        this.setIfUndefined( {
-            rows: 4,
-            columns: 4
-        } );
+        super( style );
 
     }
 
     perform() {
+
+        for ( let eID in this._elements ) {
+            let element = this._elements[ eID ];
+        }
 
     }
 

@@ -27,19 +27,18 @@
 
 import AbstractLayout from './abstract-layout';
 
-export default class GridLayout extends AbstractLayout {
+export default class LinearLayout extends AbstractLayout {
 
     constructor( options ) {
 
         super( options );
-        this.setIfUndefined( {
-            rows: 4,
-            columns: 4
-        } );
 
     }
 
     perform() {
+
+        let errorMsg = `method should be implemented in child prototype.`;
+        throw new TypeError( `LinearLayout: perform(): ` + errorMsg );
 
     }
 

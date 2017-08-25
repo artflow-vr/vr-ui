@@ -18,17 +18,18 @@
             let scene;
             let renderer;
 
-            scene = new THREE.Scene();
-
-            console.log(window);
-
             camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.1, 15 );
             camera.position.set(0, 0, 1.0);
 
             renderer = new THREE.WebGLRenderer();
             renderer.setSize( window.innerWidth, window.innerHeight );
-            renderer.setClearColor(0x2c3e50);
+            renderer.setClearColor(0xecf0f1);
             document.body.appendChild( renderer.domElement );
+
+            scene = new THREE.Scene();
+
+            let gui = setupGUI();
+            scene.add(gui.root());
 
             animate();
             function animate() {
@@ -37,6 +38,39 @@
                 requestAnimationFrame( animate );
 
             }
+
+            function setupGUI() {
+                
+                let layout = new VRUI.layout.VerticalLayout(/*{
+                    background: {
+                        depth: false
+                    }
+                }*/);
+                let tex = new THREE.TextureLoader().load('assets/background.png',
+                                                                function(tex) {
+                    
+                    let button = new VRUI.view.ButtonView({image: tex});
+                    layout.add(button);
+
+                });
+                
+
+                //layout.add(button);
+
+                let gui = new VRUI.VRUI(layout);
+
+                return gui;
+
+            }
+
+            // Registers global events
+            window.addEventListener( 'resize', function () {
+
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize( window.innerWidth, window.innerHeight );
+
+            }, false );
 
         </script>
     </body>

@@ -25,7 +25,8 @@
 * SOFTWARE.
 */
 
-let THREE = window.THREE;
+import { PLANE_GEOM, BOX_GEOM } from './utils/geometry-factory';
+import { MAT_DEFAULT } from './utils/material-factory';
 
 /**
  *
@@ -37,28 +38,40 @@ let THREE = window.THREE;
  */
 export default class Element {
 
-    constructor( options ) {
+    constructor( style ) {
 
-        // The class should be abstract
-        if ( this.method === undefined ) {
-            let errorMsg = 'the Element prorotype is abstract.';
-            throw new TypeError( 'Element: ctor(): ' + errorMsg );
-        }
-
-        this.options = {};
-        if ( options )
-            for ( let k in options ) this.options[ k ] = options[ k ];
+        this.style = {};
+        if ( style )
+            for ( let k in style ) this.style[ k ] = style[ k ];
 
         this._setIfUndefined( {
             width: 1.0,
             height: 1.0,
+            depth: 0.0,
             paddingTop: 0.0,
             paddingBottom: 0.0,
             paddingLeft: 0.0,
-            paddingRight: 0.0
+            paddingRight: 0.0,
+            position: `left`
         } );
 
         this.group = new THREE.Group();
+
+        // Creates a plane / box used as a background for the element.
+        // For more information, you can check the documentation to see
+        // every options you can give to the `background`style option.
+        let background = this.style.background;
+        if ( background ) {
+            let material = background.material || MAT_DEFAULT.clone();
+            let geom = background.depth ? PLANE_GEOM : BOX_GEOM;
+            let mesh = new THREE.Mesh( geom, material );
+            mesh.scale.x = this.style.width;
+            mesh.scale.y = this.style.height;
+            if ( background.depth && this.style.depth !== 0.0 )
+                mesh.scale.z = this.style.depth;
+
+            this.group.add( mesh );
+        }
 
     }
 
@@ -68,12 +81,17 @@ export default class Element {
      *
      * @memberof Element
      */
-    perform() { }
+    perform() {
 
-    _setIfUndefined( options ) {
+        let errorMsg = `method should be implemented in child prototype.`;
+        throw new TypeError( `Element: perform(): ` + errorMsg );
 
-        for ( let k in options )
-            if ( !( k in this.options ) ) this.options[ k ] = options[ k ];
+    }
+
+    _setIfUndefined( style ) {
+
+        for ( let k in style )
+            if ( !( k in this.style ) ) this.style[ k ] = style[ k ];
 
     }
 

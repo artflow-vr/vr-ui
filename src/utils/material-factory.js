@@ -25,22 +25,6 @@
 * SOFTWARE.
 */
 
-import AbstractLayout from './abstract-layout';
+import * as Colors from './colors';
 
-export default class GridLayout extends AbstractLayout {
-
-    constructor( options ) {
-
-        super( options );
-        this.setIfUndefined( {
-            rows: 4,
-            columns: 4
-        } );
-
-    }
-
-    perform() {
-
-    }
-
-}
+export const MAT_DEFAULT = new THREE.MeshBasicMaterial( { color: Colors.DEFAULT } );

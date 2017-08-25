@@ -25,22 +25,5 @@
 * SOFTWARE.
 */
 
-import AbstractLayout from './abstract-layout';
-
-export default class GridLayout extends AbstractLayout {
-
-    constructor( options ) {
-
-        super( options );
-        this.setIfUndefined( {
-            rows: 4,
-            columns: 4
-        } );
-
-    }
-
-    perform() {
-
-    }
-
-}
+export const PLANE_GEOM = new THREE.PlaneGeometry( 1, 1 );
+export const BOX_GEOM = new THREE.BoxGeometry( 1, 1, 1 );

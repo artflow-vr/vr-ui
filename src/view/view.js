@@ -25,9 +25,7 @@
 * SOFTWARE.
 */
 
-'use strict';
-
-import { ButtonView } from './button-view';
+import ButtonView from './button-view';
 
 export {
     ButtonView

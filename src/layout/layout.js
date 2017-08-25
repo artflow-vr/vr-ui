@@ -27,8 +27,10 @@
 
 'use strict';
 
-import { GridLayout } from './grid-layout';
+import VerticalLayout from './vertical-layout';
+import GridLayout from './grid-layout';
 
 export {
+    VerticalLayout,
     GridLayout
 };

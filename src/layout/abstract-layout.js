@@ -25,7 +25,7 @@
 * SOFTWARE.
 */
 
-import Element from '../element';
+import Element from "../element";
 
 /**
  *
@@ -36,10 +36,9 @@ import Element from '../element';
  */
 export default class AbstractLayout extends Element {
 
-    constructor( options ) {
+    constructor( style ) {
 
-        super( options );
-
+        super( style );
         this._elements = [];
 
     }
@@ -52,6 +51,9 @@ export default class AbstractLayout extends Element {
      */
     perform() {
 
+        let errorMsg = `method should be implemented in child prototype.`;
+        throw new TypeError( `AbstractLayout: perform(): ` + errorMsg );
+
     }
 
     /**
@@ -60,19 +62,22 @@ export default class AbstractLayout extends Element {
      *
      * @param  {VRUI.Element} element
      */
-    addElement( element ) {
+    add( element ) {
 
         if ( element === undefined || element === null ) {
-            let errorMsg = 'provided view argument is null or undefined.';
-            throw Error( 'AbstractLayout: addView(): ' + errorMsg );
+            let errorMsg = `provided view argument is null or undefined.`;
+            throw Error( `AbstractLayout: addView(): ` + errorMsg );
         }
 
         if ( !( element instanceof Element ) ) {
-            let errorMsg = 'provided element is not an instance of Element';
-            throw Error( 'AbstractLayout: addView(): ' + errorMsg );
+            let errorMsg = `provided element is not an instance of Element`;
+            throw Error( `AbstractLayout: addView(): ` + errorMsg );
         }
 
         this._elements.push( element );
+        // Builds Three.js scene graph when building the VRUI custom
+        // layouts / views hierarchy.
+        this.group.add( element.group );
 
     }
 
