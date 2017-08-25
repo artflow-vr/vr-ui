@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Simple Example</title>
+        <meta charset="UTF-8">
+        <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, minimal-ui" name="viewport" />
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+    </head>
+    <body>
+
+        <script type="text/javascript" src="https://cdn.rawgit.com/mrdoob/three.js/r82/build/three.min.js"></script>
+        <script type="text/javascript" src="../build/vr-ui.js"></script>
+
+        <script type="text/javascript">
+
+            let camera;
+            let scene;
+            let renderer;
+
+            scene = new THREE.Scene();
+
+            console.log(window);
+
+            camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.1, 15 );
+            camera.position.set(0, 0, 1.0);
+
+            renderer = new THREE.WebGLRenderer();
+            renderer.setSize( window.innerWidth, window.innerHeight );
+            renderer.setClearColor(0x2c3e50);
+            document.body.appendChild( renderer.domElement );
+
+            animate();
+            function animate() {
+
+                renderer.render( scene, camera );
+                requestAnimationFrame( animate );
+
+            }
+
+        </script>
+    </body>
+</html>
