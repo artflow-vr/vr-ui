@@ -47,17 +47,14 @@ export default class ButtonView extends AbstractView {
         }*/
 
         let material = MAT_DEFAULT.clone();
-        material.color.setHex( image );
         //material.map = image.clone();
-
-        let geom = this.style.depth <= 0.0001 ? PLANE_GEOM : BOX_GEOM;
-        let mesh = new THREE.Mesh( geom, material );
-        mesh.scale.x = this.style.width;
-        mesh.scale.y = this.style.height;
-        if ( this.style.depth > 0.0001 )
-            mesh.scale.z = this.style.depth;
-
-        this.group.add( mesh );
+        // DEBUG
+        material.color.setHex( image );
+        material.name = `toto`;
+        // END DEBUG
+        this.set( {
+            background: { material: material }
+        } );
 
     }
 

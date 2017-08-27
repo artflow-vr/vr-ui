@@ -38,11 +38,13 @@ export default class VerticalLayout extends LinearLayout {
     _refreshLayout( maxWidth, maxHeight, offset ) {
         super._refreshLayout( maxWidth, maxHeight, offset );
 
+        let dimensions = this.group.userData.dimensions;
+
         let yOffset = this.group.position.y;
         for ( let elt of this._elements ) {
-            elt._refreshLayout( maxWidth, maxHeight, { y: yOffset } );
-            console.log( yOffset );
-            yOffset += elt._dimensions.maxHeight;
+            elt._refreshLayout( dimensions.maxWidth, dimensions.maxHeight );
+            elt.group.position.y = yOffset;
+            yOffset -= elt.group.userData.dimensions.maxHeight;
         }
 
     }

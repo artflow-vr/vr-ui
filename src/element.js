@@ -30,6 +30,10 @@ import { MAT_DEFAULT } from './utils/material-factory';
 
 import checkProperty from './utils/property-check';
 
+const PROP_TO = {
+    background: `_updateBackground`
+};
+
 /**
  *
  * Abstract class describing an element: layout, view, ...
@@ -41,6 +45,20 @@ import checkProperty from './utils/property-check';
 export default class Element {
 
     constructor( style ) {
+
+        this.group = new THREE.Group();
+        this.group.userData.background = null;
+        this.group.userData.dimensions = {
+            maxWidth: 0.0,
+            maxHeight: 0.0,
+            halfWidth: 0.0,
+            halfHeight: 0.0
+        };
+        this.group.userData.position = {
+            x: 0,
+            y: 0,
+            z: 0
+        };
 
         this.style = {};
         if ( style )
@@ -57,30 +75,20 @@ export default class Element {
             position: `left`
         } );
 
-        this.group = new THREE.Group();
+    }
 
-        // Creates a plane / box used as a background for the element.
-        // For more information, you can check the documentation to see
-        // every options you can give to the `background`style option.
-        let background = this.style.background;
-        if ( background ) {
-            let material = background.material || MAT_DEFAULT.clone();
-            let geom = this.style.depth <= 0.0001 ? PLANE_GEOM : BOX_GEOM;
-            let mesh = new THREE.Mesh( geom, material );
-            mesh.scale.x = this.style.width;
-            mesh.scale.y = this.style.height;
-            if ( this.style.depth > 0.0001 )
-                mesh.scale.z = this.style.depth;
-            mesh.position.z = -0.05;
-            this.group.add( mesh );
+    set( style ) {
+
+        for ( let k in style ) {
+            if ( checkProperty( k, style[ k ] ) ) {
+                this.style[ k ] = style[ k ];
+                if ( PROP_TO[ k ] ) {
+                    let methodName = PROP_TO[ k ];
+                    this[ methodName ]( style[ k ] );
+                }
+            }
         }
 
-        this._dimensions = {
-            maxWidth: 0.0,
-            maxHeight: 0.0,
-            halfWidth: 0.0,
-            halfHeight: 0.0
-        };
     }
 
     /**
@@ -91,30 +99,37 @@ export default class Element {
      */
     _refreshLayout( maxWidth, maxHeight, offset ) {
 
-        this._dimensions.maxWidth = this.style.width * maxWidth;
-        this._dimensions.maxHeight = this.style.height * maxHeight;
-        this._dimensions.halfWidth = this._dimensions.maxWidth / 2.0;
-        this._dimensions.halfHeight = this._dimensions.halfHeight / 2.0;
+        let dimensions = this.group.userData.dimensions;
 
-        if ( offset ) {
-            let { x, y, z } = offset;
-            this.group.position.x += x || 0;
-            this.group.position.y += y || 0;
-            this.group.position.z += z || 0;
+        dimensions.maxWidth = this.style.width * maxWidth;
+        dimensions.maxHeight = this.style.height * maxHeight;
+        dimensions.halfWidth = dimensions.maxWidth / 2.0;
+        dimensions.halfHeight = dimensions.maxHeight / 2.0;
+
+        this.group.userData.position.x = - dimensions.halfWidth;
+        this.group.userData.position.y = - dimensions.halfHeight;
+
+        let background = this.group.userData.background;
+        if ( background ) {
+            background.position.x = this.group.userData.position.x;
+            background.position.y = this.group.userData.position.y;
+            background.position.z = this.group.userData.position.z;
+            background.scale.x = dimensions.maxWidth;
+            background.scale.y = dimensions.maxHeight;
         }
-
-        /*let horizontalPad = this.style.paddingLeft + this.style.paddingRight;
-        let verticalPad = this.style.paddingTop + this.style.paddingBottom;
-
-        this._width = maxWidth * ( this.style.width - horizontalPad );
-        this._height = maxHeight * ( this.style.height - verticalPad );*/
 
     }
 
-    set( style ) {
+    _updateBackground( background ) {
 
-        for ( let k in style )
-            if ( checkProperty( k, style[ k ] ) ) this.style[ k ] = style[ k ];
+        let material = ( background.material || MAT_DEFAULT ).clone();
+
+        if ( !this.group.userData.background ) {
+            this.group.userData.background = new THREE.Mesh( PLANE_GEOM, material );
+            this.group.add( this.group.userData.background );
+        }
+
+        this.group.userData.background.material = material;
 
     }
 
