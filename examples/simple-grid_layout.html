@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Simple GridLayout Example</title>
+        <meta charset="UTF-8">
+        <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, minimal-ui" name="viewport" />
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+    </head>
+    <body>
+
+        <script type="text/javascript" src="https://cdn.rawgit.com/mrdoob/three.js/r82/build/three.min.js"></script>
+        <script type="text/javascript" src="../build/vr-ui.js"></script>
+
+        <script type="text/javascript">
+
+            let camera;
+            let scene;
+            let renderer;
+
+            camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.1, 15 );
+            camera.position.set(0, 0, 1.0);
+
+            renderer = new THREE.WebGLRenderer();
+            renderer.setSize( window.innerWidth, window.innerHeight );
+            renderer.setClearColor(0x000000);
+            document.body.appendChild( renderer.domElement );
+
+            scene = new THREE.Scene();
+
+            let gui = null;
+            setupGUI();
+
+            animate();
+            function animate() {
+
+                renderer.render( scene, camera );
+                requestAnimationFrame( animate );
+
+            }
+
+            function setupGUI() {
+                
+                let loader = new THREE.TextureLoader();
+                loader.setPath('assets/');
+                let tex = loader.load('background.png', function(tex) {
+                    
+                    let layout = new VRUI.layout.GridLayout(4, 4, {
+                        background: {
+                            material: null
+                        }
+                    });
+                    //let button = new VRUI.view.ButtonView(tex);
+                    let button1 = new VRUI.view.ButtonView(0xFF0000, {
+                        width: 1.0,
+                        height: 1.0,
+                        margin: {
+                            left: 0.1,
+                            right: 0.4,
+                            top: 0.0
+                        }
+                    });
+                    let button2 = new VRUI.view.ButtonView(0x00FF00, {
+                        width: 1.0,
+                        height: 1.0
+                    });
+                    let button3 = new VRUI.view.ButtonView(0x0000FF, {
+                        width: 1.0,
+                        height: 1.0
+                    });
+                    layout.add(button1);
+                    layout.add(button2);
+                    layout.add(button3);
+
+                    gui = new VRUI.VRUI(0.35, 0.5);
+                    gui.addLayout(layout);
+
+                    scene.add(gui.root());
+
+                    gui.refreshLayout();
+                    
+                });
+                
+            }
+
+            // Registers global events
+            window.addEventListener( 'resize', function () {
+
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize( window.innerWidth, window.innerHeight );
+
+            }, false );
+
+        </script>
+    </body>
+</html>

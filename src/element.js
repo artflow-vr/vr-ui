@@ -111,7 +111,7 @@ export default class Element {
      *
      * @memberof Element
      */
-    _refreshLayout( maxWidth, maxHeight, offset ) {
+    _refreshLayout( maxWidth, maxHeight ) {
 
         let dimensions = this.group.userData.dimensions;
 
