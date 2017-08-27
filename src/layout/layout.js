@@ -26,9 +26,11 @@
 */
 
 import VerticalLayout from './vertical-layout';
+import HorizontalLayout from './horizontal-layout';
 import GridLayout from './grid-layout';
 
 export {
     VerticalLayout,
+    HorizontalLayout,
     GridLayout
 };

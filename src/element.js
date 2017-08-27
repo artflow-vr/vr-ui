@@ -120,7 +120,7 @@ export default class Element {
         dimensions.halfWidth = dimensions.maxWidth / 2.0;
         dimensions.halfHeight = dimensions.maxHeight / 2.0;
 
-        this.group.userData.position.x = - dimensions.halfWidth;
+        this.group.userData.position.x = dimensions.halfWidth;
         this.group.userData.position.y = - dimensions.halfHeight;
 
         let margin = this.group.userData.dimensions.margin;

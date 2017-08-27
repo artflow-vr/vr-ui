@@ -25,13 +25,30 @@
 * SOFTWARE.
 */
 
-import AbstractLayout from './abstract-layout';
+import LinearLayout from './linear-layout';
 
-export default class LinearLayout extends AbstractLayout {
+export default class HorizontalLayout extends LinearLayout {
 
-    constructor( options ) {
+    constructor( style ) {
 
-        super( options );
+        super( style );
+
+    }
+
+    _refreshLayout( maxWidth, maxHeight, offset ) {
+        super._refreshLayout( maxWidth, maxHeight, offset );
+
+        let dimensions = this.group.userData.dimensions;
+
+        let xOffset = this.group.position.x;
+        for ( let elt of this._elements ) {
+            elt._refreshLayout( dimensions.maxWidth, dimensions.maxHeight );
+            let eltDim = elt.group.userData.dimensions;
+            xOffset += eltDim.margin.left;
+            elt.group.position.x = xOffset;
+            xOffset += eltDim.maxWidth;
+            xOffset += eltDim.margin.right;
+        }
 
     }
 

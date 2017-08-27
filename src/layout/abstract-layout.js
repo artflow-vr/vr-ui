@@ -45,18 +45,6 @@ export default class AbstractLayout extends Element {
 
     /**
      *
-     * Computes bounds, item size, and move them accordingly.
-     *
-     * @memberof AbstractLayout
-     */
-    _refreshLayout( maxWidth, maxHeight, offset ) {
-
-        super._refreshLayout( maxWidth, maxHeight, offset );
-
-    }
-
-    /**
-     *
      * Adds a given element to the layout, allowing it visual space.
      *
      * @param  {VRUI.Element} element
