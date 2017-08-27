@@ -52,7 +52,13 @@ export default class Element {
             maxWidth: 0.0,
             maxHeight: 0.0,
             halfWidth: 0.0,
-            halfHeight: 0.0
+            halfHeight: 0.0,
+            margin: {
+                top: 0.0,
+                bottom: 0.0,
+                left: 0.0,
+                right: 0.0
+            }
         };
         this.group.userData.position = {
             x: 0,
@@ -64,16 +70,24 @@ export default class Element {
         if ( style )
             this.set( style );
 
-        this._setIfUndefined( {
+        this._setStyleForUndefined( {
             width: 1.0,
             height: 1.0,
             depth: 0.0,
-            paddingTop: 0.0,
-            paddingBottom: 0.0,
-            paddingLeft: 0.0,
-            paddingRight: 0.0,
+            padding: {
+                top: 0.0,
+                bottom: 0.0,
+                left: 0.0,
+                right: 0.0
+            },
+            margin: {
+                top: 0.0,
+                bottom: 0.0,
+                left: 0.0,
+                right: 0.0
+            },
             position: `left`
-        } );
+        }, this.style );
 
     }
 
@@ -109,6 +123,12 @@ export default class Element {
         this.group.userData.position.x = - dimensions.halfWidth;
         this.group.userData.position.y = - dimensions.halfHeight;
 
+        let margin = this.group.userData.dimensions.margin;
+        margin.top = this.style.margin.top * maxHeight;
+        margin.bottom = this.style.margin.bottom * maxHeight;
+        margin.left = this.style.margin.left * maxWidth;
+        margin.right = this.style.margin.right * maxWidth;
+
         let background = this.group.userData.background;
         if ( background ) {
             background.position.x = this.group.userData.position.x;
@@ -133,11 +153,22 @@ export default class Element {
 
     }
 
-    _setIfUndefined( style ) {
+    _setStyleForUndefined( style, writeTo ) {
 
-        for ( let k in style )
-            if ( !( k in this.style ) ) this.style[ k ] = style[ k ];
+        for ( let k in style ) {
+            let element = style[ k ];
+            if ( typeof element === `object` ) {
+                if ( !( k in writeTo ) ) writeTo[ k ] = {};
+                this._setStyleForUndefined( element, writeTo[ k ] );
+            } else if ( !( k in writeTo ) ) {
+                writeTo[ k ] = style[ k ];
+            }
+        }
 
     }
+
+    /*_setValueUndefined( obj, id, value ) {
+
+    }*/
 
 }
