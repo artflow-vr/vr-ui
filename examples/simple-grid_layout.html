@@ -45,7 +45,7 @@
                 loader.setPath('assets/');
                 let tex = loader.load('background.png', function(tex) {
                     
-                    let layout = new VRUI.layout.GridLayout(4, 4, {
+                    let layout = new VRUI.layout.GridLayout(2, 4, {
                         background: {
                             material: null
                         }
@@ -72,12 +72,12 @@
                     layout.add(button2);
                     layout.add(button3);
 
-                    gui = new VRUI.VRUI(0.35, 0.5);
-                    gui.addLayout(layout);
+                    page = new VRUI.Page(layout, 0.35, 0.5);
 
-                    scene.add(gui.root());
+                    gui = new VRUI.VRUI(page);
+                    gui.addToScene(scene)
 
-                    gui.refreshLayout();
+                    gui.refresh();
                     
                 });
                 

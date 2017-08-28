@@ -18,8 +18,8 @@
             let scene;
             let renderer;
 
-            camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.1, 15 );
-            camera.position.set(0, 0, 1.0);
+            camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.1, 100 );
+            camera.position.set(0, 0, 0.4);
 
             renderer = new THREE.WebGLRenderer();
             renderer.setSize( window.innerWidth, window.innerHeight );
@@ -45,11 +45,6 @@
                 loader.setPath('assets/');
                 let tex = loader.load('background.png', function(tex) {
                     
-                    /*let layout = new VRUI.layout.VerticalLayout({
-                        background: {
-                            material: null
-                        }
-                    });*/
                     let layout = new VRUI.layout.HorizontalLayout({
                         background: {
                             material: null
@@ -72,12 +67,13 @@
                     layout.add(button1);
                     layout.add(button2);
 
-                    gui = new VRUI.VRUI(0.35, 0.5);
-                    gui.addLayout(layout);
-
-                    scene.add(gui.root());
-
-                    gui.refreshLayout();
+                    page = new VRUI.Page(layout, 0.35, 0.5);
+                    
+                    gui = new VRUI.VRUI(page);
+                    gui.addToScene(scene);
+                    //scene.add(gui.root());
+                    
+                    gui.refresh();
                     
                 });
                 

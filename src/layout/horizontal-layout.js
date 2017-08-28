@@ -36,6 +36,7 @@ export default class HorizontalLayout extends LinearLayout {
     }
 
     _refreshLayout( maxWidth, maxHeight, offset ) {
+
         super._refreshLayout( maxWidth, maxHeight, offset );
 
         let dimensions = this.group.userData.dimensions;
