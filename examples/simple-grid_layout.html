@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Simple Example</title>
+        <title>Simple GridLayout Example</title>
         <meta charset="UTF-8">
         <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, minimal-ui" name="viewport" />
         <meta name="mobile-web-app-capable" content="yes">
@@ -45,32 +45,32 @@
                 loader.setPath('assets/');
                 let tex = loader.load('background.png', function(tex) {
                     
-                    /*let layout = new VRUI.layout.VerticalLayout({
-                        background: {
-                            material: null
-                        }
-                    });*/
-                    let layout = new VRUI.layout.HorizontalLayout({
+                    let layout = new VRUI.layout.GridLayout(4, 4, {
                         background: {
                             material: null
                         }
                     });
                     //let button = new VRUI.view.ButtonView(tex);
                     let button1 = new VRUI.view.ButtonView(0xFF0000, {
-                        width: 0.4,
-                        height: 0.2,
+                        width: 1.0,
+                        height: 1.0,
                         margin: {
-                            left: 0.0,
-                            right: 0.2,
-                            top: 0.1
+                            left: 0.1,
+                            right: 0.4,
+                            top: 0.0
                         }
                     });
                     let button2 = new VRUI.view.ButtonView(0x00FF00, {
-                        width: 0.2,
-                        height: 0.2
+                        width: 1.0,
+                        height: 1.0
+                    });
+                    let button3 = new VRUI.view.ButtonView(0x0000FF, {
+                        width: 1.0,
+                        height: 1.0
                     });
                     layout.add(button1);
                     layout.add(button2);
+                    layout.add(button3);
 
                     gui = new VRUI.VRUI(0.35, 0.5);
                     gui.addLayout(layout);

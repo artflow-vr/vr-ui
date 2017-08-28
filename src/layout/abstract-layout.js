@@ -45,19 +45,6 @@ export default class AbstractLayout extends Element {
 
     /**
      *
-     * Computes bounds, item size, and move them accordingly.
-     *
-     * @memberof AbstractLayout
-     */
-    perform() {
-
-        let errorMsg = `method should be implemented in child prototype.`;
-        throw new TypeError( `AbstractLayout: perform(): ` + errorMsg );
-
-    }
-
-    /**
-     *
      * Adds a given element to the layout, allowing it visual space.
      *
      * @param  {VRUI.Element} element

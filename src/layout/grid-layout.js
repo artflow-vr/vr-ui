@@ -29,17 +29,43 @@ import AbstractLayout from './abstract-layout';
 
 export default class GridLayout extends AbstractLayout {
 
-    constructor( options ) {
+    constructor( columns, rows, style ) {
 
-        super( options );
-        this.setIfUndefined( {
-            rows: 4,
-            columns: 4
-        } );
+        if ( !rows || !columns ) {
+            let errorMsg = `missing argument 'columns'.or 'rows'`;
+            throw Error( `GridLayout.ctor(): ` + errorMsg );
+        }
+
+        super( style );
+
+        this.nbRows = rows;
+        this.nbColumns = columns;
 
     }
 
-    perform() {
+    _refreshLayout( maxWidth, maxHeight, offset ) {
+
+        super._refreshLayout( maxWidth, maxHeight, offset );
+
+        let dimensions = this.group.userData.dimensions;
+        let maxEltWidth = dimensions.maxWidth / this.nbColumns;
+        let maxEltHeight = dimensions.maxHeight / this.nbRows;
+
+        let xOffset = this.group.position.x;
+        let yOffset = this.group.position.y;
+        for ( let i = 0; i < this._elements.length; ++i ) {
+            let elt = this._elements[ i ];
+            elt._refreshLayout( maxEltWidth, maxEltHeight );
+
+            let colIDX = i % this.nbColumns;
+            if ( colIDX === 0 && i !== 0 ) {
+                xOffset = this.group.position.x;
+                yOffset -= maxEltHeight;
+            }
+            elt.group.position.x = xOffset;
+            elt.group.position.y = yOffset;
+            xOffset += maxEltWidth;
+        }
 
     }
 

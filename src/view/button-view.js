@@ -32,32 +32,29 @@ import { MAT_DEFAULT } from '../utils/material-factory';
 
 export default class ButtonView extends AbstractView {
 
-    constructor( style ) {
+    constructor( image, style ) {
 
         super( style );
 
-        if ( !this.style.image ) {
+        /*if ( !image ) {
             let errorMsg = `you did not provide any texture.`;
-            throw Error( `ButtonView: ctor(): ` + errorMsg );
+            throw Error( `ButtonView.ctor(): ` + errorMsg );
         }
 
-        let image = this.style.image;
         if ( !( image instanceof THREE.Texture ) ) {
             let errorMsg = `the provided image is not a THREE.Texture object`;
-            throw Error( `ButtonView: ctor(): ` + errorMsg );
-        }
+            throw Error( `ButtonView.ctor(): ` + errorMsg );
+        }*/
 
         let material = MAT_DEFAULT.clone();
-        material.map = image.clone();
-
-        let geom = this.style.depth <= 0.0001 ? PLANE_GEOM : BOX_GEOM;
-        let mesh = new THREE.Mesh( geom, material );
-        mesh.scale.x = this.style.width;
-        mesh.scale.y = this.style.height;
-        if ( this.style.depth > 0.0001 )
-            mesh.scale.z = this.style.depth;
-
-        this.group.add( mesh );
+        //material.map = image.clone();
+        // DEBUG
+        material.color.setHex( image );
+        material.name = `toto`;
+        // END DEBUG
+        this.set( {
+            background: { material: material }
+        } );
 
     }
 

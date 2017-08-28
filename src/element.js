@@ -28,6 +28,12 @@
 import { PLANE_GEOM, BOX_GEOM } from './utils/geometry-factory';
 import { MAT_DEFAULT } from './utils/material-factory';
 
+import checkProperty from './utils/property-check';
+
+const PROP_TO = {
+    background: `_updateBackground`
+};
+
 /**
  *
  * Abstract class describing an element: layout, view, ...
@@ -40,37 +46,61 @@ export default class Element {
 
     constructor( style ) {
 
+        this.group = new THREE.Group();
+        this.group.userData.background = null;
+        this.group.userData.dimensions = {
+            maxWidth: 0.0,
+            maxHeight: 0.0,
+            halfWidth: 0.0,
+            halfHeight: 0.0,
+            margin: {
+                top: 0.0,
+                bottom: 0.0,
+                left: 0.0,
+                right: 0.0
+            }
+        };
+        this.group.userData.position = {
+            x: 0,
+            y: 0,
+            z: 0
+        };
+
         this.style = {};
         if ( style )
-            for ( let k in style ) this.style[ k ] = style[ k ];
+            this.set( style );
 
-        this._setIfUndefined( {
+        this._setStyleForUndefined( {
             width: 1.0,
             height: 1.0,
             depth: 0.0,
-            paddingTop: 0.0,
-            paddingBottom: 0.0,
-            paddingLeft: 0.0,
-            paddingRight: 0.0,
+            padding: {
+                top: 0.0,
+                bottom: 0.0,
+                left: 0.0,
+                right: 0.0
+            },
+            margin: {
+                top: 0.0,
+                bottom: 0.0,
+                left: 0.0,
+                right: 0.0
+            },
             position: `left`
-        } );
+        }, this.style );
 
-        this.group = new THREE.Group();
+    }
 
-        // Creates a plane / box used as a background for the element.
-        // For more information, you can check the documentation to see
-        // every options you can give to the `background`style option.
-        let background = this.style.background;
-        if ( background ) {
-            let material = background.material || MAT_DEFAULT.clone();
-            let geom = background.depth ? PLANE_GEOM : BOX_GEOM;
-            let mesh = new THREE.Mesh( geom, material );
-            mesh.scale.x = this.style.width;
-            mesh.scale.y = this.style.height;
-            if ( background.depth && this.style.depth !== 0.0 )
-                mesh.scale.z = this.style.depth;
+    set( style ) {
 
-            this.group.add( mesh );
+        for ( let k in style ) {
+            if ( checkProperty( k, style[ k ] ) ) {
+                this.style[ k ] = style[ k ];
+                if ( PROP_TO[ k ] ) {
+                    let methodName = PROP_TO[ k ];
+                    this[ methodName ]( style[ k ] );
+                }
+            }
         }
 
     }
@@ -81,18 +111,64 @@ export default class Element {
      *
      * @memberof Element
      */
-    perform() {
+    _refreshLayout( maxWidth, maxHeight ) {
 
-        let errorMsg = `method should be implemented in child prototype.`;
-        throw new TypeError( `Element: perform(): ` + errorMsg );
+        let dimensions = this.group.userData.dimensions;
+
+        dimensions.maxWidth = this.style.width * maxWidth;
+        dimensions.maxHeight = this.style.height * maxHeight;
+        dimensions.halfWidth = dimensions.maxWidth / 2.0;
+        dimensions.halfHeight = dimensions.maxHeight / 2.0;
+
+        this.group.userData.position.x = dimensions.halfWidth;
+        this.group.userData.position.y = - dimensions.halfHeight;
+
+        let margin = this.group.userData.dimensions.margin;
+        margin.top = this.style.margin.top * maxHeight;
+        margin.bottom = this.style.margin.bottom * maxHeight;
+        margin.left = this.style.margin.left * maxWidth;
+        margin.right = this.style.margin.right * maxWidth;
+
+        let background = this.group.userData.background;
+        if ( background ) {
+            background.position.x = this.group.userData.position.x;
+            background.position.y = this.group.userData.position.y;
+            background.position.z = this.group.userData.position.z;
+            background.scale.x = dimensions.maxWidth;
+            background.scale.y = dimensions.maxHeight;
+        }
 
     }
 
-    _setIfUndefined( style ) {
+    _updateBackground( background ) {
 
-        for ( let k in style )
-            if ( !( k in this.style ) ) this.style[ k ] = style[ k ];
+        let material = ( background.material || MAT_DEFAULT ).clone();
+
+        if ( !this.group.userData.background ) {
+            this.group.userData.background = new THREE.Mesh( PLANE_GEOM, material );
+            this.group.add( this.group.userData.background );
+        }
+
+        this.group.userData.background.material = material;
 
     }
+
+    _setStyleForUndefined( style, writeTo ) {
+
+        for ( let k in style ) {
+            let element = style[ k ];
+            if ( typeof element === `object` ) {
+                if ( !( k in writeTo ) ) writeTo[ k ] = {};
+                this._setStyleForUndefined( element, writeTo[ k ] );
+            } else if ( !( k in writeTo ) ) {
+                writeTo[ k ] = style[ k ];
+            }
+        }
+
+    }
+
+    /*_setValueUndefined( obj, id, value ) {
+
+    }*/
 
 }

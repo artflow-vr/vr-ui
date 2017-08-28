@@ -27,4 +27,9 @@
 
 import * as Colors from './colors';
 
-export const MAT_DEFAULT = new THREE.MeshBasicMaterial( { color: Colors.DEFAULT } );
+export const MAT_DEFAULT = new THREE.MeshBasicMaterial( {
+    color: Colors.DEFAULT,
+    transparent: true,
+    opacity: 1.0,
+    name: `default_material`
+} );

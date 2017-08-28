@@ -35,11 +35,4 @@ export default class LinearLayout extends AbstractLayout {
 
     }
 
-    perform() {
-
-        let errorMsg = `method should be implemented in child prototype.`;
-        throw new TypeError( `LinearLayout: perform(): ` + errorMsg );
-
-    }
-
 }

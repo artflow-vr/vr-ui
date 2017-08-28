@@ -27,7 +27,7 @@
 
 import LinearLayout from './linear-layout';
 
-export default class VerticalLayout extends LinearLayout {
+export default class HorizontalLayout extends LinearLayout {
 
     constructor( style ) {
 
@@ -40,14 +40,14 @@ export default class VerticalLayout extends LinearLayout {
 
         let dimensions = this.group.userData.dimensions;
 
-        let yOffset = this.group.position.y;
+        let xOffset = this.group.position.x;
         for ( let elt of this._elements ) {
             elt._refreshLayout( dimensions.maxWidth, dimensions.maxHeight );
             let eltDim = elt.group.userData.dimensions;
-            yOffset -= eltDim.margin.top;
-            elt.group.position.y = yOffset;
-            yOffset -= eltDim.maxHeight;
-            yOffset -= eltDim.margin.bottom;
+            xOffset += eltDim.margin.left;
+            elt.group.position.x = xOffset;
+            xOffset += eltDim.maxWidth;
+            xOffset += eltDim.margin.right;
         }
 
     }
