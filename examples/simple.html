@@ -43,26 +43,24 @@
                 
                 let loader = new THREE.TextureLoader();
                 loader.setPath('assets/');
-                let tex = loader.load('background.png', function(tex) {
+                let tex = loader.load('button.png', function(tex) {
                     
                     let layout = new VRUI.layout.HorizontalLayout({
                         background: {
                             material: null
                         }
                     });
-                    //let button = new VRUI.view.ButtonView(tex);
-                    let button1 = new VRUI.view.ButtonView(0xFF0000, {
+                    let button1 = new VRUI.view.ImageButton(tex, {
                         width: 0.4,
-                        height: 0.2,
-                        margin: {
-                            left: 0.0,
-                            right: 0.2,
-                            top: 0.1
+                        height: 0.3,
+                        padding: {
+                            top: 0.05,
+                            bottom: 0.05
                         }
                     });
-                    let button2 = new VRUI.view.ButtonView(0x00FF00, {
-                        width: 0.2,
-                        height: 0.2
+                    let button2 = new VRUI.view.ImageButton(tex, {
+                        width: 0.4,
+                        height: 0.3
                     });
                     layout.add(button1);
                     layout.add(button2);

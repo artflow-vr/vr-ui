@@ -27,38 +27,11 @@
 
 import AbstractView from './abstract-view';
 
-import { PLANE_GEOM, BOX_GEOM } from '../utils/geometry-factory';
-import { MAT_DEFAULT } from '../utils/material-factory';
-
 export default class ButtonView extends AbstractView {
 
-    constructor( image, style ) {
+    constructor( style ) {
 
         super( style );
-
-        /*if ( !image ) {
-            let errorMsg = `you did not provide any texture.`;
-            throw Error( `ButtonView.ctor(): ` + errorMsg );
-        }
-
-        if ( !( image instanceof THREE.Texture ) ) {
-            let errorMsg = `the provided image is not a THREE.Texture object`;
-            throw Error( `ButtonView.ctor(): ` + errorMsg );
-        }*/
-
-        let material = MAT_DEFAULT.clone();
-        //material.map = image.clone();
-        // DEBUG
-        material.color.setHex( image );
-        material.name = `toto`;
-        // END DEBUG
-        this.set( {
-            background: { material: material }
-        } );
-
-    }
-
-    perform() {
 
     }
 

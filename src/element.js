@@ -25,8 +25,8 @@
 * SOFTWARE.
 */
 
-import { PLANE_GEOM, BOX_GEOM } from './utils/geometry-factory';
-import { MAT_DEFAULT } from './utils/material-factory';
+import { PLANE_GEOM } from './utils/geometry-factory';
+import { BACK_DEFAULT } from './utils/material-factory';
 
 import checkProperty from './utils/property-check';
 
@@ -58,6 +58,12 @@ export default class Element {
                 bottom: 0.0,
                 left: 0.0,
                 right: 0.0
+            },
+            padding: {
+                top: 0.0,
+                bottom: 0.0,
+                left: 0.0,
+                right: 0.0
             }
         };
         this.group.userData.position = {
@@ -85,8 +91,7 @@ export default class Element {
                 bottom: 0.0,
                 left: 0.0,
                 right: 0.0
-            },
-            position: `left`
+            }
         }, this.style );
 
     }
@@ -129,6 +134,12 @@ export default class Element {
         margin.left = this.style.margin.left * maxWidth;
         margin.right = this.style.margin.right * maxWidth;
 
+        let padding = this.group.userData.dimensions.padding;
+        padding.top = this.style.padding.top * maxHeight;
+        padding.bottom = this.style.padding.bottom * maxHeight;
+        padding.left = this.style.padding.left * maxWidth;
+        padding.right = this.style.padding.right * maxWidth;
+
         let background = this.group.userData.background;
         if ( background ) {
             background.position.x = this.group.userData.position.x;
@@ -142,7 +153,7 @@ export default class Element {
 
     _updateBackground( background ) {
 
-        let material = ( background.material || MAT_DEFAULT ).clone();
+        let material = ( background.material || BACK_DEFAULT ).clone();
 
         if ( !this.group.userData.background ) {
             this.group.userData.background = new THREE.Mesh( PLANE_GEOM, material );
