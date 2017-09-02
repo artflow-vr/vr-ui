@@ -52,12 +52,8 @@
                         }
                     });
                     let button1 = new VRUI.view.ImageButton(tex, {
-                        width: 0.1,
-                        height: 0.07,
-                        padding: {
-                            top: 0.00,
-                            bottom: 0.00
-                        }
+                        width: 0.5,
+                        height: 0.2
                     });
                     let button2 = new VRUI.view.ImageButton(tex, {
                         width: 0.1,
@@ -67,15 +63,9 @@
                         width: 0.1,
                         height: 0.07
                     });
-                    layout.add(button1, button2);
-
-                    button1.onChange(function(state) {
-                        console.log('click');
-                    })
-
-                    page = new VRUI.Page(layout, 0.35, 0.5);
+                    layout.add(button1, button2, button3);
                     
-                    gui = new VRUI.VRUI(page);
+                    gui = new VRUI.VRUI(layout, 0.35, 0.5);
                     gui.addToScene(scene);
 
                     gui.refresh();

@@ -35,18 +35,16 @@ export default class VerticalLayout extends LinearLayout {
 
     }
 
-    _refreshLayout( maxWidth, maxHeight, offset ) {
-        super._refreshLayout( maxWidth, maxHeight, offset );
-
-        let dimensions = this.group.userData.dimensions;
+    refresh() {
+        super.refresh();
 
         let yOffset = this.group.position.y;
         for ( let elt of this._elements ) {
-            elt._refreshLayout( dimensions.maxWidth, dimensions.maxHeight );
-            let eltDim = elt.group.userData.dimensions;
+            elt.refresh();
+            let eltDim = elt._dimensions;
             yOffset -= eltDim.margin.top;
             elt.group.position.y = yOffset;
-            yOffset -= eltDim.maxHeight;
+            yOffset -= eltDim.height;
             yOffset -= eltDim.margin.bottom;
         }
 

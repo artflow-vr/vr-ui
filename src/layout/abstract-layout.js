@@ -36,6 +36,11 @@ import Element from "../element";
  */
 export default class AbstractLayout extends Element {
 
+    /**
+     * Creates an instance of AbstractLayout.
+     * @param {Object} [style] - Style properties. e.g: { width: 1.0, ... }
+     * @memberof AbstractLayout
+     */
     constructor( style ) {
 
         super( style );
@@ -45,17 +50,16 @@ export default class AbstractLayout extends Element {
 
             if ( this._onHoverExit ) this._onHoverExit();
 
-            this.forceExit();
+            this._forceExit();
 
         };
 
     }
 
     /**
-     *
-     * Adds a given element to the layout, allowing it visual space.
-     *
-     * @param  {VRUI.Element} element
+     * Adds an element to the layout.
+     * @param {any} element
+     * @memberof AbstractLayout
      */
     add( element ) {
 
@@ -81,29 +85,44 @@ export default class AbstractLayout extends Element {
         }
 
         this._elements.push( element );
+        // Gross hack allowing to keep a simple _refreshLayout method.
+        element._parentDimensions = this._dimensions;
+
         // Builds Three.js scene graph when building the VRUI custom
         // layouts / views hierarchy.
         this.group.add( element.group );
 
     }
 
-    forceExit() {
+    _forceExit() {
 
         for ( let elt of this._elements ) {
-            if ( elt.forceExit ) elt.forceExit();
+            if ( elt._forceExit ) elt._forceExit();
             elt.hover = false;
         }
 
     }
 
+    /**
+     * Checks intersection for all elements in the layout.
+     * @param {THREE.Raycaster} raycaster - raycaster with its origin and
+     * direction already set.
+     * @param {Object} state - Misc data. e.g: mouse pressed, etc...
+     * @returns True if an intersection occurs with the layout,
+     * false otherwise.
+     * @memberof AbstractLayout
+     */
     _intersect( raycaster, state ) {
 
         if ( !this._checkHover( raycaster, this._background,
                                 this._onHoverEnter, this._onHoverExitWrapper ) )
             return false;
 
-        for ( let elt of this._elements )
-            if ( elt._intersect( raycaster, state ) ) return true;
+        for ( let elt of this._elements ) {
+            if ( !elt._intersect( raycaster, state ) ) {
+                elt._forceExit();
+            }
+        }
 
         return true;
 

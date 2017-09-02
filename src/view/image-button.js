@@ -70,8 +70,26 @@ export default class ImageButton extends ButtonView {
 
     }
 
-    forceExit() {
-        console.log( `called` );
+    refresh() {
+
+        super.refresh();
+
+        let dimensions = this._dimensions;
+        let padding = dimensions.padding;
+
+        let width = dimensions.width;
+        let height = dimensions.height;
+        let newWidth = width - ( padding.left + padding.right );
+        let newHeight = height - ( padding.top + padding.bottom );
+
+        this.image.scale.x = newWidth;
+        this.image.scale.y = newHeight;
+        this.image.position.x += newWidth / 2 + padding.left;
+        this.image.position.y -= newHeight / 2 + padding.top;
+
+    }
+
+    _forceExit() {
         this.pressed = false;
         this._onHoverExit();
     }
@@ -94,25 +112,6 @@ export default class ImageButton extends ButtonView {
         }
 
         return true;
-
-    }
-
-    _refreshLayout( maxWidth, maxHeight ) {
-
-        super._refreshLayout( maxWidth, maxHeight );
-
-        let dimensions = this.group.userData.dimensions;
-        let padding = dimensions.padding;
-
-        let width = dimensions.maxWidth;
-        let height = dimensions.maxHeight;
-        let newWidth = width - ( padding.left + padding.right );
-        let newHeight = height - ( padding.top + padding.bottom );
-
-        this.image.scale.x = newWidth;
-        this.image.scale.y = newHeight;
-        this.image.position.x += newWidth / 2 + padding.left;
-        this.image.position.y -= newHeight / 2 + padding.top;
 
     }
 

@@ -43,19 +43,19 @@ export default class GridLayout extends AbstractLayout {
 
     }
 
-    _refreshLayout( maxWidth, maxHeight, offset ) {
+    _refreshLayout() {
 
-        super._refreshLayout( maxWidth, maxHeight, offset );
+        super.refresh();
 
-        let dimensions = this.group.userData.dimensions;
-        let maxEltWidth = dimensions.maxWidth / this.nbColumns;
-        let maxEltHeight = dimensions.maxHeight / this.nbRows;
+        let dimensions = this._dimensions;
+        let maxEltWidth = dimensions.width / this.nbColumns;
+        let maxEltHeight = dimensions.height / this.nbRows;
 
         let xOffset = this.group.position.x;
         let yOffset = this.group.position.y;
         for ( let i = 0; i < this._elements.length; ++i ) {
             let elt = this._elements[ i ];
-            elt._refreshLayout( maxEltWidth, maxEltHeight );
+            elt.refresh();
 
             let colIDX = i % this.nbColumns;
             if ( colIDX === 0 && i !== 0 ) {

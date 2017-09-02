@@ -35,19 +35,17 @@ export default class HorizontalLayout extends LinearLayout {
 
     }
 
-    _refreshLayout( maxWidth, maxHeight, offset ) {
+    refresh() {
 
-        super._refreshLayout( maxWidth, maxHeight, offset );
-
-        let dimensions = this.group.userData.dimensions;
+        super.refresh();
 
         let xOffset = this.group.position.x;
         for ( let elt of this._elements ) {
-            elt._refreshLayout( dimensions.maxWidth, dimensions.maxHeight );
-            let eltDim = elt.group.userData.dimensions;
+            elt.refresh();
+            let eltDim = elt._dimensions;
             xOffset += eltDim.margin.left;
             elt.group.position.x = xOffset;
-            xOffset += eltDim.maxWidth;
+            xOffset += eltDim.width;
             xOffset += eltDim.margin.right;
         }
 
