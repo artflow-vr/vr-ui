@@ -47,8 +47,8 @@ export default class ImageButton extends ButtonView {
         if ( imageOrMaterial.constructor === THREE.Texture ) {
             material = MAT_DEFAULT.clone();
             material.map = imageOrMaterial;
-        } else if ( imageOrMaterial.constructor === THREE.Texture ) {
-            material = imageOrMaterial;
+        } else if ( imageOrMaterial instanceof THREE.Material ) {
+            material = imageOrMaterial.clone();
         } else {
             let errorMsg = `the provided image is neither a THREE.Texture, `;
             errorMsg += `nor a THREE.Material object.`;
@@ -84,6 +84,12 @@ export default class ImageButton extends ButtonView {
         this.image.scale.y = newHeight;
         this.image.position.x += newWidth / 2 + padding.left;
         this.image.position.y -= newHeight / 2 + padding.top;
+
+    }
+
+    clone() {
+
+        return new ImageButton( this.image.material, this.style );
 
     }
 

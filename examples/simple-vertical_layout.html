@@ -72,10 +72,7 @@
                     else
                         console.log('Button1 has been released!')
                 });
-                let button2 = new VRUI.view.ImageButton(texture, {
-                    height: 0.5,
-                    width: 0.5,
-                }).onChange(function(state) {
+                let button2 = button1.clone().onChange(function(state) {
                     if (state.pressed)
                         console.log('Button2 has been clicked!')
                     else
