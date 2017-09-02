@@ -63,8 +63,15 @@
                         width: 0.1,
                         height: 0.07
                     });
-                    layout.add(button1);
-                    layout.add(button2);
+                    let button3 = new VRUI.view.ImageButton(tex, {
+                        width: 0.1,
+                        height: 0.07
+                    });
+                    layout.add(button1, button2);
+
+                    button1.onChange(function(state) {
+                        console.log('click');
+                    })
 
                     page = new VRUI.Page(layout, 0.35, 0.5);
                     
@@ -73,7 +80,7 @@
 
                     gui.refresh();
 
-                    gui.enableMouse(camera);
+                    gui.enableMouse(camera, renderer);
                     
                 });
                 

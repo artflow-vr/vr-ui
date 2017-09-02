@@ -99,9 +99,32 @@ export default class Element {
             }
         }, this.style );
 
-        this.onHover = null;
-        this.onTrigger = null;
-        this.onReleased = null;
+        this.hover = false;
+
+        this._onHoverEnter = null;
+        this._onHoverExit = null;
+        this._onChange = null;
+
+    }
+
+    onHoverEnter( callback ) {
+
+        this._onHoverEnter = callback;
+        return this;
+
+    }
+
+    onHoverExit( callback ) {
+
+        this._onHoverExit = callback;
+        return this;
+
+    }
+
+    onChange( callback ) {
+
+        this._onChange = callback;
+        return this;
 
     }
 
@@ -116,6 +139,26 @@ export default class Element {
                 }
             }
         }
+
+    }
+
+    _checkHover( raycaster, object, onHoverEnter, onHoverExit ) {
+
+        let objs = raycaster.intersectObject( object, false );
+        if ( objs.length === 0 ) {
+            if ( this.hover ) {
+                this.hover = false;
+                if ( onHoverExit ) onHoverExit();
+            }
+            return false;
+        }
+
+        if ( !this.hover ) {
+            if ( onHoverEnter ) onHoverEnter();
+            this.hover = true;
+        }
+
+        return true;
 
     }
 

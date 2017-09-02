@@ -52,12 +52,17 @@ export default class VRUI {
                                                 new THREE.Vector3() );
 
         this._mouse = {
-            coords: new THREE.Vector2( 0.0, 0.0 ),
+            coords: new THREE.Vector2( -1.0, -1.0 ),
             enabled: false,
             camera: null,
+            renderer: null,
             down: null,
             up: null,
             move: null
+        };
+
+        this._state = {
+            pressed: false
         };
 
     }
@@ -70,9 +75,7 @@ export default class VRUI {
         //this._raycaster.ray.direction.set( 0, 0, -1 ).applyMatrix4( tempMatrix );
 
         let page = this.pages[ 0 ];
-        if ( this._checkIntersection( page.root ) ) {
-            console.log( `Hit ` );
-        }
+        this._checkIntersection( page.root, this._state );
 
     }
 
@@ -98,7 +101,7 @@ export default class VRUI {
 
     }
 
-    enableMouse( camera ) {
+    enableMouse( camera, renderer ) {
 
         if ( !camera ) {
             let errorMsg = `you did not provide any camera.`;
@@ -111,21 +114,25 @@ export default class VRUI {
         }
 
         this._mouse.camera = camera;
+        this._mouse.renderer = renderer;
         this._mouse.enabled = true;
 
         this._mouse.move = ( event ) => {
 
             let coords = this._mouse.coords;
-            coords.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-            coords.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-
+            coords.x = ( event.offsetX / this._mouse.renderer.domElement.width ) * 2 - 1;
+            coords.y = - ( event.offsetY / this._mouse.renderer.domElement.height ) * 2 + 1;
         };
 
-        this._mouse.up = ( event ) => {
+        this._mouse.up = () => {
+
+            this._state.pressed = false;
 
         };
 
         this._mouse.down = ( event ) => {
+
+            if ( event.button === 0 ) this._state.pressed = true;
 
         };
 
@@ -145,10 +152,10 @@ export default class VRUI {
 
     }
 
-    _checkIntersection( mainLayout ) {
+    _checkIntersection( mainLayout, state ) {
 
         this._raycaster.setFromCamera( this._mouse.coords, this._mouse.camera );
-        return mainLayout._intersect( this._raycaster );
+        return mainLayout._intersect( this._raycaster, state );
 
     }
 

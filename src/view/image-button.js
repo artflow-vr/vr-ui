@@ -29,6 +29,8 @@ import ButtonView from './button-view';
 import { PLANE_GEOM } from '../utils/geometry-factory';
 import { MAT_DEFAULT } from '../utils/material-factory';
 
+import * as Colors from '../utils/colors';
+
 export default class ImageButton extends ButtonView {
 
     constructor( imageOrMaterial, style ) {
@@ -56,12 +58,40 @@ export default class ImageButton extends ButtonView {
         this.image = new THREE.Mesh( PLANE_GEOM, material );
         this.group.add( this.image );
 
+        this.pressed = false;
+
+        this._onHoverEnter = () => {
+            // Changes color on highlight
+            this.image.material.color.setHex( Colors.HIGHLIGHT );
+        };
+        this._onHoverExit = () => {
+            this.image.material.color.setHex( Colors.WHITE );
+        };
+
     }
 
-    _intersect( raycaster ) {
+    forceExit() {
+        console.log( `called` );
+        this.pressed = false;
+        this._onHoverExit();
+    }
 
-        let objs = raycaster.intersectObject( this.image, false );
-        if ( objs.length === 0 ) return false;
+    _intersect( raycaster, state ) {
+
+        if ( !state.pressed && this.pressed ) {
+            this.pressed = false;
+            if ( this._onChange ) this._onChange( { pressed: this.pressed } );
+        }
+
+        if ( !this._checkHover( raycaster, this.image,
+                                this._onHoverEnter, this._onHoverExit ) ) {
+            return false;
+        }
+
+        if ( state.pressed && !this.pressed ) {
+            this.pressed = true;
+            if ( this._onChange ) this._onChange( { pressed: this.pressed } );
+        }
 
         return true;
 

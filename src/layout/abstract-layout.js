@@ -41,6 +41,14 @@ export default class AbstractLayout extends Element {
         super( style );
         this._elements = [];
 
+        this._onHoverExitWrapper = () => {
+
+            if ( this._onHoverExit ) this._onHoverExit();
+
+            this.forceExit();
+
+        };
+
     }
 
     /**
@@ -52,9 +60,20 @@ export default class AbstractLayout extends Element {
     add( element ) {
 
         if ( element === undefined || element === null ) {
-            let errorMsg = `provided view argument is null or undefined.`;
-            throw Error( `AbstractLayout: addView(): ` + errorMsg );
+            let errorMsg = `provided argument is null or undefined.`;
+            throw Error( `AbstractLayout: add(): ` + errorMsg );
         }
+
+        if ( arguments.length > 0 )
+            for ( let elt of arguments ) this._addItem( elt );
+        else if ( element.constructor === Array )
+            for ( let elt of element ) this._addItem( elt );
+        else
+            this._addItem( element );
+
+    }
+
+    _addItem( element ) {
 
         if ( !( element instanceof Element ) ) {
             let errorMsg = `provided element is not an instance of Element`;
@@ -62,21 +81,29 @@ export default class AbstractLayout extends Element {
         }
 
         this._elements.push( element );
-
         // Builds Three.js scene graph when building the VRUI custom
         // layouts / views hierarchy.
         this.group.add( element.group );
 
     }
 
-    _intersect( raycaster, state ) {
-
-        let objs = raycaster.intersectObject( this._background, false );
-        if ( objs.length === 0 ) return false;
+    forceExit() {
 
         for ( let elt of this._elements ) {
-            if ( elt._intersect( raycaster, state ) ) return true;
+            if ( elt.forceExit ) elt.forceExit();
+            elt.hover = false;
         }
+
+    }
+
+    _intersect( raycaster, state ) {
+
+        if ( !this._checkHover( raycaster, this._background,
+                                this._onHoverEnter, this._onHoverExitWrapper ) )
+            return false;
+
+        for ( let elt of this._elements )
+            if ( elt._intersect( raycaster, state ) ) return true;
 
         return true;
 
