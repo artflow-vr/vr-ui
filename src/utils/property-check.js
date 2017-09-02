@@ -38,6 +38,19 @@ let checkFloatInRange = ( min, max, propID, value ) => {
 
 };
 
+let checkStringInList = ( list, propID, value ) => {
+
+    if ( !list.includes( value ) ) {
+        let errorMsg = `Element property ${propID} should have one of the `;
+        errorMsg += `following values: ` + list.toString();
+        console.error( errorMsg );
+        return false;
+    }
+
+    return true;
+
+};
+
 let PROP_CHECK = {
     width: checkFloatInRange.bind( 0.0, 1.0 ),
     height: checkFloatInRange.bind( 0.0, 1.0 ),
@@ -54,6 +67,7 @@ let PROP_CHECK = {
         left: checkFloatInRange.bind( 0.0, 0.49 ),
         right: checkFloatInRange.bind( 0.0, 0.49 )
     },
+    position: checkStringInList.bind( null, [`left`, `right`, `top`, `bottom`, `center`] ),
     background: function() {
         return true;
     }
@@ -62,6 +76,7 @@ let PROP_CHECK = {
 export default function checkProperty( propID, value, checkList = PROP_CHECK ) {
 
     let property = checkList[ propID ];
+    console.log( propID );
 
     if ( !property ) {
         let warnMsg = `property ${propID} is not recognized. Please take a `;

@@ -71,6 +71,9 @@ export default class VRUI {
         }
 
         this.root = root;
+        this.root.group.position.x = - widthUnit / 2.0;
+        this.root.group.position.y = heightUnit / 2.0;
+
         this.root._parentDimensions = {
             width: widthUnit,
             height: heightUnit

@@ -39,12 +39,31 @@ export default class HorizontalLayout extends LinearLayout {
 
         super.refresh();
 
-        let xOffset = this.group.position.x;
+        let maxHeight = this._dimensions.height;
+
+        let xOffset = 0;
         for ( let elt of this._elements ) {
             elt.refresh();
             let eltDim = elt._dimensions;
+
             xOffset += eltDim.margin.left;
             elt.group.position.x = xOffset;
+
+            // For now, the library only handle simple positioning.
+            // We can change horizontal placement in a HorizontalLayout.
+            // You can choose between 'top', 'bottom', and 'center'.
+            switch ( elt.style.position ) {
+                case `top`:
+                    elt.group.position.y = 0;
+                    break;
+                case `bottom`:
+                    elt.group.position.y = - maxHeight + eltDim.height;
+                    break;
+                case `center`:
+                    elt.group.position.y = - ( maxHeight / 2.0 ) + eltDim.halfH;
+                    break;
+            }
+
             xOffset += eltDim.width;
             xOffset += eltDim.margin.right;
         }

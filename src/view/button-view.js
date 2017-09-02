@@ -33,6 +33,8 @@ export default class ButtonView extends AbstractView {
 
         super( style );
 
+        this.pressed = false;
+
     }
 
 }

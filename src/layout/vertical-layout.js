@@ -36,14 +36,35 @@ export default class VerticalLayout extends LinearLayout {
     }
 
     refresh() {
+
         super.refresh();
 
-        let yOffset = this.group.position.y;
+        let maxWidth = this._dimensions.width;
+
+        let yOffset = 0;
         for ( let elt of this._elements ) {
             elt.refresh();
+
             let eltDim = elt._dimensions;
             yOffset -= eltDim.margin.top;
+
             elt.group.position.y = yOffset;
+
+            // For now, the library only handle simple positioning.
+            // We can change horizontal placement in a VerticalLayout.
+            // You can choose between 'left', 'right', and 'center'.
+            switch ( elt.style.position ) {
+                case `left`:
+                    elt.group.position.x = 0;
+                    break;
+                case `right`:
+                    elt.group.position.x = maxWidth - eltDim.width;
+                    break;
+                case `center`:
+                    elt.group.position.x = ( maxWidth / 2.0 ) - eltDim.halfW;
+                    break;
+            }
+
             yOffset -= eltDim.height;
             yOffset -= eltDim.margin.bottom;
         }

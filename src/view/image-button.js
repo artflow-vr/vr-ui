@@ -58,8 +58,6 @@ export default class ImageButton extends ButtonView {
         this.image = new THREE.Mesh( PLANE_GEOM, material );
         this.group.add( this.image );
 
-        this.pressed = false;
-
         this._onHoverEnter = () => {
             // Changes color on highlight
             this.image.material.color.setHex( Colors.HIGHLIGHT );

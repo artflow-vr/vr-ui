@@ -87,7 +87,8 @@ export default class Element {
             height: 1.0,
             depth: 0.0,
             padding: { top: 0.0, bottom: 0.0, left: 0.0, right: 0.0 },
-            margin: { top: 0.0, bottom: 0.0, left: 0.0, right: 0.0 }
+            margin: { top: 0.0, bottom: 0.0, left: 0.0, right: 0.0 },
+            position: `center`
         }, this.style );
 
     }
@@ -227,7 +228,7 @@ export default class Element {
         let background = this._background;
         background.position.x = dimensions.halfW;
         background.position.y = - dimensions.halfH;
-        //background.position.z = this.group.userData.position.z;
+
         background.scale.x = dimensions.width;
         background.scale.y = dimensions.height;
 
