@@ -58,6 +58,15 @@ export default class ImageButton extends ButtonView {
 
     }
 
+    _intersect( raycaster ) {
+
+        let objs = raycaster.intersectObject( this.image, false );
+        if ( objs.length === 0 ) return false;
+
+        return true;
+
+    }
+
     _refreshLayout( maxWidth, maxHeight ) {
 
         super._refreshLayout( maxWidth, maxHeight );

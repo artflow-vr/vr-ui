@@ -35,11 +35,4 @@ export default class AbstractView extends Element {
 
     }
 
-    perform() {
-
-        let errorMsg = `method should be implemented in child prototype.`;
-        throw new TypeError( `AbstractView: perform(): ` + errorMsg );
-
-    }
-
 }

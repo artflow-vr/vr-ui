@@ -26,7 +26,7 @@
 */
 
 import { PLANE_GEOM } from './utils/geometry-factory';
-import { BACK_DEFAULT } from './utils/material-factory';
+import { BACK_DEFAULT, MAT_USELESS } from './utils/material-factory';
 
 import checkProperty from './utils/property-check';
 
@@ -47,7 +47,12 @@ export default class Element {
     constructor( style ) {
 
         this.group = new THREE.Group();
-        this.group.userData.background = null;
+        this.group.userData.element = this;
+
+        this._background = new THREE.Mesh( PLANE_GEOM, MAT_USELESS );
+        this._background.visible = false;
+        this.group.add( this._background );
+
         this.group.userData.dimensions = {
             maxWidth: 0.0,
             maxHeight: 0.0,
@@ -93,6 +98,10 @@ export default class Element {
                 right: 0.0
             }
         }, this.style );
+
+        this.onHover = null;
+        this.onTrigger = null;
+        this.onReleased = null;
 
     }
 
@@ -140,7 +149,7 @@ export default class Element {
         padding.left = this.style.padding.left * maxWidth;
         padding.right = this.style.padding.right * maxWidth;
 
-        let background = this.group.userData.background;
+        let background = this._background;
         if ( background ) {
             background.position.x = this.group.userData.position.x;
             background.position.y = this.group.userData.position.y;
@@ -155,12 +164,8 @@ export default class Element {
 
         let material = ( background.material || BACK_DEFAULT ).clone();
 
-        if ( !this.group.userData.background ) {
-            this.group.userData.background = new THREE.Mesh( PLANE_GEOM, material );
-            this.group.add( this.group.userData.background );
-        }
-
-        this.group.userData.background.material = material;
+        this._background.material = material;
+        this._background.visible = background.visible || true;
 
     }
 
@@ -177,9 +182,5 @@ export default class Element {
         }
 
     }
-
-    /*_setValueUndefined( obj, id, value ) {
-
-    }*/
 
 }

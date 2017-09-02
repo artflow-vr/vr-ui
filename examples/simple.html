@@ -34,6 +34,7 @@
             animate();
             function animate() {
 
+                if (gui) gui.update();
                 renderer.render( scene, camera );
                 requestAnimationFrame( animate );
 
@@ -51,16 +52,16 @@
                         }
                     });
                     let button1 = new VRUI.view.ImageButton(tex, {
-                        width: 0.4,
-                        height: 0.3,
+                        width: 0.1,
+                        height: 0.07,
                         padding: {
-                            top: 0.05,
-                            bottom: 0.05
+                            top: 0.00,
+                            bottom: 0.00
                         }
                     });
                     let button2 = new VRUI.view.ImageButton(tex, {
-                        width: 0.4,
-                        height: 0.3
+                        width: 0.1,
+                        height: 0.07
                     });
                     layout.add(button1);
                     layout.add(button2);
@@ -69,9 +70,10 @@
                     
                     gui = new VRUI.VRUI(page);
                     gui.addToScene(scene);
-                    //scene.add(gui.root());
-                    
+
                     gui.refresh();
+
+                    gui.enableMouse(camera);
                     
                 });
                 

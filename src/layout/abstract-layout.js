@@ -62,9 +62,23 @@ export default class AbstractLayout extends Element {
         }
 
         this._elements.push( element );
+
         // Builds Three.js scene graph when building the VRUI custom
         // layouts / views hierarchy.
         this.group.add( element.group );
+
+    }
+
+    _intersect( raycaster, state ) {
+
+        let objs = raycaster.intersectObject( this._background, false );
+        if ( objs.length === 0 ) return false;
+
+        for ( let elt of this._elements ) {
+            if ( elt._intersect( raycaster, state ) ) return true;
+        }
+
+        return true;
 
     }
 

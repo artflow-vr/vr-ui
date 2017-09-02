@@ -42,10 +42,36 @@ export default class VRUI {
             this.pages = [];
             this.pages.push( pages );
         } else {
-            let errorMsg = `VRUI was provided a wrong value.You can `;
+            let errorMsg = `VRUI was provided a wrong value. You can `;
             errorMsg += `instanciate a new UI whether without arguments, or `;
             errorMsg += `either with a single VRUI.Page or an array of VRUI.Page`;
             throw new TypeError( `VRUI.ctor(): ` + errorMsg );
+        }
+
+        this._raycaster = new THREE.Raycaster( new THREE.Vector3(),
+                                                new THREE.Vector3() );
+
+        this._mouse = {
+            coords: new THREE.Vector2( 0.0, 0.0 ),
+            enabled: false,
+            camera: null,
+            down: null,
+            up: null,
+            move: null
+        };
+
+    }
+
+    update() {
+
+        if ( this.pages.length === 0 ) return;
+
+        //this._raycaster.ray.origin.setFromMatrixPosition( controller.matrixWorld );
+        //this._raycaster.ray.direction.set( 0, 0, -1 ).applyMatrix4( tempMatrix );
+
+        let page = this.pages[ 0 ];
+        if ( this._checkIntersection( page.root ) ) {
+            console.log( `Hit ` );
         }
 
     }
@@ -69,6 +95,60 @@ export default class VRUI {
         for ( let elt of this.pages ) {
             scene.add( elt.root.group );
         }
+
+    }
+
+    enableMouse( camera ) {
+
+        if ( !camera ) {
+            let errorMsg = `you did not provide any camera.`;
+            throw Error( `VRUI.enableMouse(): ` + errorMsg );
+        }
+
+        if ( camera.constructor === THREE.Camera ) {
+            let errorMsg = `the provided image is not a THREE.Camera.`;
+            throw Error( `VRUI.enableMouse(): ` + errorMsg );
+        }
+
+        this._mouse.camera = camera;
+        this._mouse.enabled = true;
+
+        this._mouse.move = ( event ) => {
+
+            let coords = this._mouse.coords;
+            coords.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+            coords.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+        };
+
+        this._mouse.up = ( event ) => {
+
+        };
+
+        this._mouse.down = ( event ) => {
+
+        };
+
+        window.addEventListener( `mousemove`, this._mouse.move );
+        window.addEventListener( `mousedown`, this._mouse.down );
+        window.addEventListener( `mouseup`, this._mouse.up );
+
+    }
+
+    disableMouse() {
+
+        this._mouse.enabled = false;
+
+        window.removeEventListener( `mousemove`, this._mouse.move );
+        window.removeEventListener( `mousedown`, this._mouse.down );
+        window.removeEventListener( `mouseup`, this._mouse.up );
+
+    }
+
+    _checkIntersection( mainLayout ) {
+
+        this._raycaster.setFromCamera( this._mouse.coords, this._mouse.camera );
+        return mainLayout._intersect( this._raycaster );
 
     }
 
