@@ -45,36 +45,22 @@
                 loader.setPath('assets/');
                 let tex = loader.load('background.png', function(tex) {
                     
-                    let layout = new VRUI.layout.GridLayout(2, 4, {
-                        background: {
-                            material: null
-                        }
+                    let layout = new VRUI.layout.GridLayout({
+                        columns : 4,
+                        rows: 3
+                    }, {
+                        background: 0x2c3e50
                     });
-                    //let button = new VRUI.view.ButtonView(tex);
-                    let button1 = new VRUI.view.ButtonView(0xFF0000, {
-                        width: 1.0,
-                        height: 1.0,
-                        margin: {
-                            left: 0.1,
-                            right: 0.4,
-                            top: 0.0
-                        }
+                    let button1 = new VRUI.view.ImageButton(tex, {
+                        height: 0.5
                     });
-                    let button2 = new VRUI.view.ButtonView(0x00FF00, {
-                        width: 1.0,
-                        height: 1.0
+                    let button2 = new VRUI.view.ImageButton(tex, {
                     });
-                    let button3 = new VRUI.view.ButtonView(0x0000FF, {
-                        width: 1.0,
-                        height: 1.0
+                    let button3 = new VRUI.view.ImageButton(tex, {
                     });
-                    layout.add(button1);
-                    layout.add(button2);
-                    layout.add(button3);
+                    layout.add(button1, button2, button3);
 
-                    page = new VRUI.Page(layout, 0.35, 0.5);
-
-                    gui = new VRUI.VRUI(page);
+                    gui = new VRUI.VRUI(layout, 0.35, 0.5);
                     gui.addToScene(scene)
 
                     gui.refresh();

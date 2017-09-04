@@ -25,4 +25,6 @@
 * SOFTWARE.
 */
 
+export const WHITE = 0xFFFFFF;
 export const DEFAULT = 0x2C3E50;
+export const HIGHLIGHT = 0x3498db;

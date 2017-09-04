@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Simple Example</title>
+        <meta charset="UTF-8">
+        <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, minimal-ui" name="viewport" />
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+    </head>
+    <body>
+
+        <script type="text/javascript" src="https://cdn.rawgit.com/mrdoob/three.js/r82/build/three.min.js"></script>
+        <script type="text/javascript" src="../build/vr-ui.js"></script>
+
+        <script type="text/javascript">
+
+            let camera;
+            let scene;
+            let renderer;
+            let textures = {};
+
+            let hoverCursor = null;
+            let planeGeom = new THREE.PlaneGeometry( 1, 1 );
+
+            let textureLoader = new THREE.TextureLoader();
+            textureLoader.setPath('assets/artflow-ui/');
+
+            camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.1, 20 );
+            camera.position.set(0, 0.0, 0.5);
+
+            renderer = new THREE.WebGLRenderer();
+            renderer.setSize( window.innerWidth, window.innerHeight );
+            renderer.setClearColor(0x2c3e50);
+            document.body.appendChild( renderer.domElement );
+
+            scene = new THREE.Scene();
+
+            let gui = null;
+            load();
+
+            animate();
+            function animate() {
+
+                if (gui) {
+                    gui.update();
+                }
+                renderer.render( scene, camera );
+                requestAnimationFrame( animate );
+
+            }
+
+            function load() {
+                
+                let promises = [];
+                promises.push(loadTexture('background', '.png'));
+                promises.push(loadTexture('button-background', '.png'));
+                promises.push(loadTexture('button_hover', '.png'));
+                promises.push(loadTexture('arrow-icon', '.png'));
+                promises.push(loadTexture('tools/brush-icon', '.png'));
+                promises.push(loadTexture('tools/particles-icon', '.png'));
+                promises.push(loadTexture('tools/tree-icon', '.png'));
+                promises.push(loadTexture('tools/water-icon', '.png'));
+      
+                Promise.all(promises).then(function() {
+
+                    setupGUI();
+
+                });
+                
+            }
+
+            function setupGUI() {
+
+                hoverCursor = new THREE.Mesh(planeGeom, new THREE.MeshBasicMaterial( {
+                    color: 0xFFFFFF,
+                    opacity: 1.0,
+                    transparent: true,
+                    map: textures['button_hover'],
+                    visible: false
+                } ));
+
+                let guiWidth = 0.5; // In Three.js units.
+                let guiHeight = 0.5; // In Three.js units.
+
+                let layout = new VRUI.layout.VerticalLayout({
+                    background: textures.background,
+                    padding: {
+                        top: 0.05
+                    },
+                });
+
+                let gridLayout = new VRUI.layout.GridLayout({
+                    columns: 4,
+                    rows: 3,
+                    hSpace: 0.03,
+                    vSpace: 0.1
+                }, {
+                    height: 0.9
+                });
+                for (let tex of ['brush-icon', 'particles-icon', 'tree-icon', 'water-icon']) {
+                    let textID = 'tools/' + tex;
+                    let button = new VRUI.view.ImageButton(textures[textID], {
+                        width: 0.85,
+                        height: 0.85,
+                        padding: {
+                            top: 0.1,
+                            bottom: 0.1,
+                            left: 0.1,
+                            right: 0.1
+                        },
+                        background: textures['button-background']
+                    }).onHoverEnter(function() {
+
+                        let width = button._background.scale.x;
+                        let height = button._background.scale.y
+
+                        hoverCursor.scale.x = width;
+                        hoverCursor.scale.y = height;
+                        hoverCursor.scale.z = button._background.scale.z;
+
+                        hoverCursor.position.x = button.group.position.x + width / 2;
+                        hoverCursor.position.y = button.group.position.y - height / 2;
+                        hoverCursor.position.z = button.group.position.z + 0.001;
+
+                        hoverCursor.material.visible = true;
+
+                    }).onHoverExit(function () {
+                        hoverCursor.material.visible = false;
+                    });
+
+                    gridLayout.add(button);
+
+                }
+                
+                gridLayout.group.add(hoverCursor);
+                layout.add(gridLayout);
+
+                gui = new VRUI.VRUI(layout, guiWidth, guiHeight);
+                //gui.root.group.rotateY(1.4);
+                gui.enableMouse(camera, renderer);
+                
+                gui.addToScene(scene); // Adds the gui to the THREE.Scene elt.
+                
+                // Do not omit the line below, it will compute the bounds
+                // of the entire gui. Each time you make some changes, you
+                // have to call it. It could possibly be costly, according
+                // to how complex is the UI, so do not call it if not necessary.
+                gui.refresh();
+
+            }
+
+            function loadTexture(file, ext) {
+
+                return new Promise( function ( resolve ) {
+                    
+                    textureLoader.load(file + ext, function(tex) {
+                    
+                        textures[file] = tex;
+                        resolve();                        
+
+                    });
+
+                });
+                
+            }
+
+            // Registers global events
+            window.addEventListener( 'resize', function () {
+
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize( window.innerWidth, window.innerHeight );
+
+            }, false );
+
+        </script>
+    </body>
+</html>

@@ -26,7 +26,9 @@
 */
 
 import ButtonView from './button-view';
+import ImageButton from './image-button';
 
 export {
-    ButtonView
+    ButtonView,
+    ImageButton
 };

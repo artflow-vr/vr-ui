@@ -29,54 +29,68 @@
             scene = new THREE.Scene();
 
             let gui = null;
-            setupGUI();
+            load();
 
             animate();
             function animate() {
 
+                if (gui) gui.update();
                 renderer.render( scene, camera );
                 requestAnimationFrame( animate );
 
             }
 
-            function setupGUI() {
+            function load() {
                 
                 let loader = new THREE.TextureLoader();
                 loader.setPath('assets/');
-                let tex = loader.load('background.png', function(tex) {
+                let tex = loader.load('button.png', function(tex) {
                     
-                    let layout = new VRUI.layout.HorizontalLayout({
-                        background: {
-                            material: null
-                        }
-                    });
-                    //let button = new VRUI.view.ButtonView(tex);
-                    let button1 = new VRUI.view.ButtonView(0xFF0000, {
-                        width: 0.4,
-                        height: 0.2,
-                        margin: {
-                            left: 0.0,
-                            right: 0.2,
-                            top: 0.1
-                        }
-                    });
-                    let button2 = new VRUI.view.ButtonView(0x00FF00, {
-                        width: 0.2,
-                        height: 0.2
-                    });
-                    layout.add(button1);
-                    layout.add(button2);
+                    setupGUI(tex);
 
-                    page = new VRUI.Page(layout, 0.35, 0.5);
-                    
-                    gui = new VRUI.VRUI(page);
-                    gui.addToScene(scene);
-                    //scene.add(gui.root());
-                    
-                    gui.refresh();
-                    
                 });
                 
+            }
+
+            function setupGUI(texture) {
+
+                let guiWidth = 0.2; // In Three.js units.
+                let guiHeight = 0.26; // In Three.js units.
+
+                let layout = new VRUI.layout.VerticalLayout({
+                    background: {
+                        material: null
+                    }
+                });
+
+                let button1 = new VRUI.view.ImageButton(texture, {
+                    height: 0.5,
+                    width: 0.5,
+                }).onChange(function(state) {
+                    if (state.pressed)
+                        console.log('Button1 has been clicked!')
+                    else
+                        console.log('Button1 has been released!')
+                });
+                let button2 = button1.clone().onChange(function(state) {
+                    if (state.pressed)
+                        console.log('Button2 has been clicked!')
+                    else
+                        console.log('Button2 has been released!')
+                });
+                layout.add(button1, button2);
+
+                gui = new VRUI.VRUI(layout, guiWidth, guiHeight);
+                gui.enableMouse(camera, renderer);
+                
+                gui.addToScene(scene); // Adds the gui to the THREE.Scene elt.
+                
+                // Do not omit the line below, it will compute the bounds
+                // of the entire gui. Each time you make some changes, you
+                // have to call it. It could possibly be costly, according
+                // to how complex is the UI, so do not call it if not necessary.
+                gui.refresh();
+
             }
 
             // Registers global events
