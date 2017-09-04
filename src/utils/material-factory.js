@@ -40,14 +40,12 @@ export const MAT_DEFAULT = new THREE.MeshBasicMaterial( {
 
 export const IMAGE_DEFAULT = new THREE.MeshBasicMaterial( {
     color: Colors.WHITE,
-    transparent: true,
-    opacity: 1.0,
-    depthWrite: false
+    alphaTest : 0.01,
+    transparent : false
 } );
 
 export const BACK_DEFAULT = new THREE.MeshBasicMaterial( {
     color: Colors.WHITE,
-    transparent: true,
-    opacity: 1.0,
-    depthWrite: false
+    depthWrite: false,
+    transparent : true
 } );

@@ -19,18 +19,20 @@
             let renderer;
             let textures = {};
 
+            let hoverCursor = null;
+            let planeGeom = new THREE.PlaneGeometry( 1, 1 );
+
             let textureLoader = new THREE.TextureLoader();
             textureLoader.setPath('assets/artflow-ui/');
 
             camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.1, 20 );
-            camera.position.set(0, 0, 0.4);
+            camera.position.set(0, 0.0, 0.5);
 
             renderer = new THREE.WebGLRenderer();
             renderer.setSize( window.innerWidth, window.innerHeight );
             renderer.setClearColor(0x2c3e50);
             document.body.appendChild( renderer.domElement );
 
-            console.log(renderer);
             scene = new THREE.Scene();
 
             let gui = null;
@@ -69,31 +71,72 @@
 
             function setupGUI() {
 
+                hoverCursor = new THREE.Mesh(planeGeom, new THREE.MeshBasicMaterial( {
+                    color: 0xFFFFFF,
+                    opacity: 1.0,
+                    transparent: true,
+                    map: textures['button_hover'],
+                    visible: false
+                } ));
+
                 let guiWidth = 0.5; // In Three.js units.
                 let guiHeight = 0.5; // In Three.js units.
 
                 let layout = new VRUI.layout.VerticalLayout({
-                    background: textures.background
+                    background: textures.background,
+                    padding: {
+                        top: 0.05
+                    },
                 });
 
                 let gridLayout = new VRUI.layout.GridLayout({
                     columns: 4,
                     rows: 3,
-                    hSpace: 0.05,
+                    hSpace: 0.03,
                     vSpace: 0.1
                 }, {
                     height: 0.9
                 });
                 for (let tex of ['brush-icon', 'particles-icon', 'tree-icon', 'water-icon']) {
                     let textID = 'tools/' + tex;
-                    gridLayout.add(new VRUI.view.ImageButton(textures[textID]));
+                    let button = new VRUI.view.ImageButton(textures[textID], {
+                        width: 0.85,
+                        height: 0.85,
+                        padding: {
+                            top: 0.1,
+                            bottom: 0.1,
+                            left: 0.1,
+                            right: 0.1
+                        },
+                        background: textures['button-background']
+                    }).onHoverEnter(function() {
+
+                        let width = button._background.scale.x;
+                        let height = button._background.scale.y
+
+                        hoverCursor.scale.x = width;
+                        hoverCursor.scale.y = height;
+                        hoverCursor.scale.z = button._background.scale.z;
+
+                        hoverCursor.position.x = button.group.position.x + width / 2;
+                        hoverCursor.position.y = button.group.position.y - height / 2;
+                        hoverCursor.position.z = button.group.position.z + 0.001;
+
+                        hoverCursor.material.visible = true;
+
+                    }).onHoverExit(function () {
+                        hoverCursor.material.visible = false;
+                    });
+
+                    gridLayout.add(button);
 
                 }
                 
+                gridLayout.group.add(hoverCursor);
                 layout.add(gridLayout);
 
                 gui = new VRUI.VRUI(layout, guiWidth, guiHeight);
-                gui.root.group.rotateY(0.4);                
+                //gui.root.group.rotateY(1.4);
                 gui.enableMouse(camera, renderer);
                 
                 gui.addToScene(scene); // Adds the gui to the THREE.Scene elt.

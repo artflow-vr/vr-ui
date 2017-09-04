@@ -46,9 +46,9 @@ export default class GridLayout extends AbstractLayout {
 
     }
 
-    refresh() {
+    refresh( maxWidth, maxHeight ) {
 
-        super.refresh();
+        super.refresh( maxWidth, maxHeight );
 
         let dimensions = this._dimensions;
 
@@ -64,7 +64,7 @@ export default class GridLayout extends AbstractLayout {
         hSpaceRel /= 2.0;
         vSpaceRel /= 2.0;
 
-        let xOffset = 0.0;
+        let xOffset = hSpaceRel;
         let yOffset = - vSpaceRel;
         for ( let i = 0; i < this._elements.length; ++i ) {
             let elt = this._elements[ i ];
@@ -72,7 +72,7 @@ export default class GridLayout extends AbstractLayout {
 
             let colIDX = i % this.nbColumns;
             if ( colIDX === 0 && i !== 0 ) {
-                xOffset = this.group.position.x;
+                xOffset = this.group.position.x + hSpaceRel;
                 yOffset -= maxHeightRel + vSpaceRel;
             }
 

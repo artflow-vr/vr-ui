@@ -90,7 +90,6 @@ let PROP_CHECK = {
 export default function checkProperty( propID, value, checkList = PROP_CHECK ) {
 
     let property = checkList[ propID ];
-    console.log( propID );
 
     if ( !property ) {
         let warnMsg = `property ${propID} is not recognized. Please take a `;

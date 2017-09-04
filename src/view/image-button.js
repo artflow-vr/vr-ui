@@ -56,6 +56,7 @@ export default class ImageButton extends ButtonView {
         }
 
         this.image = new THREE.Mesh( PLANE_GEOM, material );
+        this.image.position.z = 0.001; // prevents z-fighting
         this.group.add( this.image );
 
         this._onHoverEnter = () => {
@@ -75,8 +76,8 @@ export default class ImageButton extends ButtonView {
         let dimensions = this._dimensions;
         let padding = dimensions.padding;
 
-        let width = maxEltWidth || dimensions.width;
-        let height = maxEltHeight || dimensions.height;
+        let width = dimensions.width;
+        let height = dimensions.height;
 
         let newWidth = width - ( padding.left + padding.right );
         let newHeight = height - ( padding.top + padding.bottom );
@@ -96,7 +97,7 @@ export default class ImageButton extends ButtonView {
 
     _forceExit() {
         this.pressed = false;
-        this._onHoverExit();
+        //this._onHoverExit();
     }
 
     _intersect( raycaster, state ) {
