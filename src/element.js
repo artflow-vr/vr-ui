@@ -26,7 +26,7 @@
 */
 
 import { PLANE_GEOM } from './utils/geometry-factory';
-import { BACK_DEFAULT, MAT_USELESS } from './utils/material-factory';
+import { MAT_DEFAULT, BACK_DEFAULT, MAT_USELESS } from './utils/material-factory';
 
 import checkProperty from './utils/property-check';
 
@@ -52,6 +52,7 @@ export default class Element {
     constructor( style ) {
 
         this.group = new THREE.Group();
+        this.group.position.z = 0.001; // prevents z-fighting
         this.group.userData.element = this;
 
         this.hover = false;
@@ -70,7 +71,7 @@ export default class Element {
         // Creates the background of the element. By default, the background
         // is invisible and is only used to check intersection.
         this._background = new THREE.Mesh( PLANE_GEOM, MAT_USELESS );
-        this._background.visible = false;
+        this._background.position.z = - 0.001; // prevents z-fighting
         this.group.add( this._background );
 
         // The below properties store callbacks that will be executed
@@ -88,7 +89,8 @@ export default class Element {
             depth: 0.0,
             padding: { top: 0.0, bottom: 0.0, left: 0.0, right: 0.0 },
             margin: { top: 0.0, bottom: 0.0, left: 0.0, right: 0.0 },
-            position: `center`
+            position: `center`,
+            background: null
         }, this.style );
 
     }
@@ -201,10 +203,10 @@ export default class Element {
      * Three.js units.
      * @memberof Element
      */
-    refresh() {
+    refresh( maxEltWidth, maxEltHeight ) {
 
-        let maxWidth = this._parentDimensions.width;
-        let maxHeight = this._parentDimensions.height;
+        let maxWidth = maxEltWidth || this._parentDimensions.width;
+        let maxHeight = maxEltHeight || this._parentDimensions.height;
 
         let dimensions = this._dimensions;
 
@@ -236,10 +238,26 @@ export default class Element {
 
     _updateBackground( background ) {
 
-        let material = ( background.material || BACK_DEFAULT ).clone();
+        if ( !background ) {
+            this._background.material = BACK_DEFAULT.clone();
+            this._background.material.visible = false;
+            return;
+        }
+
+        let material = null;
+        if ( background.constructor === THREE.Texture ) {
+            material = BACK_DEFAULT.clone();
+            material.map = background;
+        } else if ( background instanceof THREE.Material )
+            material = background.clone();
+        else {
+            material = BACK_DEFAULT.clone();
+            material.depthWrite = true;
+            material.color.setHex( background );
+        }
 
         this._background.material = material;
-        this._background.visible = background.visible || true;
+        this._background.visible = true;
 
     }
 

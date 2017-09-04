@@ -27,7 +27,7 @@
 
 import ButtonView from './button-view';
 import { PLANE_GEOM } from '../utils/geometry-factory';
-import { MAT_DEFAULT } from '../utils/material-factory';
+import { IMAGE_DEFAULT } from '../utils/material-factory';
 
 import * as Colors from '../utils/colors';
 
@@ -45,7 +45,7 @@ export default class ImageButton extends ButtonView {
         let material = null;
 
         if ( imageOrMaterial.constructor === THREE.Texture ) {
-            material = MAT_DEFAULT.clone();
+            material = IMAGE_DEFAULT.clone();
             material.map = imageOrMaterial;
         } else if ( imageOrMaterial instanceof THREE.Material ) {
             material = imageOrMaterial.clone();
@@ -68,15 +68,16 @@ export default class ImageButton extends ButtonView {
 
     }
 
-    refresh() {
+    refresh( maxEltWidth, maxEltHeight ) {
 
-        super.refresh();
+        super.refresh( maxEltWidth, maxEltHeight );
 
         let dimensions = this._dimensions;
         let padding = dimensions.padding;
 
-        let width = dimensions.width;
-        let height = dimensions.height;
+        let width = maxEltWidth || dimensions.width;
+        let height = maxEltHeight || dimensions.height;
+
         let newWidth = width - ( padding.left + padding.right );
         let newHeight = height - ( padding.top + padding.bottom );
 

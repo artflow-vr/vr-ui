@@ -28,7 +28,8 @@
 import * as Colors from './colors';
 
 export const MAT_USELESS = new THREE.MeshBasicMaterial( {
-    color: Colors.WHITE
+    color: Colors.WHITE,
+    visible: false
 } );
 
 export const MAT_DEFAULT = new THREE.MeshBasicMaterial( {
@@ -37,8 +38,16 @@ export const MAT_DEFAULT = new THREE.MeshBasicMaterial( {
     opacity: 1.0
 } );
 
-export const BACK_DEFAULT = new THREE.MeshBasicMaterial( {
-    color: Colors.DEFAULT,
+export const IMAGE_DEFAULT = new THREE.MeshBasicMaterial( {
+    color: Colors.WHITE,
     transparent: true,
-    opacity: 1.0
+    opacity: 1.0,
+    depthWrite: false
+} );
+
+export const BACK_DEFAULT = new THREE.MeshBasicMaterial( {
+    color: Colors.WHITE,
+    transparent: true,
+    opacity: 1.0,
+    depthWrite: false
 } );

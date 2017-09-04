@@ -51,6 +51,22 @@ let checkStringInList = ( list, propID, value ) => {
 
 };
 
+let checkInstanceOf = ( list, propID, value ) => {
+
+    if ( !value ) return true;
+
+    for ( let Type of list ) {
+        if ( ( Type === `number` && !isNaN( value ) ) || value instanceof Type )
+            return true;
+    }
+
+    let errorMsg = `Element property ${propID} does not have the good type `;
+    console.error( errorMsg );
+
+    return false;
+
+};
+
 let PROP_CHECK = {
     width: checkFloatInRange.bind( 0.0, 1.0 ),
     height: checkFloatInRange.bind( 0.0, 1.0 ),
@@ -68,9 +84,7 @@ let PROP_CHECK = {
         right: checkFloatInRange.bind( 0.0, 0.49 )
     },
     position: checkStringInList.bind( null, [`left`, `right`, `top`, `bottom`, `center`] ),
-    background: function() {
-        return true;
-    }
+    background: checkInstanceOf.bind( null, [THREE.Material, THREE.Texture, `number`] )
 };
 
 export default function checkProperty( propID, value, checkList = PROP_CHECK ) {

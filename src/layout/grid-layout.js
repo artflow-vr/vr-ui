@@ -29,42 +29,59 @@ import AbstractLayout from './abstract-layout';
 
 export default class GridLayout extends AbstractLayout {
 
-    constructor( columns, rows, style ) {
+    constructor( data, style ) {
 
-        if ( !rows || !columns ) {
-            let errorMsg = `missing argument 'columns'.or 'rows'`;
+        if ( !data || !data.rows || !data.columns ) {
+            let errorMsg = `data object should at least contains 'columns' `;
+            errorMsg += `and 'rows' properties.`;
             throw Error( `GridLayout.ctor(): ` + errorMsg );
         }
 
         super( style );
 
-        this.nbRows = rows;
-        this.nbColumns = columns;
+        this.nbRows = data.rows;
+        this.nbColumns = data.columns;
+        this.hSpace = data.hSpace || 0.0;
+        this.vSpace = data.vSpace || 0.0;
 
     }
 
-    _refreshLayout() {
+    refresh() {
 
         super.refresh();
 
         let dimensions = this._dimensions;
-        let maxEltWidth = dimensions.width / this.nbColumns;
-        let maxEltHeight = dimensions.height / this.nbRows;
 
-        let xOffset = this.group.position.x;
-        let yOffset = this.group.position.y;
+        let maxEltWidth = ( dimensions.width ) / this.nbColumns;
+        let maxEltHeight = ( dimensions.height ) / this.nbRows;
+
+        let hSpaceRel = this.hSpace * dimensions.width;
+        let vSpaceRel = this.vSpace * dimensions.height;
+
+        let maxWidthRel = maxEltWidth - hSpaceRel;
+        let maxHeightRel = maxEltHeight - vSpaceRel;
+
+        hSpaceRel /= 2.0;
+        vSpaceRel /= 2.0;
+
+        let xOffset = 0.0;
+        let yOffset = - vSpaceRel;
         for ( let i = 0; i < this._elements.length; ++i ) {
             let elt = this._elements[ i ];
-            elt.refresh();
+            elt.refresh( maxWidthRel, maxHeightRel );
 
             let colIDX = i % this.nbColumns;
             if ( colIDX === 0 && i !== 0 ) {
                 xOffset = this.group.position.x;
-                yOffset -= maxEltHeight;
+                yOffset -= maxHeightRel + vSpaceRel;
             }
+
+            xOffset += hSpaceRel;
+
             elt.group.position.x = xOffset;
             elt.group.position.y = yOffset;
-            xOffset += maxEltWidth;
+
+            xOffset += maxWidthRel + hSpaceRel;
         }
 
     }
