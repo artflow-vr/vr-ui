@@ -38,9 +38,9 @@ export default class ElementView extends AbstractView {
             throw Error( `ElementView: ctor(): ` + errorMsg );
         }
 
-        if ( mesh.constructor !== THREE.Mesh ) {
+        if ( !( mesh instanceof THREE.Object3D ) ) {
             let errorMsg = `provided mesh is not of type THREE.Mesh.`;
-            //throw Error( `ElementView: ctor(): ` + errorMsg );
+            throw Error( `ElementView: ctor(): ` + errorMsg );
         }
 
         super( style );
@@ -51,14 +51,14 @@ export default class ElementView extends AbstractView {
 
         this.pressed = false;
 
-        this._onHoverEnter = () => {
+        this._onHoverEnter = ( object ) => {
 
-            this.mesh.material.color.setHex( Colors.HIGHLIGHT );
+            object.mesh.material.color.setHex( Colors.HIGHLIGHT );
 
         };
-        this._onHoverExit = () => {
+        this._onHoverExit = ( object ) => {
 
-            this.mesh.material.color.setHex( Colors.WHITE );
+            object.mesh.material.color.setHex( Colors.WHITE );
 
         };
 
@@ -90,17 +90,8 @@ export default class ElementView extends AbstractView {
             xOffset = newWidth;
             yOffset = newHeight * 0.5;
         }
-
-        // TODO: Support left and right
-        switch ( this.style.position ) {
-            case `right`:
-                //elt.group.position.x += dimensions.maxWidth - eltDim.width;
-                break;
-            case `center`:
-                this.mesh.position.x += xOffset / 2 + padding.left;
-                this.mesh.position.y -= yOffset / 2 + padding.top;
-                break;
-        }
+        this.mesh.position.x += xOffset / 2 + padding.left;
+        this.mesh.position.y -= yOffset / 2 + padding.top;
 
     }
 
@@ -108,7 +99,7 @@ export default class ElementView extends AbstractView {
 
         if ( !state.pressed && this.pressed ) {
             this.pressed = false;
-            if ( this._onChange ) this._onChange( { pressed: this.pressed } );
+            if ( this._onChange ) this._onChange( this, { pressed: this.pressed } );
         }
 
         if ( !this._checkHover( raycaster, this.mesh,
@@ -118,7 +109,7 @@ export default class ElementView extends AbstractView {
 
         if ( state.pressed && !this.pressed ) {
             this.pressed = true;
-            if ( this._onChange ) this._onChange( { pressed: this.pressed } );
+            if ( this._onChange ) this._onChange( this, { pressed: this.pressed } );
         }
 
         return true;

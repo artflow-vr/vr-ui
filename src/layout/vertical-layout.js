@@ -38,6 +38,7 @@ export default class VerticalLayout extends LinearLayout {
     refresh( maxEltWidth, maxEltHeight ) {
 
         super.refresh( maxEltWidth, maxEltHeight );
+        this.type = `vertical-layout`;
 
         let dimensions = this._dimensions;
 

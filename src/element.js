@@ -60,6 +60,9 @@ export default class Element {
         this.group.position.z = 0.001; // prevents z-fighting
         this.group.userData.element = this;
 
+        // Reference to parent.
+        this.parent = null;
+
         this.hover = false;
 
         this._dimensions = {
@@ -188,13 +191,13 @@ export default class Element {
         if ( objs.length === 0 ) {
             if ( this.hover ) {
                 this.hover = false;
-                if ( onHoverExit ) onHoverExit();
+                if ( onHoverExit ) onHoverExit( this );
             }
             return false;
         }
 
         if ( !this.hover ) {
-            if ( onHoverEnter ) onHoverEnter();
+            if ( onHoverEnter ) onHoverEnter( this );
             this.hover = true;
         }
 
