@@ -127,8 +127,8 @@
                     columns: 4,
                     rows: 3,
                     hSpace: 0.03,
-                    vSpace: 0.1
-                }, { height: 0.8 });
+                    vSpace: 0.1,
+                }, { height: 0.8, background: 0xFF0000, position: 'right' });
 
                 for (let tex of ['brush-icon', 'particles-icon', 'tree-icon', 'water-icon']) {
                     let textID = 'tools/' + tex;
@@ -166,7 +166,8 @@
 
                 let layout = new VRUI.layout.HorizontalLayout({
                     height: 0.2,
-                    background: null
+                    background: 0x0000FF,
+                    align: 'bottom'
                 });
 
                 let leftArrow = new VRUI.view.ImageButton(arrowLeftTexture, {

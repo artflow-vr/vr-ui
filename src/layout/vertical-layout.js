@@ -42,35 +42,51 @@ export default class VerticalLayout extends LinearLayout {
 
         let dimensions = this._dimensions;
 
-        let yOffset = - dimensions.padding.top + dimensions.padding.bottom;
+        let offset = {
+            top: dimensions.padding.top,
+            bottom: dimensions.padding.bottom,
+            right: dimensions.padding.right,
+            left: dimensions.padding.left
+        };
+        //let yOffset = - dimensions.padding.top + dimensions.padding.bottom;
         for ( let elt of this._elements ) {
             elt.refresh();
 
             let eltDim = elt._dimensions;
-            yOffset -= eltDim.margin.top;
+            //yOffset -= eltDim.margin.top;
 
-            elt.group.position.y = yOffset;
+            //elt.group.position.y = yOffset;
 
-            elt.group.position.x = dimensions.padding.left
-                                            - dimensions.padding.right;
+            //elt.group.position.x = dimensions.padding.left
+            //                                - dimensions.padding.right;
+
+            switch ( elt.style.align ) {
+                case `top`:
+                    offset.top += eltDim.margin.top;
+                    elt.group.position.y = - offset.top;
+                    offset.top += eltDim.height + eltDim.margin.bottom;
+                    break;
+                case `bottom`:
+                    offset.bottom += eltDim.margin.bottom;
+                    elt.group.position.y = offset.bottom - dimensions.height + eltDim.height;
+                    offset.bottom += eltDim.height + eltDim.margin.top;
+                    break;
+            }
 
             // For now, the library only handle simple positioning.
             // We can change horizontal placement in a VerticalLayout.
             // You can choose between 'left', 'right', and 'center'.
             switch ( elt.style.position ) {
-                case `left`:
-                    elt.group.position.x += 0;
-                    break;
                 case `right`:
-                    elt.group.position.x += dimensions.maxWidth - eltDim.width;
+                    elt.group.position.x += dimensions.width - eltDim.width;
                     break;
-                case `center`:
+                /*case `center`:
                     elt.group.position.x += ( dimensions.width / 2.0 ) - eltDim.halfW;
-                    break;
+                    break;*/
             }
 
-            yOffset -= eltDim.height;
-            yOffset -= eltDim.margin.bottom;
+            //yOffset -= eltDim.height;
+            //yOffset -= eltDim.margin.bottom;
         }
 
     }

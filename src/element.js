@@ -98,6 +98,7 @@ export default class Element {
             padding: { top: 0.0, bottom: 0.0, left: 0.0, right: 0.0 },
             margin: { top: 0.0, bottom: 0.0, left: 0.0, right: 0.0 },
             position: `center`,
+            align: `top`,
             background: null
         }, this.style );
 

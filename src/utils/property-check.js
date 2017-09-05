@@ -83,7 +83,8 @@ let PROP_CHECK = {
         left: checkFloatInRange.bind( 0.0, 0.49 ),
         right: checkFloatInRange.bind( 0.0, 0.49 )
     },
-    position: checkStringInList.bind( null, [`left`, `right`, `top`, `bottom`, `center`] ),
+    position: checkStringInList.bind( null, [`left`, `right`] ),
+    align: checkStringInList.bind( null, [`top`, `bottom`, `center`] ),
     background: checkInstanceOf.bind( null, [THREE.Material, THREE.Texture, `number`] )
 };
 

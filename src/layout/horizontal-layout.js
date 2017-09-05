@@ -52,9 +52,6 @@ export default class HorizontalLayout extends LinearLayout {
             elt.refresh();
             let eltDim = elt._dimensions;
 
-            // For now, the library only handle simple positioning.
-            // We can change horizontal placement in a HorizontalLayout.
-            // You can choose between 'top', 'bottom', and 'center'.
             switch ( elt.style.position ) {
                 case `right`:
                     offset.right += eltDim.margin.right + eltDim.width;
@@ -67,15 +64,18 @@ export default class HorizontalLayout extends LinearLayout {
                     offset.left += eltDim.width;
                     offset.left += eltDim.margin.right;
                     break;
+            }
+
+            switch ( elt.style.align ) {
                 case `top`:
                     elt.group.position.y = 0;
-                    break;
+                break;
                 case `bottom`:
                     elt.group.position.y = - maxHeight + eltDim.height;
-                    break;
+                break;
                 case `center`:
                     elt.group.position.y = - ( maxHeight / 2.0 ) + eltDim.halfH;
-                    break;
+                break;
             }
 
         }
