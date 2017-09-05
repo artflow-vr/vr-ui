@@ -25,15 +25,36 @@
 * SOFTWARE.
 */
 
-import AbstractView from './abstract-view';
+import ElementView from './element-view';
+import createText from '../helper/text';
 
-export default class ButtonView extends AbstractView {
+export default class TextView extends ElementView {
 
-    constructor( style ) {
+    constructor( str, style ) {
 
-        super( style );
+        if ( str === undefined || str === null ) {
+            let errorMsg = `provided string is null or undefined.`;
+            throw Error( `TextView: ctor(): ` + errorMsg );
+        }
 
-        this.pressed = false;
+        if ( typeof str !== `string` ) {
+            let errorMsg = `provided string is not of type string.`;
+            throw Error( `TextView: ctor(): ` + errorMsg );
+        }
+
+        super( createText( str ), style );
+
+        this.type = `text`;
+        this.text = str;
+
+        this.userData.toto = 4;
+
+    }
+
+    updateStr( str ) {
+
+        this.text = str;
+        this.textMesh.geometry.update( str );
 
     }
 

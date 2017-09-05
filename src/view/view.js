@@ -25,10 +25,12 @@
 * SOFTWARE.
 */
 
-import ButtonView from './button-view';
+import ElementView from './element-view';
 import ImageButton from './image-button';
+import TextView from './text-view';
 
 export {
-    ButtonView,
-    ImageButton
+    ElementView,
+    ImageButton,
+    TextView
 };

@@ -51,6 +51,11 @@ export default class Element {
      */
     constructor( style ) {
 
+        // The 'type' variable is useful to make some special checks
+        // according to the element we are in. It avoids to make call
+        // to instance of.
+        this.type = `element`;
+
         this.group = new THREE.Group();
         this.group.position.z = 0.001; // prevents z-fighting
         this.group.userData.element = this;
@@ -92,6 +97,10 @@ export default class Element {
             position: `center`,
             background: null
         }, this.style );
+
+        // Custom objects allowing users to save data in element,
+        // without interfering with the library internals.
+        this.userData = {};
 
     }
 

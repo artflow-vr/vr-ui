@@ -26,9 +26,11 @@
             textureLoader.setPath('assets/artflow-ui/');
 
             camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.1, 20 );
-            camera.position.set(0, 0.0, 0.5);
+            camera.position.set(0, 0.0, 0.7);
 
-            renderer = new THREE.WebGLRenderer();
+            renderer = new THREE.WebGLRenderer({
+                antialias: true
+            });
             renderer.setSize( window.innerWidth, window.innerHeight );
             renderer.setClearColor(0x2c3e50);
             document.body.appendChild( renderer.domElement );
@@ -43,6 +45,7 @@
 
                 if (gui) {
                     gui.update();
+                    //gui.root.group.rotateY(0.05);
                 }
                 renderer.render( scene, camera );
                 requestAnimationFrame( animate );
@@ -88,6 +91,10 @@
                         top: 0.05
                     },
                 });
+                /*layout.add(new VRUI.view.TextView('Tools', {
+                    width: 1.0,
+                    height: 0.1
+                }));*/
 
                 let gridLayout = new VRUI.layout.GridLayout({
                     columns: 4,
@@ -95,12 +102,12 @@
                     hSpace: 0.03,
                     vSpace: 0.1
                 }, {
-                    height: 0.9
+                    height: 0.8
                 });
                 for (let tex of ['brush-icon', 'particles-icon', 'tree-icon', 'water-icon']) {
                     let textID = 'tools/' + tex;
                     let button = new VRUI.view.ImageButton(textures[textID], {
-                        width: 0.85,
+                        width: 0.8,
                         height: 0.85,
                         padding: {
                             top: 0.1,
@@ -136,7 +143,7 @@
                 layout.add(gridLayout);
 
                 gui = new VRUI.VRUI(layout, guiWidth, guiHeight);
-                //gui.root.group.rotateY(1.4);
+                //gui.root.group.rotateY(1.0);
                 gui.enableMouse(camera, renderer);
                 
                 gui.addToScene(scene); // Adds the gui to the THREE.Scene elt.
@@ -146,6 +153,12 @@
                 // have to call it. It could possibly be costly, according
                 // to how complex is the UI, so do not call it if not necessary.
                 gui.refresh();
+
+            }
+
+            function createBottom() {
+
+
 
             }
 

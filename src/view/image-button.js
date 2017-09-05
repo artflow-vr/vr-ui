@@ -25,17 +25,13 @@
 * SOFTWARE.
 */
 
-import ButtonView from './button-view';
+import ElementView from './element-view';
 import { PLANE_GEOM } from '../utils/geometry-factory';
 import { IMAGE_DEFAULT } from '../utils/material-factory';
 
-import * as Colors from '../utils/colors';
-
-export default class ImageButton extends ButtonView {
+export default class ImageButton extends ElementView {
 
     constructor( imageOrMaterial, style ) {
-
-        super( style );
 
         if ( !imageOrMaterial ) {
             let errorMsg = `you did not provide any texture.`;
@@ -55,69 +51,14 @@ export default class ImageButton extends ButtonView {
             throw Error( `ButtonView.ctor(): ` + errorMsg );
         }
 
-        this.image = new THREE.Mesh( PLANE_GEOM, material );
-        this.image.position.z = 0.001; // prevents z-fighting
-        this.group.add( this.image );
-
-        this._onHoverEnter = () => {
-            // Changes color on highlight
-            this.image.material.color.setHex( Colors.HIGHLIGHT );
-        };
-        this._onHoverExit = () => {
-            this.image.material.color.setHex( Colors.WHITE );
-        };
-
-    }
-
-    refresh( maxEltWidth, maxEltHeight ) {
-
-        super.refresh( maxEltWidth, maxEltHeight );
-
-        let dimensions = this._dimensions;
-        let padding = dimensions.padding;
-
-        let width = dimensions.width;
-        let height = dimensions.height;
-
-        let newWidth = width - ( padding.left + padding.right );
-        let newHeight = height - ( padding.top + padding.bottom );
-
-        this.image.scale.x = newWidth;
-        this.image.scale.y = newHeight;
-        this.image.position.x += newWidth / 2 + padding.left;
-        this.image.position.y -= newHeight / 2 + padding.top;
+        super( new THREE.Mesh( PLANE_GEOM, material ), style );
+        this.type = `button`;
 
     }
 
     clone() {
 
         return new ImageButton( this.image.material, this.style );
-
-    }
-
-    _forceExit() {
-        this.pressed = false;
-        //this._onHoverExit();
-    }
-
-    _intersect( raycaster, state ) {
-
-        if ( !state.pressed && this.pressed ) {
-            this.pressed = false;
-            if ( this._onChange ) this._onChange( { pressed: this.pressed } );
-        }
-
-        if ( !this._checkHover( raycaster, this.image,
-                                this._onHoverEnter, this._onHoverExit ) ) {
-            return false;
-        }
-
-        if ( state.pressed && !this.pressed ) {
-            this.pressed = true;
-            if ( this._onChange ) this._onChange( { pressed: this.pressed } );
-        }
-
-        return true;
 
     }
 
