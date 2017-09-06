@@ -126,22 +126,32 @@
                 let gridLayout = new VRUI.layout.GridLayout({
                     columns: 4,
                     rows: 3,
-                    hSpace: 0.03,
-                    vSpace: 0.1,
-                }, { height: 0.8, background: 0xFF0000, position: 'right' });
+                    hSpace: 0.00,
+                    vSpace: 0.0,
+                }, {
+                    height: 0.8,
+                    background: 0x00FF00,
+                    position: 'right',
+                    padding: {
+                        left: 0.1,
+                        right: 0.1,
+                        top: 0.1,
+                        bottom: 0.1
+                    }
+                });
 
                 for (let tex of ['brush-icon', 'particles-icon', 'tree-icon', 'water-icon']) {
                     let textID = 'tools/' + tex;
                     let button = new VRUI.view.ImageButton(textures[textID], {
-                        width: 0.7,
-                        height: 0.85,
+                        width: 0.75,
+                        height: 0.7,
                         padding: {
                             top: 0.1,
                             bottom: 0.1,
                             left: 0.1,
                             right: 0.1
                         },
-                        background: textures['button-background']
+                        background: 0xFF0000//textures['button-background']
                     }).onHoverEnter(buttonHover).onHoverExit(buttonHoverExit);
 
                     gridLayout.add(button);
@@ -166,7 +176,7 @@
 
                 let layout = new VRUI.layout.HorizontalLayout({
                     height: 0.2,
-                    background: 0x0000FF,
+                    background: null,
                     align: 'bottom'
                 });
 
@@ -226,15 +236,22 @@
             function buttonHover(object) {
 
                 let width = object._background.scale.x;
-                let height = object._background.scale.y
+                let height = object._background.scale.y;
 
-                hoverCursor.scale.x = width;
-                hoverCursor.scale.y = height;
+                object.userData.previousScale = {
+                    x: object.group.scale.x, y: object.group.scale.y
+                };
+
+                object.group.scale.x *= 1.2;
+                object.group.scale.y *= 1.2;
+
+                hoverCursor.scale.x = width * 1.2;
+                hoverCursor.scale.y = height * 1.2;
                 hoverCursor.scale.z = object._background.scale.z;
 
                 let world = object.group.getWorldPosition();
-                hoverCursor.position.x = world.x + width / 2;
-                hoverCursor.position.y = world.y - height / 2;
+                hoverCursor.position.x = world.x + (width * 1.2) / 2;
+                hoverCursor.position.y = world.y - (height * 1.2) / 2;
                 hoverCursor.position.z = world.z + 0.001;
 
                 hoverCursor.material.visible = true;
@@ -244,6 +261,8 @@
             function buttonHoverExit(object) {
 
                 hoverCursor.material.visible = false;
+                object.group.scale.x = object.userData.previousScale.x;
+                object.group.scale.y = object.userData.previousScale.y;
 
             }
 
