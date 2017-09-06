@@ -19,8 +19,14 @@
             let renderer;
             let textures = {};
 
+            // Mesh cursor displayed above the UI to show
+            // an highlight effect.
             let hoverCursor = null;
             let planeGeom = new THREE.PlaneGeometry( 1, 1 );
+
+            // Used to store the last object having the highlight cursor on it.
+            // It allows to change group easily.
+            let container = null;
 
             let textureLoader = new THREE.TextureLoader();
             textureLoader.setPath('assets/artflow-ui/');
@@ -130,8 +136,7 @@
                     vSpace: 0.0,
                 }, {
                     height: 0.8,
-                    background: 0x00FF00,
-                    position: 'right',
+                    position: 'left',
                     padding: {
                         left: 0.1,
                         right: 0.1,
@@ -151,7 +156,7 @@
                             left: 0.1,
                             right: 0.1
                         },
-                        background: 0xFF0000//textures['button-background']
+                        background: textures['button-background']
                     }).onHoverEnter(buttonHover).onHoverExit(buttonHoverExit);
 
                     gridLayout.add(button);
@@ -245,16 +250,20 @@
                 object.group.scale.x *= 1.2;
                 object.group.scale.y *= 1.2;
 
-                hoverCursor.scale.x = width * 1.2;
-                hoverCursor.scale.y = height * 1.2;
-                hoverCursor.scale.z = object._background.scale.z;
+                hoverCursor.scale.x = width;
+                hoverCursor.scale.y = height;
 
-                let world = object.group.getWorldPosition();
-                hoverCursor.position.x = world.x + (width * 1.2) / 2;
-                hoverCursor.position.y = world.y - (height * 1.2) / 2;
-                hoverCursor.position.z = world.z + 0.001;
+                let position = object.group.position;
+                hoverCursor.position.x = width / 2;
+                hoverCursor.position.y = - height * 0.5;
+                hoverCursor.position.z = position.z + 0.001;
 
                 hoverCursor.material.visible = true;
+
+                if (container != null) container.group.children.pop();
+                object.group.add(hoverCursor);
+
+                container = object;
 
             }
 
