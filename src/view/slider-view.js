@@ -85,16 +85,8 @@ export default class SliderView extends ElementView {
         this._max = MAX_VALUE;
         this._value = ( this._max - this._min ) / 2.0;
 
-        this._onHoverEnter = ( object ) => {
-
-            object.handleMesh.material.color.setHex( Colors.HIGHLIGHT );
-
-        };
-        this._onHoverExit = ( object ) => {
-
-            object.handleMesh.material.color.setHex( Colors.WHITE );
-
-        };
+        this._onHoverEnter = null;
+        this._onHoverExit = null;
 
     }
 

@@ -58,7 +58,8 @@ let IS_INSTANCE_OF = ( data, propID, value ) => {
     if ( !value ) return true;
 
     for ( let Type of data ) {
-        if ( ( Type === `number` && !isNaN( value ) ) || value instanceof Type )
+        if ( ( Type === `number` && !isNaN( value ) )
+            || ( Type === `string` && typeof value === Type ) || value instanceof Type )
             return true;
     }
 

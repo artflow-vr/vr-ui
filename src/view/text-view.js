@@ -28,24 +28,33 @@
 import ElementView from './element-view';
 import createText from '../helper/text';
 
+import {
+    checkAndClone,
+    IS_INSTANCE_OF
+} from '../utils/property-check';
+
+let PROP_TO_CHECK = {
+    string: { "data": [`string`], "function": IS_INSTANCE_OF },
+    color: { "data": [ `number`], "function": IS_INSTANCE_OF }
+};
+
 export default class TextView extends ElementView {
 
-    constructor( str, style ) {
+    constructor( data, style ) {
 
-        if ( str === undefined || str === null ) {
+        if ( !data || data.string === undefined || data.string === null ) {
             let errorMsg = `provided string is null or undefined.`;
             throw Error( `TextView: ctor(): ` + errorMsg );
         }
 
-        if ( typeof str !== `string` ) {
-            let errorMsg = `provided string is not of type string.`;
-            throw Error( `TextView: ctor(): ` + errorMsg );
-        }
+        let userData = {};
+        checkAndClone( data, PROP_TO_CHECK, userData );
 
-        super( createText( str ), style );
+        super( createText( userData.string, userData.color ), style );
 
+        this.data = userData;
         this.type = `text`;
-        this.text = str;
+        this.text = this.data.string;
 
     }
 

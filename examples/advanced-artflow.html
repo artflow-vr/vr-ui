@@ -145,7 +145,10 @@
                         })
                     }
 
-                    let text = new VRUI.view.TextView(str, {
+                    let text = new VRUI.view.TextView({
+                        string: str,
+                        color: 0xFFFFFF
+                    }, {
                         width: 0.5,
                         height: 0.7,
                         position:'left',

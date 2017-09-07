@@ -1920,9 +1920,8 @@ kerning first=255 second=229 amount=-1
 `;
 
 const font = parseASCII( bmpFont );
-const INIT_SCALE = 0.008;//0.00024
 
-export default function createText( str, userStyle = { color: 0xFFFFFF } ) {
+export default function createText( str, color = 0xFFFFFF ) {
 
     const texture = new THREE.Texture();
     texture.image = image;
@@ -1934,7 +1933,7 @@ export default function createText( str, userStyle = { color: 0xFFFFFF } ) {
     const material = new THREE.RawShaderMaterial( SDFShader( {
         side: THREE.DoubleSide,
         transparent: true,
-        color: userStyle.color,
+        color: color,
         map: texture
     } ) );
 
@@ -1947,11 +1946,9 @@ export default function createText( str, userStyle = { color: 0xFFFFFF } ) {
       } );
 
     const layout = geom.layout;
-    console.log( layout.width );
 
     const mesh = new THREE.Mesh( geom, material );
     mesh.position.x = -layout.width / 2;
-    //mesh.position.y = layout.height / 2;
     mesh.position.y = ( layout.height / 2 ) * 1.035;
 
     const textAnchor = new THREE.Object3D();
@@ -1959,13 +1956,5 @@ export default function createText( str, userStyle = { color: 0xFFFFFF } ) {
     textAnchor.scale.multiplyScalar( 0.008 );
     textAnchor.add( mesh );
     return textAnchor;
-    //mesh.scale.multiply( new THREE.Vector3( 1,-1,1 ) );
-    //mesh.scale.multiplyScalar( INIT_SCALE );
-
-    //let charSize = mesh.scale.x;
-    //mesh.position.x = str.length * 0.5 * charSize * 20;
-    //mesh.position.y = - geom.layout.height * 0.035 * INIT_SCALE;
-
-    //return mesh;
 
 }
