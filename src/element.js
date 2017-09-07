@@ -183,16 +183,6 @@ export default class Element {
      */
     set( style ) {
 
-        /*for ( let k in style ) {
-            if ( checkProperty( k, style[ k ] ) ) {
-                this.style[ k ] = style[ k ];
-                if ( PROP_TO[ k ] ) {
-                    let methodName = PROP_TO[ k ];
-                    this[ methodName ]( style[ k ] );
-                }
-            }
-        }*/
-        //if ( !checkALl( style, PROP_TO_CHECK ) ) return;
         checkAndClone( style, PROP_TO_CHECK, this.style );
         for ( let k in style )
             if ( PROP_TO[ k ] ) this[ PROP_TO[ k ] ]( style[ k ] );
@@ -298,6 +288,10 @@ export default class Element {
         for ( let k in style ) {
             let element = style[ k ];
             if ( typeof element === `object` ) {
+                if ( !element ) {
+                    writeTo[ k ] = null;
+                    continue;
+                }
                 if ( !( k in writeTo ) ) writeTo[ k ] = {};
                 this._setStyleForUndefined( element, writeTo[ k ] );
             } else if ( !( k in writeTo ) ) {

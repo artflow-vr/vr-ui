@@ -47,7 +47,7 @@ export default class ImageButton extends ElementView {
 
     clone() {
 
-        return new ImageButton( this.image.material, this.style );
+        return new ImageButton( this.mesh.material, this.style );
 
     }
 
