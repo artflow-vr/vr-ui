@@ -41,24 +41,22 @@ export default class VerticalLayout extends LinearLayout {
         this.type = `vertical-layout`;
 
         let dimensions = this._dimensions;
+        let padding = dimensions.padding;
 
         let offset = {
-            top: dimensions.padding.top,
-            bottom: dimensions.padding.bottom,
-            right: dimensions.padding.right,
-            left: dimensions.padding.left
+            top: padding.top,
+            bottom: padding.bottom,
+            right: padding.right,
+            left: padding.left
         };
-        //let yOffset = - dimensions.padding.top + dimensions.padding.bottom;
+
+        let horizontalPad = padding.right + padding.left;
+        let maxWidthPerElt = dimensions.width - horizontalPad;
+
         for ( let elt of this._elements ) {
-            elt.refresh();
+            elt.refresh( maxWidthPerElt );
 
             let eltDim = elt._dimensions;
-            //yOffset -= eltDim.margin.top;
-
-            //elt.group.position.y = yOffset;
-
-            //elt.group.position.x = dimensions.padding.left
-            //                                - dimensions.padding.right;
 
             switch ( elt.style.align ) {
                 case `top`:
@@ -80,13 +78,12 @@ export default class VerticalLayout extends LinearLayout {
                 case `right`:
                     elt.group.position.x += dimensions.width - eltDim.width;
                     break;
-                /*case `center`:
-                    elt.group.position.x += ( dimensions.width / 2.0 ) - eltDim.halfW;
-                    break;*/
+                case `center`:
+                    elt.group.position.x += dimensions.width * 0.5 - eltDim.halfW;
+                    break;
             }
+            elt.group.position.x += padding.left - padding.right;
 
-            //yOffset -= eltDim.height;
-            //yOffset -= eltDim.margin.bottom;
         }
 
     }

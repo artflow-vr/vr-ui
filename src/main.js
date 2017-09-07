@@ -74,6 +74,8 @@ export default class VRUI {
         this.root.group.position.x = - widthUnit / 2.0;
         this.root.group.position.y = heightUnit / 2.0;
 
+        this.enabled = true;
+
         this.root._parentDimensions = {
             width: widthUnit,
             height: heightUnit
@@ -107,6 +109,7 @@ export default class VRUI {
      */
     update() {
 
+        if ( !this.enabled ) return;
         //this._raycaster.ray.origin.setFromMatrixPosition( controller.matrixWorld );
         //this._raycaster.ray.direction.set( 0, 0, -1 ).applyMatrix4( tempMatrix );
 

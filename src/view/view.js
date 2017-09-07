@@ -28,9 +28,13 @@
 import ElementView from './element-view';
 import ImageButton from './image-button';
 import TextView from './text-view';
+import CheckboxView from './checkbox-view';
+import SliderView from './slider-view';
 
 export {
     ElementView,
     ImageButton,
-    TextView
+    TextView,
+    CheckboxView,
+    SliderView
 };

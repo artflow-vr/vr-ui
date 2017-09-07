@@ -25,11 +25,11 @@
 * SOFTWARE.
 */
 
-import AbstractView from './abstract-view';
+import Element from '../element';
 
 import * as Colors from '../utils/colors';
 
-export default class ElementView extends AbstractView {
+export default class ElementView extends Element {
 
     constructor( mesh, style ) {
 
@@ -51,6 +51,8 @@ export default class ElementView extends AbstractView {
 
         this.pressed = false;
 
+        this.listenTo = null;
+
         this._onHoverEnter = ( object ) => {
 
             object.mesh.material.color.setHex( Colors.HIGHLIGHT );
@@ -61,6 +63,17 @@ export default class ElementView extends AbstractView {
             object.mesh.material.color.setHex( Colors.WHITE );
 
         };
+
+    }
+
+    listen( obj, propID ) {
+
+        this.listenTo = {
+            object: obj,
+            propID: propID
+        };
+
+        return this;
 
     }
 

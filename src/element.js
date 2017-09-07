@@ -26,9 +26,30 @@
 */
 
 import { PLANE_GEOM } from './utils/geometry-factory';
-import { MAT_DEFAULT, BACK_DEFAULT, MAT_USELESS } from './utils/material-factory';
+import { MaterialFactory, createMaterial } from './utils/material';
 
-import checkProperty from './utils/property-check';
+import { checkAndClone, IS_IN_RANGE, IS_IN_LIST, IS_INSTANCE_OF } from './utils/property-check';
+
+let PROP_TO_CHECK = {
+    width: { "data": [0.0, 1.0], "function": IS_IN_RANGE },
+    height: { "data": [0.0, 1.0], "function": IS_IN_RANGE },
+    depth: { "data": [0.0, 1.0], "function": IS_IN_RANGE },
+    padding: {
+        top: { "data": [0.0, 0.49], "function": IS_IN_RANGE },
+        bottom: { "data": [0.0, 0.49], "function": IS_IN_RANGE },
+        left: { "data": [0.0, 0.49], "function": IS_IN_RANGE },
+        right: { "data": [0.0, 0.49], "function": IS_IN_RANGE }
+    },
+    margin: {
+        top: { "data": [0.0, 0.49], "function": IS_IN_RANGE },
+        bottom: { "data": [0.0, 0.49], "function": IS_IN_RANGE },
+        left: { "data": [0.0, 0.49], "function": IS_IN_RANGE },
+        right: { "data": [0.0, 0.49], "function": IS_IN_RANGE }
+    },
+    position: { "data": [`left`, `right`, `center`], "function": IS_IN_LIST },
+    align: { "data": [`top`, `bottom`, `center`], "function": IS_IN_LIST },
+    background: { "data": [THREE.Material, THREE.Texture, `number`], "function": IS_INSTANCE_OF }
+};
 
 const PROP_TO = {
     background: `_updateBackground`
@@ -78,7 +99,7 @@ export default class Element {
 
         // Creates the background of the element. By default, the background
         // is invisible and is only used to check intersection.
-        this._background = new THREE.Mesh( PLANE_GEOM, MAT_USELESS );
+        this._background = new THREE.Mesh( PLANE_GEOM, MaterialFactory.MAT_USELESS );
         this._background.position.z = - 0.001; // prevents z-fighting
         this.group.add( this._background );
 
@@ -87,6 +108,8 @@ export default class Element {
         this._onHoverEnter = null;
         this._onHoverExit = null;
         this._onChange = null;
+
+        this._lastIntersect = null;
 
         this.style = {};
         if ( style ) this.set( style );
@@ -160,7 +183,7 @@ export default class Element {
      */
     set( style ) {
 
-        for ( let k in style ) {
+        /*for ( let k in style ) {
             if ( checkProperty( k, style[ k ] ) ) {
                 this.style[ k ] = style[ k ];
                 if ( PROP_TO[ k ] ) {
@@ -168,7 +191,11 @@ export default class Element {
                     this[ methodName ]( style[ k ] );
                 }
             }
-        }
+        }*/
+        //if ( !checkALl( style, PROP_TO_CHECK ) ) return;
+        checkAndClone( style, PROP_TO_CHECK, this.style );
+        for ( let k in style )
+            if ( PROP_TO[ k ] ) this[ PROP_TO[ k ] ]( style[ k ] );
 
     }
 
@@ -188,8 +215,8 @@ export default class Element {
      */
     _checkHover( raycaster, object, onHoverEnter, onHoverExit ) {
 
-        let objs = raycaster.intersectObject( object, false );
-        if ( objs.length === 0 ) {
+        let obj = raycaster.intersectObject( object, false );
+        if ( obj.length === 0 ) {
             if ( this.hover ) {
                 this.hover = false;
                 if ( onHoverExit ) onHoverExit( this );
@@ -197,6 +224,8 @@ export default class Element {
             return false;
         }
 
+        this._lastIntersect = obj[ 0 ];
+        //console.log( this._lastIntersect );
         if ( !this.hover ) {
             if ( onHoverEnter ) onHoverEnter( this );
             this.hover = true;
@@ -252,22 +281,12 @@ export default class Element {
     _updateBackground( background ) {
 
         if ( !background ) {
-            this._background.material = BACK_DEFAULT.clone();
+            this._background.material = MaterialFactory.BACK_DEFAULT.clone();
             this._background.material.visible = false;
             return;
         }
 
-        let material = null;
-        if ( background.constructor === THREE.Texture ) {
-            material = BACK_DEFAULT.clone();
-            material.map = background;
-        } else if ( background instanceof THREE.Material )
-            material = background.clone();
-        else {
-            material = BACK_DEFAULT.clone();
-            material.depthWrite = true;
-            material.color.setHex( background );
-        }
+        let material = createMaterial( background, MaterialFactory.BACK_DEFAULT );
 
         this._background.material = material;
         this._background.visible = true;

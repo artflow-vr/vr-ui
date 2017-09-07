@@ -27,29 +27,18 @@
 
 import ElementView from './element-view';
 import { PLANE_GEOM } from '../utils/geometry-factory';
-import { IMAGE_DEFAULT } from '../utils/material-factory';
+import { MaterialFactory, createMaterial } from '../utils/material';
 
 export default class ImageButton extends ElementView {
 
-    constructor( imageOrMaterial, style ) {
+    constructor( imgOrMatOrColor, style ) {
 
-        if ( !imageOrMaterial ) {
+        if ( !imgOrMatOrColor ) {
             let errorMsg = `you did not provide any texture.`;
-            throw Error( `ButtonView.ctor(): ` + errorMsg );
+            throw Error( `ImageButton.ctor(): ` + errorMsg );
         }
 
-        let material = null;
-
-        if ( imageOrMaterial.constructor === THREE.Texture ) {
-            material = IMAGE_DEFAULT.clone();
-            material.map = imageOrMaterial;
-        } else if ( imageOrMaterial instanceof THREE.Material ) {
-            material = imageOrMaterial.clone();
-        } else {
-            let errorMsg = `the provided image is neither a THREE.Texture, `;
-            errorMsg += `nor a THREE.Material object.`;
-            throw Error( `ButtonView.ctor(): ` + errorMsg );
-        }
+        let material = createMaterial( imgOrMatOrColor, MaterialFactory.IMAGE_DEFAULT );
 
         super( new THREE.Mesh( PLANE_GEOM, material ), style );
         this.type = `button`;

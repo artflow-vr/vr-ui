@@ -47,8 +47,6 @@ export default class TextView extends ElementView {
         this.type = `text`;
         this.text = str;
 
-        this.userData.toto = 4;
-
     }
 
     updateStr( str ) {
