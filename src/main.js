@@ -81,8 +81,12 @@ export default class VRUI {
             height: heightUnit
         };
 
+        this.inputObject = null;
+
         this._raycaster = new THREE.Raycaster( new THREE.Vector3(),
                                                 new THREE.Vector3() );
+
+        this._controllerRotation = new THREE.Matrix4();
 
         this._mouse = {
             coords: new THREE.Vector2( -1.0, -1.0 ),
@@ -97,6 +101,8 @@ export default class VRUI {
         this._state = {
             pressed: false
         };
+
+        this._update = this._updateVR;
 
     }
 
@@ -113,7 +119,7 @@ export default class VRUI {
         //this._raycaster.ray.origin.setFromMatrixPosition( controller.matrixWorld );
         //this._raycaster.ray.direction.set( 0, 0, -1 ).applyMatrix4( tempMatrix );
 
-        this._checkIntersection( this.root, this._state );
+        this._update();
 
     }
 
@@ -148,7 +154,6 @@ export default class VRUI {
         scene.add( this.root.group );
 
     }
-
 
     /**
      *
@@ -197,8 +202,9 @@ export default class VRUI {
         window.addEventListener( `mousedown`, this._mouse.down );
         window.addEventListener( `mouseup`, this._mouse.up );
 
-    }
+        this._update = this._updateMouse;
 
+    }
 
     /**
      *
@@ -213,12 +219,57 @@ export default class VRUI {
         window.removeEventListener( `mousedown`, this._mouse.down );
         window.removeEventListener( `mouseup`, this._mouse.up );
 
+        this._update = this._updateVR;
+
     }
 
-    _checkIntersection( mainLayout, state ) {
+    addInput( object ) {
+
+        if ( !( object instanceof THREE.Object3D ) ) {
+            let errorMsg = `input object is not a THREE.Object3D instance.`;
+            throw Error( `VRUI.addInput(): ` + errorMsg );
+        }
+
+        this.inputObject = object;
+
+    }
+
+    setPressed( trigger ) {
+
+        if ( this._mouse.enabled ) {
+            let warnMsg = `this method only works with input object.`;
+            console.warn( `VRUI.setPressed(): ` + warnMsg );
+            return;
+        }
+        this._state.pressed = trigger;
+
+    }
+
+    _updateMouse() {
 
         this._raycaster.setFromCamera( this._mouse.coords, this._mouse.camera );
-        return mainLayout._intersect( this._raycaster, state );
+        this.root._intersect( this._raycaster, this._state );
+
+    }
+
+    _updateVR() {
+
+        if ( !this.inputObject ) return;
+
+        this._state.pressed = this.inputObject.userData.vrui.pressed
+                                || this._state.pressed;
+
+        this._controllerRotation.identity().extractRotation(
+            this.inputObject.matrixWorld
+        );
+
+        this._raycaster.ray.origin.setFromMatrixPosition(
+            this.inputObject.matrixWorld
+        );
+        this._raycaster.ray.direction.set( 0, 0, -1 ).applyMatrix4(
+            this._controllerRotation
+        );
+        this.root._intersect( this._raycaster, this._state );
 
     }
 
