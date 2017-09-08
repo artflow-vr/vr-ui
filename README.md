@@ -28,7 +28,7 @@ let element = new Element(data, style);
 ```
 
 with `data` an **Object** of properties containing view or layout relative data. For instance:
-```
+```javascript
 let layout = new VRUI.layout.GridLayout({
     columns : 4,
     rows: 3
@@ -59,7 +59,7 @@ let button = new VRUI.view.ImageButton(arrowLeftTexture, {
         bottom: 0.08,
     },
     background: backgroundTexture
-})
+});
 
 let text = new VRUI.view.TextView({
     string: 'my string!',
@@ -75,8 +75,8 @@ let guiWidth = 0.5; // In Three.js units.
 let guiHeight = 0.5; // In Three.js units.
 
 let gui = new VRUI.VRUI(layout, guiWidth, guiHeight);
-optionUI.addToScene(scene); // Supposing 'scene' exist and is a THREE.Scene
-optionUI.refresh(); // Recompute the bounds of the UI.
+gui.addToScene(scene); // Supposing 'scene' exist and is a THREE.Scene
+gui.refresh(); // Recompute the bounds of the UI.
 
 ```
 
