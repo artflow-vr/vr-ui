@@ -53,14 +53,17 @@ export default class ElementView extends Element {
 
         this.listenTo = null;
 
+        this._initialColor = new THREE.Color();
+
         this._onHoverEnter = ( object ) => {
 
+            this._initialColor.copy( object.mesh.material.color );
             object.mesh.material.color.setHex( Colors.HIGHLIGHT );
 
         };
         this._onHoverExit = ( object ) => {
 
-            object.mesh.material.color.setHex( Colors.WHITE );
+            object.mesh.material.color.copy( this._initialColor );
 
         };
 
