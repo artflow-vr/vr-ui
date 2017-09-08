@@ -18,7 +18,67 @@ Every views added to the GUI is scaled and positionned relative to its parent. E
   <img width="350" src="layout-example.jpg">
 </p>
 
-To get more information, you can consult the [wiki](), or the multiple [examples](https://github.com/artflow-vr/vr-ui/tree/master/examples).
+To get more information, you can consult the [wiki](https://github.com/artflow-vr/vr-ui/wiki), or the multiple [examples](https://github.com/artflow-vr/vr-ui/tree/master/examples).
+
+### UI Element
+
+Every UI elements (layouts, views, ...) are createad like this:
+```javascript
+let element = new Element(data, style);
+```
+
+with `data` an **Object** of properties containing view or layout relative data. For instance:
+```
+let layout = new VRUI.layout.GridLayout({
+    columns : 4,
+    rows: 3
+}, {
+    background: 0x2c3e50
+});
+```
+Here, we create a **GridLayout**, with **4** columns and **3** rows (this data are only available in **GridLayout**), and with only a **background** property as a style.
+
+## Examples
+
+### Horizontal layout
+
+```javascript
+let layout = new VRUI.layout.HorizontalLayout({
+    height: 0.1,
+    margin: {
+        bottom: 0.1
+    }
+});
+
+let button = new VRUI.view.ImageButton(arrowLeftTexture, {
+    width: 0.1,
+    background: 0xFF0000,
+    position: 'left',
+    padding: {
+        top: 0.08,
+        bottom: 0.08,
+    },
+    background: backgroundTexture
+})
+
+let text = new VRUI.view.TextView({
+    string: 'my string!',
+    color: 0xFFFFFF
+}, {
+    height: 0.7,
+    position:'right',
+});
+
+layout.add(button, text);
+
+let guiWidth = 0.5; // In Three.js units.
+let guiHeight = 0.5; // In Three.js units.
+
+let gui = new VRUI.VRUI(layout, guiWidth, guiHeight);
+optionUI.addToScene(scene); // Supposing 'scene' exist and is a THREE.Scene
+optionUI.refresh(); // Recompute the bounds of the UI.
+
+```
 
 ## Build
 
@@ -46,7 +106,8 @@ In a nutshell, do not hesitate!
 
 ## TODO
 
-* [ ] Add helper to create in few lines a datgui like UI.
+* [ ] Remove `color` extra data, and add it as a style property
+* [ ] Add helper to create in few lines a datgui like UI
 * [ ] Add option to keep element aspect ratio
 * [ ] Add animation
 
