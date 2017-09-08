@@ -19,8 +19,14 @@
             let renderer;
             let textures = {};
 
+            // Mesh cursor displayed above the UI to show
+            // an highlight effect.
             let hoverCursor = null;
             let planeGeom = new THREE.PlaneGeometry( 1, 1 );
+
+            // Used to store the last object having the highlight cursor on it.
+            // It allows to change group easily.
+            let container = null;
 
             let textureLoader = new THREE.TextureLoader();
             textureLoader.setPath('assets/artflow-ui/');
@@ -28,22 +34,26 @@
             camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.1, 20 );
             camera.position.set(0, 0.0, 0.5);
 
-            renderer = new THREE.WebGLRenderer();
+            renderer = new THREE.WebGLRenderer({
+                antialias: true
+            });
             renderer.setSize( window.innerWidth, window.innerHeight );
-            renderer.setClearColor(0x2c3e50);
+            renderer.setClearColor(0x152021);
             document.body.appendChild( renderer.domElement );
 
             scene = new THREE.Scene();
 
-            let gui = null;
+            let homeUI = null;
+            let optionUI = null;
             load();
 
             animate();
             function animate() {
 
-                if (gui) {
-                    gui.update();
-                }
+                if (homeUI) homeUI.update();
+                if (optionUI) optionUI.update();
+
+                //gui.root.group.rotateY(0.008);
                 renderer.render( scene, camera );
                 requestAnimationFrame( animate );
 
@@ -56,6 +66,10 @@
                 promises.push(loadTexture('button-background', '.png'));
                 promises.push(loadTexture('button_hover', '.png'));
                 promises.push(loadTexture('arrow-icon', '.png'));
+                promises.push(loadTexture('home-icon', '.png'));
+                promises.push(loadTexture('slider-background', '.png'));
+                promises.push(loadTexture('slider-button', '.png'));
+                promises.push(loadTexture('check', '.png'));
                 promises.push(loadTexture('tools/brush-icon', '.png'));
                 promises.push(loadTexture('tools/particles-icon', '.png'));
                 promises.push(loadTexture('tools/tree-icon', '.png'));
@@ -63,13 +77,254 @@
       
                 Promise.all(promises).then(function() {
 
-                    setupGUI();
+                    homeUI = createHomeUI();
+                    optionUI = createOptionUI();
 
                 });
                 
             }
 
-            function setupGUI() {
+            function loadTexture(file, ext) {
+
+                return new Promise( function ( resolve ) {
+
+                    textureLoader.load(file + ext, function(tex) {
+                    
+                        tex.generateMipmap = false;
+                        tex.minFilter = THREE.LinearFilter;
+                        tex.maxFilter = THREE.LinearFilter;
+                        tex.needsUpdate = true;
+
+                        textures[file] = tex;
+                        resolve();
+
+                    });
+
+                });
+
+            }
+
+            /*
+                Creates an option page, used in ArtFlow to change tool
+                properties.
+            */
+            function createOptionUI() {
+
+                let guiWidth = 0.5; // In Three.js units.
+                let guiHeight = 0.5; // In Three.js units.
+
+                function createRow(str, isSlider) {
+
+                    let layout = new VRUI.layout.HorizontalLayout({
+                        height: 0.1,
+                        margin: {
+                            bottom: 0.1
+                        }
+                    });
+
+                    let elt = null;
+                    if (!isSlider) {
+                        elt = new VRUI.view.CheckboxView({
+                            empty: textures['button-background'],
+                            check: textures.check
+                        }, {
+                            width: 0.08,
+                            height: 0.7,
+                            position: 'left'
+                        }).onChange((object, data) => {
+                            console.log(data);
+                        });
+                        elt.checkMesh.scale.multiplyScalar(0.85);
+                    } else {
+                        elt = new VRUI.view.SliderView({
+                            background: textures['slider-background'],
+                            handle: textures['slider-button']
+                        }, {
+                            width: 0.5,
+                            position:'left'
+                        })
+                    }
+
+                    let text = new VRUI.view.TextView({
+                        string: str,
+                        color: 0xFFFFFF
+                    }, {
+                        width: 0.5,
+                        height: 0.7,
+                        position:'left',
+                    });
+
+                    layout.add(text, elt);
+                    return layout;
+
+                }
+
+                let layout = new VRUI.layout.VerticalLayout({
+                    background: textures.background,
+                    padding: {
+                        top: 0.05,
+                        left: 0.08,
+                        right: 0.08,
+                        bottom: 0.05
+                    },
+                });
+
+                layout.add(createRow('enabled'), createRow('size', true));
+
+                let optionUI = new VRUI.VRUI(layout, guiWidth, guiHeight);
+                optionUI.enableMouse(camera, renderer);
+                optionUI.addToScene(scene);
+                optionUI.refresh();
+                optionUI.root.group.rotateY(0.0);
+
+                optionUI.root.group.position.x = 0.2;
+                return optionUI;
+
+            }
+
+            /*
+                Creates the ArtFlow main UI page, listing every tools.
+            */
+            function createHomeUI() {
+
+                /**
+                 * Creates grid of buttons, behaving like this:
+                 * [[tool1]  [tool2]   [tool3]   [tool4]]
+                 * [[tool5]  [tool6]   [tool7]   [tool8]]
+                 * [[tool9]  [tool10]  [tool11]  [tool12]]
+                 */
+                function createGrid() {
+
+                    let gridLayout = new VRUI.layout.GridLayout({
+                        columns: 4,
+                        rows: 3,
+                        hSpace: 0.00,
+                        vSpace: 0.0,
+                    }, {
+                        height: 0.8,
+                        position: 'left',
+                        padding: {
+                            left: 0.1,
+                            right: 0.1,
+                            top: 0.1,
+                            bottom: 0.1
+                        }
+                    });
+
+                    for (let tex of ['brush-icon', 'particles-icon', 'tree-icon', 'water-icon']) {
+                        let textID = 'tools/' + tex;
+                        let button = new VRUI.view.ImageButton(textures[textID], {
+                            width: 0.75,
+                            height: 0.7,
+                            padding: {
+                                top: 0.1,
+                                bottom: 0.1,
+                                left: 0.1,
+                                right: 0.1
+                            },
+                            background: textures['button-background']
+                        }).onHoverEnter(buttonHover).onHoverExit(buttonHoverExit);
+
+                        gridLayout.add(button);
+
+                    }
+
+                    return gridLayout;
+
+                }
+
+                /**
+                 * Creates bottom bar, behaving like this:
+                 * [(arrow-left)     (arrow-right)] 
+                 */
+                function createBottom() {
+
+                    let arrowRightTexture = textures['arrow-icon'];
+                    let arrowLeftTexture = arrowRightTexture.clone();
+                    arrowLeftTexture.needsUpdate = true;
+                    arrowLeftTexture.wrapS = THREE.RepeatWrapping;
+                    arrowLeftTexture.repeat.x = - 1;
+
+                    let layout = new VRUI.layout.HorizontalLayout({
+                        height: 0.2,
+                        background: null,
+                        align: 'bottom'
+                    });
+
+                    let leftArrow = new VRUI.view.ImageButton(arrowLeftTexture, {
+                        width: 0.1,
+                        height: 0.45,
+                        background: 0xFF0000,
+                        position: 'left',
+                        margin: {
+                            left: 0.1
+                        },
+                        padding: {
+                            top: 0.08,
+                            bottom: 0.08,
+                            left: 0.01,
+                            right: 0.01,
+                        },
+                        background: textures['button-background']
+                    }).onHoverEnter(buttonHover).onHoverExit(buttonHoverExit);
+                    let rightArrow = new VRUI.view.ImageButton(arrowRightTexture, {
+                        width: 0.1,
+                        height: 0.45,
+                        background: 0xFF0000,
+                        position: 'right',
+                        margin: {
+                            right: 0.1
+                        },
+                        padding: {
+                            top: 0.08,
+                            bottom: 0.08,
+                            left: 0.01,
+                            right: 0.01,
+                        },
+                        background: textures['button-background']
+                    }).onHoverEnter(buttonHover).onHoverExit(buttonHoverExit);
+
+                    layout.add(leftArrow, rightArrow);
+                    return layout;
+
+                }
+
+                function buttonHover(object) {
+
+                    let width = object._background.scale.x;
+                    let height = object._background.scale.y;
+
+                    object.userData.previousScale = {
+                        x: object.group.scale.x, y: object.group.scale.y
+                    };
+
+                    object.group.scale.x *= 1.2;
+                    object.group.scale.y *= 1.2;
+
+                    hoverCursor.scale.x = width;
+                    hoverCursor.scale.y = height;
+
+                    let position = object.group.position;
+                    hoverCursor.position.x = width / 2;
+                    hoverCursor.position.y = - height * 0.5;
+                    hoverCursor.position.z = position.z + 0.001;
+
+                    hoverCursor.material.visible = true;
+
+                    if (container != null) container.group.children.pop();
+                    object.group.add(hoverCursor);
+
+                    container = object;
+
+                }
+
+                function buttonHoverExit(object) {
+
+                    hoverCursor.material.visible = false;
+                    object.group.scale.x = object.userData.previousScale.x;
+                    object.group.scale.y = object.userData.previousScale.y;
+
+                }
 
                 hoverCursor = new THREE.Mesh(planeGeom, new THREE.MeshBasicMaterial( {
                     color: 0xFFFFFF,
@@ -78,6 +333,7 @@
                     map: textures['button_hover'],
                     visible: false
                 } ));
+                scene.add(hoverCursor);
 
                 let guiWidth = 0.5; // In Three.js units.
                 let guiHeight = 0.5; // In Three.js units.
@@ -89,79 +345,25 @@
                     },
                 });
 
-                let gridLayout = new VRUI.layout.GridLayout({
-                    columns: 4,
-                    rows: 3,
-                    hSpace: 0.03,
-                    vSpace: 0.1
-                }, {
-                    height: 0.9
-                });
-                for (let tex of ['brush-icon', 'particles-icon', 'tree-icon', 'water-icon']) {
-                    let textID = 'tools/' + tex;
-                    let button = new VRUI.view.ImageButton(textures[textID], {
-                        width: 0.85,
-                        height: 0.85,
-                        padding: {
-                            top: 0.1,
-                            bottom: 0.1,
-                            left: 0.1,
-                            right: 0.1
-                        },
-                        background: textures['button-background']
-                    }).onHoverEnter(function() {
+                let grid = createGrid();
+                layout.add(grid, createBottom());
 
-                        let width = button._background.scale.x;
-                        let height = button._background.scale.y
+                homeUI = new VRUI.VRUI(layout, guiWidth, guiHeight);
+                //gui.root.group.rotateY(1.0);
+                homeUI.enableMouse(camera, renderer);
 
-                        hoverCursor.scale.x = width;
-                        hoverCursor.scale.y = height;
-                        hoverCursor.scale.z = button._background.scale.z;
+                homeUI.addToScene(scene); // Adds the gui to the THREE.Scene elt.
 
-                        hoverCursor.position.x = button.group.position.x + width / 2;
-                        hoverCursor.position.y = button.group.position.y - height / 2;
-                        hoverCursor.position.z = button.group.position.z + 0.001;
-
-                        hoverCursor.material.visible = true;
-
-                    }).onHoverExit(function () {
-                        hoverCursor.material.visible = false;
-                    });
-
-                    gridLayout.add(button);
-
-                }
-                
-                gridLayout.group.add(hoverCursor);
-                layout.add(gridLayout);
-
-                gui = new VRUI.VRUI(layout, guiWidth, guiHeight);
-                //gui.root.group.rotateY(1.4);
-                gui.enableMouse(camera, renderer);
-                
-                gui.addToScene(scene); // Adds the gui to the THREE.Scene elt.
-                
                 // Do not omit the line below, it will compute the bounds
                 // of the entire gui. Each time you make some changes, you
                 // have to call it. It could possibly be costly, according
                 // to how complex is the UI, so do not call it if not necessary.
-                gui.refresh();
+                homeUI.refresh();
 
-            }
+                homeUI.root.group.position.x = - 0.5;
 
-            function loadTexture(file, ext) {
+                return homeUI;
 
-                return new Promise( function ( resolve ) {
-                    
-                    textureLoader.load(file + ext, function(tex) {
-                    
-                        textures[file] = tex;
-                        resolve();                        
-
-                    });
-
-                });
-                
             }
 
             // Registers global events

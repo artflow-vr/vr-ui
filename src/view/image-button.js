@@ -25,99 +25,29 @@
 * SOFTWARE.
 */
 
-import ButtonView from './button-view';
+import ElementView from './element-view';
 import { PLANE_GEOM } from '../utils/geometry-factory';
-import { IMAGE_DEFAULT } from '../utils/material-factory';
+import { MaterialFactory, createMaterial } from '../utils/material';
 
-import * as Colors from '../utils/colors';
+export default class ImageButton extends ElementView {
 
-export default class ImageButton extends ButtonView {
+    constructor( imgOrMatOrColor, style ) {
 
-    constructor( imageOrMaterial, style ) {
-
-        super( style );
-
-        if ( !imageOrMaterial ) {
+        if ( !imgOrMatOrColor ) {
             let errorMsg = `you did not provide any texture.`;
-            throw Error( `ButtonView.ctor(): ` + errorMsg );
+            throw Error( `ImageButton.ctor(): ` + errorMsg );
         }
 
-        let material = null;
+        let material = createMaterial( imgOrMatOrColor, MaterialFactory.IMAGE_DEFAULT );
 
-        if ( imageOrMaterial.constructor === THREE.Texture ) {
-            material = IMAGE_DEFAULT.clone();
-            material.map = imageOrMaterial;
-        } else if ( imageOrMaterial instanceof THREE.Material ) {
-            material = imageOrMaterial.clone();
-        } else {
-            let errorMsg = `the provided image is neither a THREE.Texture, `;
-            errorMsg += `nor a THREE.Material object.`;
-            throw Error( `ButtonView.ctor(): ` + errorMsg );
-        }
-
-        this.image = new THREE.Mesh( PLANE_GEOM, material );
-        this.image.position.z = 0.001; // prevents z-fighting
-        this.group.add( this.image );
-
-        this._onHoverEnter = () => {
-            // Changes color on highlight
-            this.image.material.color.setHex( Colors.HIGHLIGHT );
-        };
-        this._onHoverExit = () => {
-            this.image.material.color.setHex( Colors.WHITE );
-        };
+        super( new THREE.Mesh( PLANE_GEOM, material ), style );
+        this.type = `button`;
 
     }
 
-    refresh( maxEltWidth, maxEltHeight ) {
+    clone( imgOrMatOrColor ) {
 
-        super.refresh( maxEltWidth, maxEltHeight );
-
-        let dimensions = this._dimensions;
-        let padding = dimensions.padding;
-
-        let width = dimensions.width;
-        let height = dimensions.height;
-
-        let newWidth = width - ( padding.left + padding.right );
-        let newHeight = height - ( padding.top + padding.bottom );
-
-        this.image.scale.x = newWidth;
-        this.image.scale.y = newHeight;
-        this.image.position.x += newWidth / 2 + padding.left;
-        this.image.position.y -= newHeight / 2 + padding.top;
-
-    }
-
-    clone() {
-
-        return new ImageButton( this.image.material, this.style );
-
-    }
-
-    _forceExit() {
-        this.pressed = false;
-        //this._onHoverExit();
-    }
-
-    _intersect( raycaster, state ) {
-
-        if ( !state.pressed && this.pressed ) {
-            this.pressed = false;
-            if ( this._onChange ) this._onChange( { pressed: this.pressed } );
-        }
-
-        if ( !this._checkHover( raycaster, this.image,
-                                this._onHoverEnter, this._onHoverExit ) ) {
-            return false;
-        }
-
-        if ( state.pressed && !this.pressed ) {
-            this.pressed = true;
-            if ( this._onChange ) this._onChange( { pressed: this.pressed } );
-        }
-
-        return true;
+        return new ImageButton( imgOrMatOrColor || this.mesh.material, this.style );
 
     }
 

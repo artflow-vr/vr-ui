@@ -25,27 +25,44 @@
 * SOFTWARE.
 */
 
-import * as Colors from './colors';
+import ElementView from './element-view';
+import createText from '../helper/text';
 
-export const MAT_USELESS = new THREE.MeshBasicMaterial( {
-    color: Colors.WHITE,
-    visible: false
-} );
+import {
+    checkAndClone,
+    IS_INSTANCE_OF
+} from '../utils/property-check';
 
-export const MAT_DEFAULT = new THREE.MeshBasicMaterial( {
-    color: Colors.WHITE,
-    transparent: true,
-    opacity: 1.0
-} );
+let PROP_TO_CHECK = {
+    string: { "data": [`string`], "function": IS_INSTANCE_OF },
+    color: { "data": [ `number`], "function": IS_INSTANCE_OF }
+};
 
-export const IMAGE_DEFAULT = new THREE.MeshBasicMaterial( {
-    color: Colors.WHITE,
-    alphaTest : 0.01,
-    transparent : false
-} );
+export default class TextView extends ElementView {
 
-export const BACK_DEFAULT = new THREE.MeshBasicMaterial( {
-    color: Colors.WHITE,
-    depthWrite: false,
-    transparent : true
-} );
+    constructor( data, style ) {
+
+        if ( !data || data.string === undefined || data.string === null ) {
+            let errorMsg = `provided string is null or undefined.`;
+            throw Error( `TextView: ctor(): ` + errorMsg );
+        }
+
+        let userData = {};
+        checkAndClone( data, PROP_TO_CHECK, userData );
+
+        super( createText( userData.string, userData.color ), style );
+
+        this.data = userData;
+        this.type = `text`;
+        this.text = this.data.string;
+
+    }
+
+    updateStr( str ) {
+
+        this.text = str;
+        this.textMesh.geometry.update( str );
+
+    }
+
+}

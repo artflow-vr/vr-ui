@@ -52,36 +52,88 @@ export default class GridLayout extends AbstractLayout {
 
         let dimensions = this._dimensions;
 
-        let maxEltWidth = ( dimensions.width ) / this.nbColumns;
-        let maxEltHeight = ( dimensions.height ) / this.nbRows;
+        let padRel = {
+            top: dimensions.padding.top * dimensions.height,
+            bottom: dimensions.padding.bottom * dimensions.height,
+            left: dimensions.padding.left * dimensions.width,
+            right: dimensions.padding.right * dimensions.width
+        };
 
-        let hSpaceRel = this.hSpace * dimensions.width;
-        let vSpaceRel = this.vSpace * dimensions.height;
+        /*
+            _dimensions.width_
+            |                |
+            |  padded_width  |
+            |  |__|___|__|   |
+            |  |__|___|__|   |
+            |  |__|___|__|   |
+            |________________|
+        */
 
+        // Computes bounds by adding padding to the whole grid.
+        // The new width is the total width witout the padding width,
+        // The new height is the total height witout the padding height.
+        let paddedWidth = dimensions.width - ( padRel.left + padRel.right );
+        let paddedHeight = dimensions.height - ( padRel.top + padRel.bottom );
+
+        // Computes the maximum size occupied by each element,
+        // without spacing.
+        let maxEltWidth = paddedWidth / this.nbColumns;
+        let maxEltHeight = paddedHeight / this.nbRows;
+
+        // Computes the space between each element, in world units.
+        let hSpaceRel = this.hSpace * paddedWidth;
+        let vSpaceRel = this.vSpace * paddedHeight;
+
+        // Computes the maximum size occupied by each element,
+        // in world units.
         let maxWidthRel = maxEltWidth - hSpaceRel;
         let maxHeightRel = maxEltHeight - vSpaceRel;
 
         hSpaceRel /= 2.0;
         vSpaceRel /= 2.0;
 
-        let xOffset = hSpaceRel;
-        let yOffset = - vSpaceRel;
+        let offset = {
+            x: hSpaceRel + ( dimensions.halfW - paddedWidth * 0.5 )
+                                                + padRel.left - padRel.right,
+            y: - vSpaceRel - ( dimensions.halfH - paddedHeight * 0.5 )
+                                                    + padRel.bottom - padRel.top
+        };
+
         for ( let i = 0; i < this._elements.length; ++i ) {
             let elt = this._elements[ i ];
             elt.refresh( maxWidthRel, maxHeightRel );
+            let eltDim = elt._dimensions;
 
             let colIDX = i % this.nbColumns;
             if ( colIDX === 0 && i !== 0 ) {
-                xOffset = this.group.position.x + hSpaceRel;
-                yOffset -= maxHeightRel + vSpaceRel;
+                offset.x = this.group.position.x + hSpaceRel;
+                offset.y -= maxHeightRel + vSpaceRel;
             }
 
-            xOffset += hSpaceRel;
+            switch ( elt.style.position ) {
+                case `right`:
+                    elt.group.position.x = maxWidthRel - eltDim.width;
+                    break;
+                case `center`:
+                    elt.group.position.x = ( maxWidthRel / 2.0 ) - eltDim.halfW;
+                    break;
+            }
 
-            elt.group.position.x = xOffset;
-            elt.group.position.y = yOffset;
+            switch ( elt.style.align ) {
+                case `bottom`:
+                    elt.group.position.y = - maxEltHeight + eltDim.height;
+                    break;
+                case `center`:
+                    elt.group.position.y = - ( maxEltHeight / 2 ) + eltDim.halfH;
+                    break;
+            }
 
-            xOffset += maxWidthRel + hSpaceRel;
+            offset.x += hSpaceRel;
+
+            elt.group.position.x += offset.x;
+            elt.group.position.y += offset.y;
+
+            offset.x += maxWidthRel + hSpaceRel;
         }
 
     }

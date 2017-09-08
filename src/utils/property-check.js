@@ -25,8 +25,10 @@
 * SOFTWARE.
 */
 
-let checkFloatInRange = ( min, max, propID, value ) => {
+let IS_IN_RANGE = ( data, propID, value ) => {
 
+    let min = data[ 0 ];
+    let max = data[ 1 ];
     if ( value < min || value > max ) {
         let errorMsg = `Element property ${propID} should be in the range `;
         errorMsg += `[${min}, ${max}]`;
@@ -38,11 +40,11 @@ let checkFloatInRange = ( min, max, propID, value ) => {
 
 };
 
-let checkStringInList = ( list, propID, value ) => {
+let IS_IN_LIST = ( data, propID, value ) => {
 
-    if ( !list.includes( value ) ) {
+    if ( !data.includes( value ) ) {
         let errorMsg = `Element property ${propID} should have one of the `;
-        errorMsg += `following values: ` + list.toString();
+        errorMsg += `following values: ` + data.toString();
         console.error( errorMsg );
         return false;
     }
@@ -51,12 +53,13 @@ let checkStringInList = ( list, propID, value ) => {
 
 };
 
-let checkInstanceOf = ( list, propID, value ) => {
+let IS_INSTANCE_OF = ( data, propID, value ) => {
 
     if ( !value ) return true;
 
-    for ( let Type of list ) {
-        if ( ( Type === `number` && !isNaN( value ) ) || value instanceof Type )
+    for ( let Type of data ) {
+        if ( ( Type === `number` && !isNaN( value ) )
+            || ( Type === `string` && typeof value === Type ) || value instanceof Type )
             return true;
     }
 
@@ -67,45 +70,62 @@ let checkInstanceOf = ( list, propID, value ) => {
 
 };
 
-let PROP_CHECK = {
-    width: checkFloatInRange.bind( 0.0, 1.0 ),
-    height: checkFloatInRange.bind( 0.0, 1.0 ),
-    depth: checkFloatInRange.bind( 0.0, 1.0 ),
-    padding: {
-        top: checkFloatInRange.bind( 0.0, 0.49 ),
-        bottom: checkFloatInRange.bind( 0.0, 0.49 ),
-        left: checkFloatInRange.bind( 0.0, 0.49 ),
-        right: checkFloatInRange.bind( 0.0, 0.49 )
-    },
-    margin: {
-        top: checkFloatInRange.bind( 0.0, 0.49 ),
-        bottom: checkFloatInRange.bind( 0.0, 0.49 ),
-        left: checkFloatInRange.bind( 0.0, 0.49 ),
-        right: checkFloatInRange.bind( 0.0, 0.49 )
-    },
-    position: checkStringInList.bind( null, [`left`, `right`, `top`, `bottom`, `center`] ),
-    background: checkInstanceOf.bind( null, [THREE.Material, THREE.Texture, `number`] )
+let checkTerminalProp = ( obj, expected, propID ) => {
+
+    let callback = expected[ propID ].function;
+    let data = expected[ propID ].data;
+
+    if ( !callback( data, propID, obj[ propID ] ) ) return false;
+
+    return true;
+
 };
 
-export default function checkProperty( propID, value, checkList = PROP_CHECK ) {
+let OBJ_CTOR = {}.constructor;
 
-    let property = checkList[ propID ];
+let checkAndClone = ( obj, expected, result ) => {
 
-    if ( !property ) {
-        let warnMsg = `property ${propID} is not recognized. Please take a `;
-        warnMsg += `look at the documentation to see the complete set.`;
-        console.warn( `checkProperty(): ` + warnMsg );
-        return false;
-    }
-
-    if ( typeof property === `object` ) {
-        for ( let k in property ) {
-            if ( !checkProperty( k, value[ k ], checkList[ propID ] ) )
-                return false;
+    for ( let k in obj ) {
+        let val = expected[ k ];
+        if ( !val ) {
+            let warnMsg = `property ${k} is not recognized. Please take a `;
+            warnMsg += `look at the documentation to see the complete set.`;
+            console.warn( `check(): ` + warnMsg );
+            continue;
         }
-        return true;
+        if ( obj[ k ] && obj[ k ].constructor === OBJ_CTOR ) {
+            if ( !result[ k ] ) result[ k ] = {};
+            checkAndClone( obj[ k ], expected[ k ], result[ k ] );
+            continue;
+        }
+
+        if ( !checkTerminalProp( obj, expected, k ) ) continue;
+
+        result[ k ] = obj[ k ];
     }
 
-    return property( propID, value );
+};
 
-}
+let setUndefinedProps = ( obj, result ) => {
+
+    for ( let k in obj ) {
+        let val = obj[ k ];
+        if ( !result[ k ] && val && val.constructor === OBJ_CTOR )
+            result[ k ] = {};
+
+        if ( val && val.constructor === OBJ_CTOR ) {
+            setUndefinedProps( val, result[ k ] );
+            continue;
+        }
+        if ( !result[ k ] ) result[ k ] = obj[ k ];
+    }
+
+};
+
+export {
+    IS_IN_RANGE,
+    IS_IN_LIST,
+    IS_INSTANCE_OF,
+    checkAndClone,
+    setUndefinedProps
+};

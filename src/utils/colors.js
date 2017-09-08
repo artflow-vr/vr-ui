@@ -28,3 +28,10 @@
 export const WHITE = 0xFFFFFF;
 export const DEFAULT = 0x2C3E50;
 export const HIGHLIGHT = 0x3498db;
+export const WHITE_LIGHT = 0xECF0F1;
+
+export const BACK_CHECKBOX = DEFAULT;
+export const MARK_CHECKBOX = WHITE_LIGHT;
+
+export const BACK_SLIDER = DEFAULT;
+export const HANDLER_SLIDER = DEFAULT;

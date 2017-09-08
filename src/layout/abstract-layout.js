@@ -44,11 +44,12 @@ export default class AbstractLayout extends Element {
     constructor( style ) {
 
         super( style );
+
         this._elements = [];
 
         this._onHoverExitWrapper = () => {
 
-            if ( this._onHoverExit ) this._onHoverExit();
+            if ( this._onHoverExit ) this._onHoverExit( this );
 
             this._forceExit();
 
@@ -87,6 +88,7 @@ export default class AbstractLayout extends Element {
         this._elements.push( element );
         // Gross hack allowing to keep a simple _refreshLayout method.
         element._parentDimensions = this._dimensions;
+        element.parent = this;
 
         // Builds Three.js scene graph when building the VRUI custom
         // layouts / views hierarchy.
@@ -96,10 +98,16 @@ export default class AbstractLayout extends Element {
 
     _forceExit() {
 
+        if ( !this.hover ) return;
+
         for ( let elt of this._elements ) {
-            if ( elt._forceExit ) elt._forceExit();
+            if ( elt._forceExit ) {
+                elt._forceExit();
+                if ( elt._onHoverExit ) elt._onHoverExit( elt );
+            }
             elt.hover = false;
         }
+        this.hover = false;
 
     }
 

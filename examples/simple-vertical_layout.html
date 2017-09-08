@@ -58,12 +58,14 @@
                 let guiHeight = 0.26; // In Three.js units.
 
                 let layout = new VRUI.layout.VerticalLayout({
-                    background: {
-                        material: null
-                    }
+                    background: 0xFF0000,
+                    width: 0.5
+                });
+                layout.set({
+                    background: 0xFFFFFF
                 });
 
-                let button1 = new VRUI.view.ImageButton(texture, {
+                let button1 = new VRUI.view.ImageButton(0x00FF00, {
                     height: 0.5,
                     width: 0.5,
                 }).onChange(function(state) {
@@ -72,7 +74,7 @@
                     else
                         console.log('Button1 has been released!')
                 });
-                let button2 = button1.clone().onChange(function(state) {
+                let button2 = button1.clone(0x0000FF).onChange(function(state) {
                     if (state.pressed)
                         console.log('Button2 has been clicked!')
                     else

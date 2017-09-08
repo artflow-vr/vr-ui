@@ -26,9 +26,30 @@
 */
 
 import { PLANE_GEOM } from './utils/geometry-factory';
-import { MAT_DEFAULT, BACK_DEFAULT, MAT_USELESS } from './utils/material-factory';
+import { MaterialFactory, createMaterial } from './utils/material';
 
-import checkProperty from './utils/property-check';
+import { checkAndClone, IS_IN_RANGE, IS_IN_LIST, IS_INSTANCE_OF } from './utils/property-check';
+
+let PROP_TO_CHECK = {
+    width: { "data": [0.0, 1.0], "function": IS_IN_RANGE },
+    height: { "data": [0.0, 1.0], "function": IS_IN_RANGE },
+    depth: { "data": [0.0, 1.0], "function": IS_IN_RANGE },
+    padding: {
+        top: { "data": [0.0, 0.49], "function": IS_IN_RANGE },
+        bottom: { "data": [0.0, 0.49], "function": IS_IN_RANGE },
+        left: { "data": [0.0, 0.49], "function": IS_IN_RANGE },
+        right: { "data": [0.0, 0.49], "function": IS_IN_RANGE }
+    },
+    margin: {
+        top: { "data": [0.0, 0.49], "function": IS_IN_RANGE },
+        bottom: { "data": [0.0, 0.49], "function": IS_IN_RANGE },
+        left: { "data": [0.0, 0.49], "function": IS_IN_RANGE },
+        right: { "data": [0.0, 0.49], "function": IS_IN_RANGE }
+    },
+    position: { "data": [`left`, `right`, `center`], "function": IS_IN_LIST },
+    align: { "data": [`top`, `bottom`, `center`], "function": IS_IN_LIST },
+    background: { "data": [THREE.Material, THREE.Texture, `number`], "function": IS_INSTANCE_OF }
+};
 
 const PROP_TO = {
     background: `_updateBackground`
@@ -51,9 +72,17 @@ export default class Element {
      */
     constructor( style ) {
 
+        // The 'type' variable is useful to make some special checks
+        // according to the element we are in. It avoids to make call
+        // to instance of.
+        this.type = `element`;
+
         this.group = new THREE.Group();
         this.group.position.z = 0.001; // prevents z-fighting
         this.group.userData.element = this;
+
+        // Reference to parent.
+        this.parent = null;
 
         this.hover = false;
 
@@ -70,7 +99,7 @@ export default class Element {
 
         // Creates the background of the element. By default, the background
         // is invisible and is only used to check intersection.
-        this._background = new THREE.Mesh( PLANE_GEOM, MAT_USELESS );
+        this._background = new THREE.Mesh( PLANE_GEOM, MaterialFactory.MAT_USELESS );
         this._background.position.z = - 0.001; // prevents z-fighting
         this.group.add( this._background );
 
@@ -79,6 +108,8 @@ export default class Element {
         this._onHoverEnter = null;
         this._onHoverExit = null;
         this._onChange = null;
+
+        this._lastIntersect = null;
 
         this.style = {};
         if ( style ) this.set( style );
@@ -90,8 +121,13 @@ export default class Element {
             padding: { top: 0.0, bottom: 0.0, left: 0.0, right: 0.0 },
             margin: { top: 0.0, bottom: 0.0, left: 0.0, right: 0.0 },
             position: `center`,
+            align: `top`,
             background: null
         }, this.style );
+
+        // Custom objects allowing users to save data in element,
+        // without interfering with the library internals.
+        this.userData = {};
 
     }
 
@@ -147,15 +183,9 @@ export default class Element {
      */
     set( style ) {
 
-        for ( let k in style ) {
-            if ( checkProperty( k, style[ k ] ) ) {
-                this.style[ k ] = style[ k ];
-                if ( PROP_TO[ k ] ) {
-                    let methodName = PROP_TO[ k ];
-                    this[ methodName ]( style[ k ] );
-                }
-            }
-        }
+        checkAndClone( style, PROP_TO_CHECK, this.style );
+        for ( let k in style )
+            if ( PROP_TO[ k ] ) this[ PROP_TO[ k ] ]( style[ k ] );
 
     }
 
@@ -175,17 +205,19 @@ export default class Element {
      */
     _checkHover( raycaster, object, onHoverEnter, onHoverExit ) {
 
-        let objs = raycaster.intersectObject( object, false );
-        if ( objs.length === 0 ) {
+        let obj = raycaster.intersectObject( object, false );
+        if ( obj.length === 0 ) {
             if ( this.hover ) {
                 this.hover = false;
-                if ( onHoverExit ) onHoverExit();
+                if ( onHoverExit ) onHoverExit( this );
             }
             return false;
         }
 
+        this._lastIntersect = obj[ 0 ];
+        //console.log( this._lastIntersect );
         if ( !this.hover ) {
-            if ( onHoverEnter ) onHoverEnter();
+            if ( onHoverEnter ) onHoverEnter( this );
             this.hover = true;
         }
 
@@ -239,22 +271,12 @@ export default class Element {
     _updateBackground( background ) {
 
         if ( !background ) {
-            this._background.material = BACK_DEFAULT.clone();
+            this._background.material = MaterialFactory.BACK_DEFAULT.clone();
             this._background.material.visible = false;
             return;
         }
 
-        let material = null;
-        if ( background.constructor === THREE.Texture ) {
-            material = BACK_DEFAULT.clone();
-            material.map = background;
-        } else if ( background instanceof THREE.Material )
-            material = background.clone();
-        else {
-            material = BACK_DEFAULT.clone();
-            material.depthWrite = true;
-            material.color.setHex( background );
-        }
+        let material = createMaterial( background, MaterialFactory.BACK_DEFAULT );
 
         this._background.material = material;
         this._background.visible = true;
@@ -266,6 +288,10 @@ export default class Element {
         for ( let k in style ) {
             let element = style[ k ];
             if ( typeof element === `object` ) {
+                if ( !element ) {
+                    writeTo[ k ] = null;
+                    continue;
+                }
                 if ( !( k in writeTo ) ) writeTo[ k ] = {};
                 this._setStyleForUndefined( element, writeTo[ k ] );
             } else if ( !( k in writeTo ) ) {
