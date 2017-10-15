@@ -33,6 +33,7 @@ import { checkAndClone, IS_IN_RANGE, IS_IN_LIST, IS_INSTANCE_OF } from './utils/
 let PROP_TO_CHECK = {
     width: { "data": [0.0, 1.0], "function": IS_IN_RANGE },
     height: { "data": [0.0, 1.0], "function": IS_IN_RANGE },
+    aspectRatio: { "data": [0.0, 100.0], "function": IS_IN_RANGE },
     depth: { "data": [0.0, 1.0], "function": IS_IN_RANGE },
     padding: {
         top: { "data": [0.0, 0.49], "function": IS_IN_RANGE },
@@ -65,7 +66,7 @@ const PROP_TO = {
 export default class Element {
 
     /**
-     * Creates an instance of Element. An elment can be added to any layout.
+     * Creates an instance of Element. An element can be added to any layout.
      *
      * @param {Object} [style] - Style properties. e.g: { width: 1.0, ... }
      * @memberof Element
@@ -115,8 +116,6 @@ export default class Element {
         if ( style ) this.set( style );
 
         this._setStyleForUndefined( {
-            width: 1.0,
-            height: 1.0,
             depth: 0.0,
             padding: { top: 0.0, bottom: 0.0, left: 0.0, right: 0.0 },
             margin: { top: 0.0, bottom: 0.0, left: 0.0, right: 0.0 },
@@ -240,10 +239,28 @@ export default class Element {
         let maxWidth = maxEltWidth || this._parentDimensions.width;
         let maxHeight = maxEltHeight || this._parentDimensions.height;
 
+        let style = this.style;
         let dimensions = this._dimensions;
 
-        dimensions.width = this.style.width * maxWidth;
-        dimensions.height = this.style.height * maxHeight;
+        if ( style.aspectRatio && !style.width && !style.height ) {
+            style.width = 1.0;
+            style.height = 1.0;
+
+            let warnMsg = `aspectRatio provided, but missing`;
+            warnMsg = ` width or height properties.`;
+            console.warn( `Element.refresh(): ` + warnMsg );
+        }
+
+        dimensions.width = null;
+        dimensions.height = null;
+        if ( style.aspectRatio ) {
+            if ( style.width )
+                dimensions.height = style.aspectRatio * style.width * maxWidth;
+            else
+                dimensions.width = style.aspectRatio * style.height * maxHeight;
+        }
+        dimensions.width = dimensions.width || ( ( style.width || 1.0 ) * maxWidth );
+        dimensions.height = dimensions.height || ( ( style.height || 1.0 ) * maxHeight );
         dimensions.halfW = dimensions.width / 2.0;
         dimensions.halfH = dimensions.height / 2.0;
 

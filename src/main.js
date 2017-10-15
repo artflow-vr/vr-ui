@@ -46,7 +46,7 @@ export default class VRUI {
      * @param {number} [depthUnit=0.0] - Depth in Three.js units.
      * @memberof VRUI
      */
-    constructor( root, widthUnit, heightUnit, depthUnit = 0.0 ) {
+    constructor( root, widthUnit, heightUnit ) {
 
         if ( !widthUnit || widthUnit <= 0 ) {
             let errorMsg = `parent layout should have a width specified `;
