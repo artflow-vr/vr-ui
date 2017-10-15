@@ -110,6 +110,8 @@ In a nutshell, do not hesitate!
 * [ ] Add helper to create in few lines a datgui like UI
 * [ ] Add option to keep element aspect ratio
 * [ ] Add animation
+* [ ] Add getters / setters to element, and ImageButton to simplify usage
+* [ ] Add paging system
 
 * [X] Add slider view
 * [X] Fix GridLayout not spacing items as expected
