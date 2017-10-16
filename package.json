@@ -12,7 +12,7 @@
     "threejs",
     "3D"
   ],
-  "main": "build/vr-ui.js",
+  "main": "build/vr-ui.min.js",
   "files": [
     "package.json",
     "LICENSE",
