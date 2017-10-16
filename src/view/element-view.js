@@ -118,17 +118,18 @@ export default class ElementView extends Element {
             if ( this._onChange ) this._onChange( this, { pressed: this.pressed } );
         }
 
-        if ( !this._checkHover( raycaster, this.mesh,
-            this._onHoverEnter, this._onHoverExit ) ) {
-            return false;
-        }
+        let intersectionDist = this._checkHover( raycaster, this.mesh,
+            this._onHoverEnter, this._onHoverExit );
+
+        if ( !intersectionDist )
+            return null;
 
         if ( state.pressed && !this.pressed ) {
             this.pressed = true;
             if ( this._onChange ) this._onChange( this, { pressed: this.pressed } );
         }
 
-        return true;
+        return intersectionDist;
 
     }
 

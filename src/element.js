@@ -210,17 +210,16 @@ export default class Element {
                 this.hover = false;
                 if ( onHoverExit ) onHoverExit( this );
             }
-            return false;
+            return null;
         }
 
         this._lastIntersect = obj[ 0 ];
-        //console.log( this._lastIntersect );
         if ( !this.hover ) {
             if ( onHoverEnter ) onHoverEnter( this );
             this.hover = true;
         }
 
-        return true;
+        return this._lastIntersect;
 
     }
 

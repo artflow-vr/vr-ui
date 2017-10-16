@@ -118,9 +118,10 @@ export default class SliderView extends ElementView {
 
     _intersect( raycaster, state ) {
 
-        if ( !this._checkHover( raycaster, this.backgroundMesh,
-            this._onHoverEnter, this._onHoverExit ) ) {
-            return false;
+        let intersectionDist = this._checkHover( raycaster, this.backgroundMesh,
+            this._onHoverEnter, this._onHoverExit );
+        if ( !intersectionDist ) {
+            return null;
         }
 
         if ( state.pressed ) {
@@ -140,7 +141,7 @@ export default class SliderView extends ElementView {
                 this.listenTo.object[ this.listenTo.propID ] = this._value;
         }
 
-        return true;
+        return intersectionDist;
 
     }
 

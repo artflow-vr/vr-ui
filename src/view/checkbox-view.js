@@ -103,14 +103,13 @@ export default class CheckboxView extends ElementView {
             }
         }
 
-        if ( !this._checkHover( raycaster, this.emptyMesh,
-            this._onHoverEnter, this._onHoverExit ) ) {
-            return false;
-        }
+        let intersectionDist = this._checkHover( raycaster, this.emptyMesh,
+            this._onHoverEnter, this._onHoverExit );
+
+        if ( !intersectionDist ) return null;
 
         this.pressed = state.pressed && !this.pressed;
-
-        return true;
+        return intersectionDist;
 
     }
 

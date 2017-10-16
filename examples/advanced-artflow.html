@@ -50,7 +50,8 @@
             animate();
             function animate() {
 
-                if (homeUI) homeUI.update();
+                let dist = null;
+                if (homeUI) dist = homeUI.update();
                 if (optionUI) optionUI.update();
 
                 //gui.root.group.rotateY(0.008);

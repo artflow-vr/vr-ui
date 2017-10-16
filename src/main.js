@@ -82,6 +82,7 @@ export default class VRUI {
         };
 
         this.inputObject = null;
+        this.distance = Infinity;
 
         this._raycaster = new THREE.Raycaster( new THREE.Vector3(),
                                                 new THREE.Vector3() );
@@ -115,11 +116,11 @@ export default class VRUI {
      */
     update() {
 
-        if ( !this.enabled ) return;
+        if ( !this.enabled ) return null;
         //this._raycaster.ray.origin.setFromMatrixPosition( controller.matrixWorld );
         //this._raycaster.ray.direction.set( 0, 0, -1 ).applyMatrix4( tempMatrix );
 
-        this._update();
+        return this._update();
 
     }
 
@@ -248,13 +249,13 @@ export default class VRUI {
     _updateMouse() {
 
         this._raycaster.setFromCamera( this._mouse.coords, this._mouse.camera );
-        this.root._intersect( this._raycaster, this._state );
+        return this.root._intersect( this._raycaster, this._state );
 
     }
 
     _updateVR() {
 
-        if ( !this.inputObject ) return;
+        if ( !this.inputObject ) return null;
 
         this._state.pressed = this.inputObject.userData.vrui.pressed
                                 || this._state.pressed;
@@ -269,7 +270,8 @@ export default class VRUI {
         this._raycaster.ray.direction.set( 0, 0, -1 ).applyMatrix4(
             this._controllerRotation
         );
-        this.root._intersect( this._raycaster, this._state );
+
+        return this.root._intersect( this._raycaster, this._state );
 
     }
 

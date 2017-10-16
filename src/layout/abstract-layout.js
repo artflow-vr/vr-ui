@@ -122,9 +122,10 @@ export default class AbstractLayout extends Element {
      */
     _intersect( raycaster, state ) {
 
-        if ( !this._checkHover( raycaster, this._background,
-                                this._onHoverEnter, this._onHoverExitWrapper ) )
-            return false;
+        let intersectionDist = this._checkHover( raycaster, this._background,
+            this._onHoverEnter, this._onHoverExitWrapper );
+        if ( !intersectionDist )
+            return null;
 
         for ( let elt of this._elements ) {
             if ( !elt._intersect( raycaster, state ) ) {
@@ -132,7 +133,7 @@ export default class AbstractLayout extends Element {
             }
         }
 
-        return true;
+        return intersectionDist;
 
     }
 
