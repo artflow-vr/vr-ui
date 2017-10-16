@@ -1,6 +1,6 @@
 {
   "name": "vr-ui",
-  "version": "0.0.2",
+  "version": "0.0.5",
   "description": "simple Three.js based library to create VR UI.",
   "repository": "git@github.com:artflow-vr/vr-ui.git",
   "bugs": "https://github.com/artflow-vr/vr-ui/issues",
@@ -13,11 +13,12 @@
     "3D"
   ],
   "main": "build/vr-ui.min.js",
+  "module": "vr-ui.js",
   "files": [
     "package.json",
     "LICENSE",
     "README.md",
-    "build/vr-ui.js",
+    "build/vr-ui.min.js",
     "src",
     "examples"
   ],

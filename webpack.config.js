@@ -30,7 +30,8 @@ let exp = {
     path: path.resolve( __dirname, BUILD + `/` ),
     filename: null,
     publicPath: `/` + BUILD + `/`,
-    library: `VRUI`
+    library: `VRUI`,
+    libraryTarget: "amd"
   },
   module: {}
 };
