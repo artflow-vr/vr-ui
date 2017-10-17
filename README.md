@@ -112,6 +112,8 @@ In a nutshell, do not hesitate!
 * [ ] Add animation
 * [ ] Add getters / setters to element, and ImageButton to simplify usage
 * [ ] Add paging system
+* [ ] Allow different meshes to be used with ImageButton, Slider, etc... This would allow to add meshes with particular form and UVs
+* [ ] Fix refresh not working when called several times
 
 * [X] Add slider view
 * [X] Fix GridLayout not spacing items as expected
