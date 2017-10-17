@@ -208,14 +208,22 @@ export default class Element {
         if ( obj.length === 0 ) {
             if ( this.hover ) {
                 this.hover = false;
-                if ( onHoverExit ) onHoverExit( this );
+                if ( onHoverExit ) {
+                    onHoverExit( this, {
+                        info: this._lastIntersect
+                    } );
+                }
             }
             return null;
         }
 
         this._lastIntersect = obj[ 0 ];
         if ( !this.hover ) {
-            if ( onHoverEnter ) onHoverEnter( this );
+            if ( onHoverEnter ) {
+                onHoverEnter( this, {
+                    info: this._lastIntersect
+                } );
+            }
             this.hover = true;
         }
 

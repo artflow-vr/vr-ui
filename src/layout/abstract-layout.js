@@ -103,7 +103,8 @@ export default class AbstractLayout extends Element {
         for ( let elt of this._elements ) {
             if ( elt._forceExit ) {
                 elt._forceExit();
-                if ( elt._onHoverExit ) elt._onHoverExit( elt );
+                if ( elt._onHoverExit )
+                    elt._onHoverExit( elt, { info: null } );
             }
             elt.hover = false;
         }
@@ -122,9 +123,9 @@ export default class AbstractLayout extends Element {
      */
     _intersect( raycaster, state ) {
 
-        let intersectionDist = this._checkHover( raycaster, this._background,
+        let intersectionInfo = this._checkHover( raycaster, this._background,
             this._onHoverEnter, this._onHoverExitWrapper );
-        if ( !intersectionDist )
+        if ( !intersectionInfo )
             return null;
 
         for ( let elt of this._elements ) {
@@ -133,7 +134,7 @@ export default class AbstractLayout extends Element {
             }
         }
 
-        return intersectionDist;
+        return intersectionInfo;
 
     }
 

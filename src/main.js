@@ -102,6 +102,7 @@ export default class VRUI {
         this._state = {
             pressed: false
         };
+        this._forcePressed = false;
 
         this._update = this._updateVR;
 
@@ -242,7 +243,7 @@ export default class VRUI {
             console.warn( `VRUI.setPressed(): ` + warnMsg );
             return;
         }
-        this._state.pressed = trigger;
+        this._forcePressed = trigger;
 
     }
 
@@ -258,7 +259,7 @@ export default class VRUI {
         if ( !this.inputObject ) return null;
 
         this._state.pressed = this.inputObject.userData.vrui.pressed
-                                || this._state.pressed;
+                                || this._forcePressed;
 
         this._controllerRotation.identity().extractRotation(
             this.inputObject.matrixWorld

@@ -94,7 +94,8 @@ export default class CheckboxView extends ElementView {
             if ( this._onChange ) {
                 this._onChange( this, {
                     pressed: this.pressed,
-                    state: this.checked
+                    state: this.checked,
+                    info: this._lastIntersect
                 } );
                 this.checked = !this.checked;
                 this.checkMesh.material.visible = this.checked;
@@ -103,13 +104,13 @@ export default class CheckboxView extends ElementView {
             }
         }
 
-        let intersectionDist = this._checkHover( raycaster, this.emptyMesh,
+        let intersectionInfo = this._checkHover( raycaster, this.emptyMesh,
             this._onHoverEnter, this._onHoverExit );
 
-        if ( !intersectionDist ) return null;
+        if ( !intersectionInfo ) return null;
 
         this.pressed = state.pressed && !this.pressed;
-        return intersectionDist;
+        return intersectionInfo;
 
     }
 
