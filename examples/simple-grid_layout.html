@@ -14,6 +14,8 @@
 
         <script type="text/javascript">
 
+            let VRUI = window.VRUI.default;
+
             let camera;
             let scene;
             let renderer;
@@ -52,17 +54,22 @@
                         background: 0x2c3e50
                     });
                     let button1 = new VRUI.view.ImageButton(tex, {
-                        height: 0.5
+                        height: 0.5,
+                        background: 0xFF0000
                     });
                     let button2 = new VRUI.view.ImageButton(tex, {
+                        background: 0x00FF00
                     });
                     let button3 = new VRUI.view.ImageButton(tex, {
                     });
-                    layout.add(button1, button2, button3);
+                    layout.add(button1);
 
                     gui = new VRUI.VRUI(layout, 0.35, 0.5);
                     gui.addToScene(scene)
 
+                    layout.add(button2);
+                    gui.refresh();
+                    layout.add(button3);
                     gui.refresh();
                     
                 });

@@ -106,8 +106,8 @@ export default class ElementView extends Element {
             xOffset = newWidth;
             yOffset = newHeight * 0.5;
         }
-        this.mesh.position.x += xOffset / 2 + padding.left;
-        this.mesh.position.y -= yOffset / 2 + padding.top;
+        this.mesh.position.x = xOffset / 2 + padding.left;
+        this.mesh.position.y = - yOffset / 2 + padding.top;
 
     }
 

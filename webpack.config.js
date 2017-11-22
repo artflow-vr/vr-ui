@@ -30,8 +30,7 @@ let exp = {
     path: path.resolve( __dirname, BUILD + `/` ),
     filename: null,
     publicPath: `/` + BUILD + `/`,
-    library: `VRUI`,
-    libraryTarget: "amd"
+    library: `VRUI`
   },
   module: {}
 };
@@ -39,6 +38,7 @@ let exp = {
 if ( env.parsed.WEBPACK_CONFIG !== `build` ) {
     OUTPUT_FILE = OUTPUT_FILE + `.js`;
     plugins.push( new webpack.HotModuleReplacementPlugin() );
+    exp.output.libraryTarget = `window`;
 } else {
   OUTPUT_FILE = OUTPUT_FILE + `.min.js`;
   plugins.push( new webpack.optimize.UglifyJsPlugin( { minimize: true } ) );
@@ -47,6 +47,7 @@ if ( env.parsed.WEBPACK_CONFIG !== `build` ) {
     loader: `eslint-loader`,
     exclude: /node_modules/
   } );
+  exp.output.libraryTarget = `amd`;
 }
 
 exp.output.filename = OUTPUT_FILE;
