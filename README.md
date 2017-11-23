@@ -80,6 +80,24 @@ gui.refresh(); // Recompute the bounds of the UI.
 
 ```
 
+## Features
+
+### Multiple layouts
+
+As stated above, the UI support several layout, that can be combined together, such as the **Horizontal Layout**, **Vertical Layout**, or the **Grid Layout**.
+
+### Pages
+
+For now, we support multiple pages, but without animation when changing from one to another (this will be out soon). Pages can also be created when the previous one is full, if you specify so.
+
+<p align="center">
+  <img width="350" src="https://user-images.githubusercontent.com/8783766/33181626-2dc423e2-d071-11e7-8999-796089b08d98.gif">
+</p>
+
+### Object3D as an input
+
+You can use any **THREE.Object3D** element as an input, by just calling `VRUI.addInput()`
+
 ## Build
 
 You can use either [npm](https://www.npmjs.com/) or [yarn](https://www.npmjs.com/):
