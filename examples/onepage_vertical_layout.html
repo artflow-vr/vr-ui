@@ -52,18 +52,19 @@
                 let guiHeight = 0.26; // In Three.js units.
 
                 // Creates the parent of all layouts in our UI.
-                let layout = new VRUI.layout.VerticalLayout({
-                    background: 0x2c3e50,
-                    padding: {top: 0.1, bottom: 0.1, left: 0.1, right: 0.1}
-                    
+                let layout = new VRUI.layout.VerticalLayout(null, {
+                    background: 0x2c3e50
                 });
 
                 // Creates the UI, with an empty Horizontal Layout.
                 // You can also fill the layout before creating the GUI, there
                 // is no problem doing that.
-                gui = new VRUI.VRUI(layout, {
-                    width: guiWidth, height: guiHeight
-                });
+                gui = new VRUI.VRUI({
+                    width: guiWidth, height: guiHeight,
+                    mode: {
+                        template: layout
+                    }
+                }, null);
                 gui.enableMouse(camera, renderer);
                 gui.addToScene(scene); // Adds the gui to the THREE.Scene elt.
 
@@ -74,7 +75,10 @@
                     console.log('Button has been '+ stateStr + '!')
                 }
 
-                let button1 = new VRUI.view.ImageButton(texture, {
+                let button1 = new VRUI.view.ImageButton({
+                    id: 'myButton',
+                    innerMaterial: texture
+                }, {
                     height: 0.5,
                     aspectRatio: 1.0,
                     align: 'top'
@@ -89,8 +93,7 @@
                 // is here the Horizontal Layout. You can read more about this
                 // by going looking at the doc, but there are several mode to
                 // simplify adding several elements one after the others.
-                //let button3 = button1.clone();
-                gui.add(button1, button2/*, button3*/);
+                gui.add([button1, button2]);
 
                 // Do not omit the line below, it will compute the bounds
                 // of the entire gui. Each time you make some changes, you

@@ -46,13 +46,7 @@ export default class GridLayout extends AbstractLayout {
         super.refresh( maxWidth, maxHeight );
 
         let dimensions = this._dimensions;
-
-        let padRel = {
-            top: dimensions.padding.top * dimensions.height,
-            bottom: dimensions.padding.bottom * dimensions.height,
-            left: dimensions.padding.left * dimensions.width,
-            right: dimensions.padding.right * dimensions.width
-        };
+        let padRel = dimensions.padding;
 
         /*
             _dimensions.width_
@@ -64,10 +58,10 @@ export default class GridLayout extends AbstractLayout {
             |________________|
         */
 
-        let nbRows = this.data.nbRows;
-        let nbColumns = this.data.nbColumns;
-        let hSpace = this.data.hSpace;
-        let vSpace = this.data.vSpace;
+        let nbRows = this.data.rows;
+        let nbColumns = this.data.columns;
+        let hSpace = this.data.hSpace || 0.0;
+        let vSpace = this.data.vSpace || 0.0;
 
         // Computes bounds by adding padding to the whole grid.
         // The new width is the total width witout the padding width,
@@ -99,6 +93,8 @@ export default class GridLayout extends AbstractLayout {
                                                     + padRel.bottom - padRel.top
         };
 
+        let initXOffset = offset.x;
+
         for ( let i = 0; i < this._elements.length; ++i ) {
             let elt = this._elements[ i ];
             elt.refresh( maxWidthRel, maxHeightRel );
@@ -106,7 +102,7 @@ export default class GridLayout extends AbstractLayout {
 
             let colIDX = i % nbColumns;
             if ( colIDX === 0 && i !== 0 ) {
-                offset.x = this.group.position.x + hSpaceRel;
+                offset.x = initXOffset;
                 offset.y -= maxHeightRel + vSpaceRel;
             }
 
@@ -146,7 +142,7 @@ export default class GridLayout extends AbstractLayout {
      */
     isFull() {
 
-        return this._elements.length === this.data.nbColumns * this.data.nbRows;
+        return this._elements.length === this.data.columns * this.data.rows;
 
     }
 

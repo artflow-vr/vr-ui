@@ -279,6 +279,9 @@ export default class Element {
 
         dimensions.width = null;
         dimensions.height = null;
+
+        // TODO: What should we do if the specified base size is larger
+        // than the other one that is allowed?
         if ( style.aspectRatio ) {
             if ( style.width )
                 dimensions.height = style.aspectRatio * style.width * maxWidth;
@@ -317,6 +320,9 @@ export default class Element {
      * TODO: Support deep copy by using a boolean.
      */
     _clone( dest ) {
+
+        // TODO: add style parameter to clone, to allow to easily change
+        // the style of an object when cloning, instead of calling set by hand.
 
         // Copies callback
         dest.onChange( this._onChange );

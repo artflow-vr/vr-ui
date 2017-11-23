@@ -58,7 +58,7 @@ export default class VRUI {
      * }
      * @memberof VRUI
      */
-    constructor( root, data ) {
+    constructor( data, root ) {
 
         if ( !data.width || data.width <= 0 ) {
             let errorMsg = `parent layout should have a width specified `;
@@ -78,6 +78,10 @@ export default class VRUI {
         this.data.height = this.data.height || 0.5;
         this.data.mode = this.data.mode || { type: VRUI.AUTOMATIC_ADDING };
         this.data.mode.type = this.data.mode.type || VRUI.AUTOMATIC_ADDING;
+        if ( this.data.mode.type === VRUI.AUTOMATIC_ADDING ) {
+            let template = this.data.mode.template;
+            this.data.mode.template = template ? template.clone() : null;
+        }
 
         this.inputObject = null;
 
@@ -87,12 +91,7 @@ export default class VRUI {
         // instanciate a new VRUI :).
         this.pages = [];
         this.pageGroup = new THREE.Group();
-        this._pageId = 0;
         if ( root !== undefined && root !== null ) this.addPage( root );
-
-        // This is just a really tiny optimization to avoid using the index
-        // each time we need to access the currPage.
-        this.currPage = this.pages[ this._pageId ];
 
         this._raycaster = new THREE.Raycaster(
             new THREE.Vector3(), new THREE.Vector3()
@@ -148,21 +147,27 @@ export default class VRUI {
      *
      * @param {VRUI.Element} element - elements to add, could be any VRUI.Element,
      * so any layout, any button, etc...
-     * * @param {VRUI.AbstractLayout} layout - target layout. This will often be
+     *
+     * @param {VRUI.AbstractLayout} layout - target layout. This will often be
      * empty, but can be useful if you do not want your item to be added in the
      * parent element of the page.
      * For instance, if you have a Vertical Layout containing a Grid Layout as
      * well as an Horizontal Layout, you may want to only add
+     *
+     * If you want your pages to have completely different layouts, you will
+     * unfortunately not be able to use the automatic adding, because it requres
+     * a template.
+     * In this case, it is better to just create your page statically, and it
+     * using the `addPage()' method.
+     * You could also just create a new VRUI, and not a page.
+     *
      */
-    add( layoutID = null, element ) {
+    add( element, layoutID ) {
 
         if ( element.constructor === Array ) {
             for ( let elt of element ) this._add( elt, layoutID );
-        } else if ( arguments.length > 1 ) {
-            for ( let i = 1; i < arguments.length; ++i )
-                this._add( arguments[ i ], layoutID );
         } else {
-            this._add( element,layoutID );
+            this._add( element, layoutID );
         }
 
     }
@@ -198,6 +203,10 @@ export default class VRUI {
      * @param {Object} dimensions - Contains width and height of the page. If
      * this is not specified, or one of the dimension is null or undefined, the
      * function will use the initial dimensions given to the constructor of VRUI.
+     *
+     * If you want to build static page, with a unique template, you may want
+     * to use this function, by first creating your complete layout somewhere,
+     * and adding it using this function.
      */
     addPage( page, dimensions ) {
 
@@ -227,8 +236,14 @@ export default class VRUI {
         // We hide the added page by default, excepted if the UI is empty
         if ( this.pages.length !== 1 )
             page.setVisible( false );
-        else
+        else {
+            // This is just a really tiny optimization to avoid using the index
+            // each time we need to access the currPage.
+            this._pageId = 0;
+            this.currPage = this.pages[ this._pageId ];
             page.setVisible( true );
+        }
+
     }
 
     nextPage() {
@@ -326,7 +341,6 @@ export default class VRUI {
     }
 
     /**
-     *
      * Disable mouse interactions. The method will remove registered events
      * from the window element.
      */
@@ -393,55 +407,77 @@ export default class VRUI {
 
     }
 
+    /**
+     * Adds the element to either the first layout, or the targeted layout using
+     * the `layoutID' attribute
+     * @param {*} element - Elements to push in the UI
+     * @param {*} layoutID - ID of a children layout in which the element should
+     * be added.
+     */
     _addWithExpansion( element, layoutID ) {
 
+        let pages = this.pages;
         let template = this.data.mode.template;
-        let lastPage = this.pages[ this.pages.length - 1 ];
-
-        if ( !template ) {
-            let errorMsg = `adding element is in automatic mode, but `;
-            errorMsg += `no page template was provided.`;
-            throw Error( `VRUI.add(): ` + errorMsg );
-        }
-
         if ( !( template instanceof AbstractLayout ) ) {
             let errorMsg = `provided template should be an instance of `;
             errorMsg += `VRUI.AbstractLayout.`;
             throw Error( `VRUI.add(): ` + errorMsg );
         }
 
-        let targetLayout = lastPage;
-        if ( !( targetLayout instanceof AbstractLayout ) || targetLayout.isFull() ) {
-            targetLayout = template.clone();
-            this.addPage( targetLayout );
+        let lastPage = pages.length ? pages[ pages.length - 1 ] : null;
+
+        let findLayout = ( elt ) => {
+            if ( elt.data.id === layoutID ) return elt;
+            return null;
+        };
+
+        if ( !lastPage ) {
+            lastPage = template.clone();
+            this.addPage( lastPage );
         }
 
-        if ( !layoutID ) {
-            targetLayout.add( element );
+        if ( layoutID )
+            lastPage = this._visit( lastPage, findLayout );
+
+        if ( !( lastPage instanceof AbstractLayout ) ) {
+            let errorMsg = `trying to add element in an element that is not `;
+            errorMsg += `an instance of VRUI.AbstractLayout!`;
+            throw Error( `VRUI.add(): ` + errorMsg );
+        }
+
+        if ( lastPage.isFull() ) {
+            let page = template.clone();
+            this.addPage( page );
+            if ( layoutID ) lastPage = this._visit( page, findLayout );
+        }
+
+        if ( !lastPage ) {
+            // The given 'layoutID' was not found. We have to warn the user.
+            let warnMsg = `given layoutID '` + layoutID + `' was not found.`;
+            console.warn( `VRUI.add(): ` + warnMsg );
             return;
         }
 
-        // 'layoutID' is not null, we have to loop through every elements
-        // looking for the layout in which we should add the element.
+        lastPage.add( element );
+
+    }
+
+    _visit( layout, callback ) {
+
+        if ( !layout._elements ) return null;
+
         let visited = [];
-        for ( let elt of targetLayout._elements ) visited.push( elt );
+        for ( let elt of layout._elements ) visited.push( elt );
         while ( visited.length > 0 ) {
             let elt = visited.shift();
             // The element has been found
-            if ( elt.id === layoutID ) {
-                if ( !( elt instanceof AbstractLayout ) ) {
-                    let errorMsg = `provided layoutID should be an instance of `;
-                    errorMsg += `VRUI.AbstractLayout.`;
-                    throw Error( `VRUI.add(): ` + errorMsg );
-                }
-                elt.add( element );
-                return;
-            }
-        }
+            let res = callback( elt );
+            if ( res ) return res;
 
-        // The given 'layoutID' was not found. We have to warn the user.
-        let warnMsg = `given layoutID '` + layoutID + `' was not found.`;
-        console.warn( `VRUI.add(): ` + warnMsg );
+            if ( elt._elements )
+                for ( let e of elt._elements ) visited.push( e );
+        }
+        return null;
 
     }
 

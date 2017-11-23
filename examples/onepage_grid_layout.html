@@ -10,6 +10,7 @@
     <body>
 
         <script type="text/javascript" src="https://cdn.rawgit.com/mrdoob/three.js/r82/build/three.min.js"></script>
+        <script type="text/javascript" src="js/setup.js"></script>
         <script type="text/javascript" src="../build/vr-ui.js"></script>
 
         <script type="text/javascript">
@@ -22,7 +23,6 @@
 
             let gui = null;
             load();
-            //setupGUI();
 
             animate();
             function animate() {
@@ -48,8 +48,8 @@
 
             function setupGUI(tex) {
                 
-                // Creates the UI, with no layout for now. We can add it later.
-                gui = new VRUI.VRUI(null, 0.35, 0.5);
+                let guiWidth = 0.35;
+                let guiHeight = 0.5;
 
                 let layout = new VRUI.layout.GridLayout({
                     columns : 4,
@@ -57,23 +57,27 @@
                 }, {
                     background: 0x2c3e50
                 });
-                let button1 = new VRUI.view.ImageButton(tex, {
-                    height: 0.5,
-                    background: 0xFF0000
-                });
-                let button2 = new VRUI.view.ImageButton(tex, {
-                    background: 0x00FF00
-                });
-                let button3 = new VRUI.view.ImageButton(tex, {
-                });
-                layout.add(button1);
 
-                
+                // Creates the UI, with no layout for now. We can add it later.
+                gui = new VRUI.VRUI({
+                    width: guiWidth, height: guiHeight,
+                    mode: {
+                        template: layout
+                    } 
+                }, null);
                 gui.addToScene(scene)
+                gui.enableMouse(camera, renderer);
 
-                layout.add(button2);
-                gui.refresh();
-                layout.add(button3);
+                let button1 = new VRUI.view.ImageButton({
+                    innerMaterial: tex
+                }, {
+                    width: 1.0,
+                    aspectRatio: 1.0,
+                    align: 'center'
+                });
+
+                for (let i = 0; i < 10; ++i) gui.add(button1.clone());
+
                 gui.refresh();
                     
             }

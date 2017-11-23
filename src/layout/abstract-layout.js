@@ -82,10 +82,8 @@ export default class AbstractLayout extends Element {
         // Shallow clone the layout.
         let layout = new this.constructor( this.data, this.style );
         // Deep clone every element of the layout
-        for ( let elt of this._elements ) {
-            let clonedElt = elt.clone();
-            layout.add( clonedElt );
-        }
+        for ( let elt of this._elements ) layout.add( elt.clone() );
+        return layout;
 
     }
 
