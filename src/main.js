@@ -356,6 +356,17 @@ export default class VRUI {
 
     }
 
+    /**
+     * Adds a THREE.Object3D element as an input. The element orientation
+     * will be used as a pointer. If you want the UI to be informed that a button
+     * has been pressed, you have to call `setPressed' by hand, or add the
+     * vrui.pressed variable to the Object3D user data, e.g:
+     *
+     * inputObj.userData.vrui = {};
+     * inputObj.userData.vrui.pressed = true; // or false
+     *
+     * @param {*} object
+     */
     addInput( object ) {
 
         if ( !( object instanceof THREE.Object3D ) ) {
@@ -367,6 +378,18 @@ export default class VRUI {
 
     }
 
+    /**
+     * Specify whether the input (the mouse or the Three.Object3D) should trigger
+     * the UI.
+     *
+     * Alternatively, you can set the vrui.pressed variable
+     * to the Object3D user data, e.g:
+     *
+     * inputObj.userData.vrui = {};
+     * inputObj.userData.vrui.pressed = true; // or false
+     *
+     * @param {*} trigger
+     */
     setPressed( trigger ) {
 
         if ( this._mouse.enabled ) {
