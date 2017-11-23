@@ -10,25 +10,16 @@
     <body>
 
         <script type="text/javascript" src="https://cdn.rawgit.com/mrdoob/three.js/r82/build/three.min.js"></script>
+        <script type="text/javascript" src="js/setup.js"></script>
         <script type="text/javascript" src="../build/vr-ui.js"></script>
 
         <script type="text/javascript">
 
             let VRUI = window.VRUI.default;
 
-            let camera;
-            let scene;
-            let renderer;
-
-            camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.1, 100 );
-            camera.position.set(0, 0, 0.4);
-
-            renderer = new THREE.WebGLRenderer();
-            renderer.setSize( window.innerWidth, window.innerHeight );
-            renderer.setClearColor(0x000000);
-            document.body.appendChild( renderer.domElement );
-
-            scene = new THREE.Scene();
+            // We call the wrapper to create a scene. This is defined in the
+            // 'js/setup.js' script, and is useful for all samples.
+            let { camera, renderer, scene } = createBaseScene();
 
             let gui = null;
             load();
@@ -37,6 +28,7 @@
             function animate() {
 
                 if (gui) gui.update();
+
                 renderer.render( scene, camera );
                 requestAnimationFrame( animate );
 
@@ -59,36 +51,47 @@
                 let guiWidth = 0.2; // In Three.js units.
                 let guiHeight = 0.26; // In Three.js units.
 
+                // Creates the parent of all layouts in our UI.
                 let layout = new VRUI.layout.VerticalLayout({
-                    background: 0xFF0000,
-                    width: 0.5
-                });
-                layout.set({
-                    background: 0xFFFFFF
+                    background: 0x2c3e50,
+                    padding: {top: 0.1, bottom: 0.1, left: 0.1, right: 0.1}
+                    
                 });
 
-                let button1 = new VRUI.view.ImageButton(0x00FF00, {
-                    height: 0.5,
-                    width: 0.5,
-                }).onChange(function(state) {
-                    if (state.pressed)
-                        console.log('Button1 has been clicked!')
-                    else
-                        console.log('Button1 has been released!')
+                // Creates the UI, with an empty Horizontal Layout.
+                // You can also fill the layout before creating the GUI, there
+                // is no problem doing that.
+                gui = new VRUI.VRUI(layout, {
+                    width: guiWidth, height: guiHeight
                 });
-                let button2 = button1.clone(0x0000FF).onChange(function(state) {
-                    if (state.pressed)
-                        console.log('Button2 has been clicked!')
-                    else
-                        console.log('Button2 has been released!')
-                });
-                layout.add(button1, button2);
-
-                gui = new VRUI.VRUI(layout, guiWidth, guiHeight);
                 gui.enableMouse(camera, renderer);
-                
                 gui.addToScene(scene); // Adds the gui to the THREE.Scene elt.
-                
+
+                // Callbacks applied on both buttons, telling whether the button
+                // is pressed or not.
+                let onChange = (state) => {
+                    let stateStr = state.pressed ? 'pressed' : 'released';
+                    console.log('Button has been '+ stateStr + '!')
+                }
+
+                let button1 = new VRUI.view.ImageButton(texture, {
+                    height: 0.5,
+                    aspectRatio: 1.0,
+                    align: 'top'
+                }).onChange(onChange);
+
+                let button2 = button1.clone();
+                button2.onChange(onChange);
+
+                // You can either add the buttons directly to the Horizontal
+                // Layout, or add them directly to the UI. Adding them to the UI
+                // will add them to the parent layout of the current page, which
+                // is here the Horizontal Layout. You can read more about this
+                // by going looking at the doc, but there are several mode to
+                // simplify adding several elements one after the others.
+                //let button3 = button1.clone();
+                gui.add(button1, button2/*, button3*/);
+
                 // Do not omit the line below, it will compute the bounds
                 // of the entire gui. Each time you make some changes, you
                 // have to call it. It could possibly be costly, according
@@ -96,15 +99,6 @@
                 gui.refresh();
 
             }
-
-            // Registers global events
-            window.addEventListener( 'resize', function () {
-
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize( window.innerWidth, window.innerHeight );
-
-            }, false );
 
         </script>
     </body>

@@ -31,7 +31,7 @@ import * as Colors from '../utils/colors';
 
 export default class ElementView extends Element {
 
-    constructor( mesh, style ) {
+    constructor( data, mesh, style ) {
 
         if ( mesh === undefined || mesh === null ) {
             let errorMsg = `provided mesh is null or undefined.`;
@@ -43,7 +43,7 @@ export default class ElementView extends Element {
             throw Error( `ElementView: ctor(): ` + errorMsg );
         }
 
-        super( style );
+        super( data, style );
 
         this.mesh = mesh;
         this.mesh.position.z = 0.001; // prevents z-fighting
@@ -82,6 +82,8 @@ export default class ElementView extends Element {
 
     refresh( maxEltWidth, maxEltHeight ) {
 
+        // TODO: Padding and marging are not working correctly.
+
         super.refresh( maxEltWidth, maxEltHeight );
 
         let dimensions = this._dimensions;
@@ -99,15 +101,15 @@ export default class ElementView extends Element {
         if ( this.type !== `text` ) {
             this.mesh.scale.x = newWidth;
             this.mesh.scale.y = newHeight;
-            xOffset = this.mesh.scale.x;
-            yOffset = this.mesh.scale.y;
+            xOffset = width * 0.5 + ( padding.left - padding.right );
+            yOffset = - height * 0.5 + ( padding.bottom - padding.top );
         } else {
             this.mesh.scale.multiplyScalar( newHeight );
             xOffset = newWidth;
             yOffset = newHeight * 0.5;
         }
-        this.mesh.position.x = xOffset / 2 + padding.left;
-        this.mesh.position.y = - yOffset / 2 + padding.top;
+        this.mesh.position.x = xOffset;
+        this.mesh.position.y = yOffset;
 
     }
 

@@ -37,12 +37,7 @@ export default class GridLayout extends AbstractLayout {
             throw Error( `GridLayout.ctor(): ` + errorMsg );
         }
 
-        super( style );
-
-        this.nbRows = data.rows;
-        this.nbColumns = data.columns;
-        this.hSpace = data.hSpace || 0.0;
-        this.vSpace = data.vSpace || 0.0;
+        super( data, style );
 
     }
 
@@ -69,6 +64,11 @@ export default class GridLayout extends AbstractLayout {
             |________________|
         */
 
+        let nbRows = this.data.nbRows;
+        let nbColumns = this.data.nbColumns;
+        let hSpace = this.data.hSpace;
+        let vSpace = this.data.vSpace;
+
         // Computes bounds by adding padding to the whole grid.
         // The new width is the total width witout the padding width,
         // The new height is the total height witout the padding height.
@@ -77,12 +77,12 @@ export default class GridLayout extends AbstractLayout {
 
         // Computes the maximum size occupied by each element,
         // without spacing.
-        let maxEltWidth = paddedWidth / this.nbColumns;
-        let maxEltHeight = paddedHeight / this.nbRows;
+        let maxEltWidth = paddedWidth / nbColumns;
+        let maxEltHeight = paddedHeight / nbRows;
 
         // Computes the space between each element, in world units.
-        let hSpaceRel = this.hSpace * paddedWidth;
-        let vSpaceRel = this.vSpace * paddedHeight;
+        let hSpaceRel = hSpace * paddedWidth;
+        let vSpaceRel = vSpace * paddedHeight;
 
         // Computes the maximum size occupied by each element,
         // in world units.
@@ -104,7 +104,7 @@ export default class GridLayout extends AbstractLayout {
             elt.refresh( maxWidthRel, maxHeightRel );
             let eltDim = elt._dimensions;
 
-            let colIDX = i % this.nbColumns;
+            let colIDX = i % nbColumns;
             if ( colIDX === 0 && i !== 0 ) {
                 offset.x = this.group.position.x + hSpaceRel;
                 offset.y -= maxHeightRel + vSpaceRel;
@@ -135,6 +135,24 @@ export default class GridLayout extends AbstractLayout {
 
             offset.x += maxWidthRel + hSpaceRel;
         }
+
+    }
+
+    /**
+     * Checks whether the layout is full or not.
+     * Note: this function is O(n), because developer can remove elements by
+     * hand.
+     *
+     */
+    isFull() {
+
+        return this._elements.length === this.data.nbColumns * this.data.nbRows;
+
+    }
+
+    clone() {
+
+        return new GridLayout( this.data, this.style );
 
     }
 

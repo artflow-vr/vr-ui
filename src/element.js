@@ -71,12 +71,17 @@ export default class Element {
      * @param {Object} [style] - Style properties. e.g: { width: 1.0, ... }
      * @memberof Element
      */
-    constructor( style ) {
+    constructor( data = null, style ) {
 
         // The 'type' variable is useful to make some special checks
         // according to the element we are in. It avoids to make call
         // to instance of.
         this.type = `element`;
+
+        // The 'data' attribute is useful to store extra data for any type of
+        // element. For instance, the `id' attribute is used when searching
+        // for a given item in the hierarchy.
+        this.data = data ? Object.assign( {}, data ) : {};
 
         this.group = new THREE.Group();
         this.group.position.z = 0.001; // prevents z-fighting
@@ -84,8 +89,8 @@ export default class Element {
 
         // Reference to parent.
         this.parent = null;
-
         this.hover = false;
+        this.visible = true;
 
         this._dimensions = {
             margin: {},
@@ -188,6 +193,18 @@ export default class Element {
 
     }
 
+    setVisible( toggle ) {
+
+        this.group.traverse( function ( child ) {
+
+            if ( child instanceof THREE.Object3D ) child.visible = toggle;
+
+        } );
+
+        this.visible = toggle;
+
+    }
+
     /**
      * Checks whether the element is hovered or not. If changes happen,
      * this method will call the onHoverEnter / onHoverExit callbacks.
@@ -203,6 +220,8 @@ export default class Element {
      * @memberof Element
      */
     _checkHover( raycaster, object, onHoverEnter, onHoverExit ) {
+
+        if ( !this.visible ) return null;
 
         let obj = raycaster.intersectObject( object, false );
         if ( obj.length === 0 ) {
@@ -292,6 +311,20 @@ export default class Element {
 
     }
 
+    /**
+     * Clones the properties that are commong to each element.
+     * For now, this only support the shallow copy.
+     * TODO: Support deep copy by using a boolean.
+     */
+    _clone( dest ) {
+
+        // Copies callback
+        dest.onChange( this._onChange );
+        dest.onHoverEnter( this._onHoverEnter );
+        dest.onHoverExit( this._onHoverExit );
+
+    }
+
     _updateBackground( background ) {
 
         if ( !background ) {
@@ -311,7 +344,8 @@ export default class Element {
 
         for ( let k in style ) {
             let element = style[ k ];
-            if ( typeof element === `object` ) {
+            if ( element !== null && element !== undefined &&
+                 typeof element === `object` ) {
                 if ( !element ) {
                     writeTo[ k ] = null;
                     continue;
