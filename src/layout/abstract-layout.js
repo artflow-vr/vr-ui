@@ -41,10 +41,9 @@ export default class AbstractLayout extends Element {
      * @param {Object} [style] - Style properties. e.g: { width: 1.0, ... }
      * @memberof AbstractLayout
      */
-    constructor( style ) {
+    constructor( data, style ) {
 
-        super( style );
-
+        super( data, style );
         this._elements = [];
 
         this._onHoverExitWrapper = () => {
@@ -75,6 +74,16 @@ export default class AbstractLayout extends Element {
             for ( let elt of element ) this._addItem( elt );
         else
             this._addItem( element );
+
+    }
+
+    clone( ) {
+
+        // Shallow clone the layout.
+        let layout = new this.constructor( this.data, this.style );
+        // Deep clone every element of the layout.
+        for ( let elt of this._elements ) layout.add( elt.clone() );
+        return layout;
 
     }
 

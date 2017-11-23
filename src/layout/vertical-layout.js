@@ -29,13 +29,15 @@ import LinearLayout from './linear-layout';
 
 export default class VerticalLayout extends LinearLayout {
 
-    constructor( style ) {
+    constructor( data, style ) {
 
-        super( style );
+        super( data, style );
 
     }
 
     refresh( maxEltWidth, maxEltHeight ) {
+
+        // TODO: Padding and marging are not working correctly.
 
         super.refresh( maxEltWidth, maxEltHeight );
         this.type = `vertical-layout`;
@@ -51,10 +53,13 @@ export default class VerticalLayout extends LinearLayout {
         };
 
         let horizontalPad = padding.right + padding.left;
+        let verticalPad = padding.top + padding.bottom;
+
         let maxWidthPerElt = dimensions.width - horizontalPad;
+        let maxHeightPerElt = dimensions.height - verticalPad;
 
         for ( let elt of this._elements ) {
-            elt.refresh( maxWidthPerElt );
+            elt.refresh( maxWidthPerElt, maxHeightPerElt );
 
             let eltDim = elt._dimensions;
 
@@ -85,6 +90,21 @@ export default class VerticalLayout extends LinearLayout {
             elt.group.position.x += padding.left - padding.right;
 
         }
+
+    }
+
+    /**
+     * Checks whether the layout is full or not.
+     * Note: this function is O(n), because developer can remove elements by
+     * hand.
+     */
+    isFull() {
+
+        let height = 0.0;
+        for ( let elt of this._elements ) {
+            height += elt.style.height;
+        }
+        return height >= 1.0;
 
     }
 

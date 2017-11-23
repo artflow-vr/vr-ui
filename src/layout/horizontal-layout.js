@@ -29,13 +29,15 @@ import LinearLayout from './linear-layout';
 
 export default class HorizontalLayout extends LinearLayout {
 
-    constructor( style ) {
+    constructor( data, style ) {
 
-        super( style );
+        super( data, style );
 
     }
 
     refresh( maxEltWidth, maxEltHeight ) {
+
+        // TODO: Padding and marging are not working correctly.
 
         super.refresh( maxEltWidth, maxEltHeight );
         this.type = `horizontal-layout`;
@@ -43,13 +45,23 @@ export default class HorizontalLayout extends LinearLayout {
         let dimensions = this._dimensions;
         let maxHeight = this._dimensions.height;
 
+        let padding = dimensions.padding;
+
         let offset = {
-            left: 0,
-            center: 0,
-            right: 0
+            top: - padding.top + padding.bottom,
+            bottom: padding.bottom,
+            right: padding.right,
+            left: padding.left
         };
+
+        // Computes bounds by adding padding to the whole layout.
+        // The new width is the total width witout the padding width.
+        // The new height is the total height witout the padding height.
+        let paddedWidth = dimensions.width - ( padding.left + padding.right );
+        let paddedHeight = dimensions.height - ( padding.top + padding.bottom );
+
         for ( let elt of this._elements ) {
-            elt.refresh();
+            elt.refresh( paddedWidth, paddedHeight );
             let eltDim = elt._dimensions;
 
             switch ( elt.style.position ) {
@@ -59,6 +71,7 @@ export default class HorizontalLayout extends LinearLayout {
                     offset.right += eltDim.margin.left;
                     break;
                 case `left`:
+                case `center`:
                     offset.left += eltDim.margin.left;
                     elt.group.position.x = offset.left;
                     offset.left += eltDim.width;
@@ -68,17 +81,34 @@ export default class HorizontalLayout extends LinearLayout {
 
             switch ( elt.style.align ) {
                 case `top`:
-                    elt.group.position.y = 0;
-                break;
+                    elt.group.position.y = offset.top + eltDim.margin.top;
+                    break;
                 case `bottom`:
-                    elt.group.position.y = - maxHeight + eltDim.height;
-                break;
+                    elt.group.position.y = - maxHeight + eltDim.margin.bottom +
+                        eltDim.height + offset.top;
+                    break;
                 case `center`:
-                    elt.group.position.y = - ( maxHeight / 2.0 ) + eltDim.halfH;
-                break;
+                    elt.group.position.y = - ( paddedHeight * 0.5 ) + eltDim.halfH;
+                    break;
             }
 
         }
+
+    }
+
+    /**
+     * Checks whether the layout is full or not.
+     * Note: this function is O(n), because developer can remove elements by
+     * hand.
+     *
+     */
+    isFull() {
+
+        let width = 0.0;
+        for ( let elt of this._elements ) {
+            width += elt.style.width;
+        }
+        return width >= 1.0;
 
     }
 

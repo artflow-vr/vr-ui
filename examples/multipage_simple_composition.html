@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Simple Example</title>
+        <meta charset="UTF-8">
+        <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, minimal-ui" name="viewport" />
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+    </head>
+    <body>
+
+        <script type="text/javascript" src="https://cdn.rawgit.com/mrdoob/three.js/r82/build/three.min.js"></script>
+        <script type="text/javascript" src="js/setup.js"></script>
+        <script type="text/javascript" src="../build/vr-ui.js"></script>
+
+        <script type="text/javascript">
+
+            let VRUI = window.VRUI.default;
+
+            // We call the wrapper to create a scene. This is defined in the
+            // 'js/setup.js' script, and is useful for all samples.
+            let { camera, renderer, scene } = createBaseScene();
+
+            let gui = null;
+            load();
+
+            animate();
+            function animate() {
+
+                if (gui) gui.update();
+
+                renderer.render( scene, camera );
+                requestAnimationFrame( animate );
+
+            }
+
+            function load() {
+                
+                let loader = new THREE.TextureLoader();
+                loader.setPath('assets/');
+                let tex = loader.load('button.png', function(tex) {
+                    
+                    setupGUI(tex);
+
+                });
+                
+            }
+
+            function setupGUI(texture) {
+
+                let guiWidth = 0.2; // In Three.js units.
+                let guiHeight = 0.26; // In Three.js units.
+
+                // Creates the UI, without any layout for now.
+                // You could also fill the layout before creating the GUI, there
+                // is no problem doing that.
+                gui = new VRUI.VRUI({
+                    width: guiWidth,
+                    height: guiHeight
+                }, null);
+
+                // We could also add this directly in the VRUI constructor
+                // in the `data' object.
+                gui.data.mode.template = createPageTemplate();
+                
+                gui.enableMouse(camera, renderer);
+                gui.addToScene(scene); // Adds the GUI to the THREE.Scene elt.
+
+                let button = new VRUI.view.ImageButton(
+                    { innerMaterial: 0xFF0000 },
+                    { width: 1.0, aspectRatio: 1.0 }
+                )
+
+                // Adds four buttons to the GridLayout. This will fill the first
+                // page.
+                // Be careful here! We want to add the button to the GridLayout,
+                // which is not directly the page, but one of the child of the page.
+                // We have to provide the layoutID parameter with the good value.
+                for (let i = 0; i < 5; ++i) 
+                    gui.add(button.clone(), 'gridLayout');
+
+                // Do not omit the line below, it will compute the bounds
+                // of the entire GUI. Each time you make some changes, you
+                // have to call it. It could possibly be costly, according
+                // to how complex is the UI, so do not call it if not necessary.
+                gui.refresh();
+
+            }
+
+            function createPageTemplate() {
+
+                // First, we create a bottom layout, with two dummy buttons.
+                // It could, for instance, be some buttons to switch between pages.
+                let button = new VRUI.view.ImageButton(
+                    { innerMaterial: 0xFFFF00 },
+                    { height: 1.0, aspectRatio: 1.0, position: 'left' }
+                ).onChange((s) => {
+                    if (s.pressed) gui.nextPage();
+                });
+
+                let button2 = button.clone();
+                button2.set({ position: 'right' })
+
+                let bottom = new VRUI.layout.HorizontalLayout(null, {
+                    height: 0.1
+                });
+                bottom.add(button, button2)
+
+                // Here, we create the grid, placed above the bottom layout.
+                // It will be added before the bottom layout.
+                let grid = new VRUI.layout.GridLayout( {
+                        id: 'gridLayout',  //
+                        columns: 2,        // Layout data
+                        rows: 2            //
+                    }, {
+                        height: 0.9
+                    }
+                );
+
+                // Creates the page layout containing both layouts that
+                // have been defined above.
+                let parent = new VRUI.layout.VerticalLayout(null, {
+                    background: 0x2c3e50,
+                    padding: {top: 0.1, bottom: 0.1, left: 0.1, right: 0.1}
+                });
+                parent.add(grid, bottom)
+
+                return parent;
+
+            }
+
+        </script>
+    </body>
+</html>

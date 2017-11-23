@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Simple GridLayout Example</title>
+        <meta charset="UTF-8">
+        <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, minimal-ui" name="viewport" />
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+    </head>
+    <body>
+
+        <script type="text/javascript" src="https://cdn.rawgit.com/mrdoob/three.js/r82/build/three.min.js"></script>
+        <script type="text/javascript" src="js/setup.js"></script>
+        <script type="text/javascript" src="../build/vr-ui.js"></script>
+
+        <script type="text/javascript">
+
+            let VRUI = window.VRUI.default;
+
+            // We call the wrapper to create a scene. This is defined in the
+            // 'js/setup.js' script, and is useful for all samples.
+            let { camera, renderer, scene } = createBaseScene();
+
+            let gui = null;
+            load();
+
+            animate();
+            function animate() {
+
+                if (gui) gui.update();
+
+                renderer.render( scene, camera );
+                requestAnimationFrame( animate );
+
+            }
+
+            function load() {
+
+                let loader = new THREE.TextureLoader();
+                loader.setPath('assets/');
+                let tex = loader.load('button.png', function(tex) {
+                    
+                    setupGUI(tex);
+
+                });
+
+            }
+
+            function setupGUI(tex) {
+                
+                let guiWidth = 0.35;
+                let guiHeight = 0.5;
+
+                let layout = new VRUI.layout.GridLayout({
+                    columns : 4,
+                    rows: 3
+                }, {
+                    background: 0x2c3e50
+                });
+
+                // Creates the UI, with no layout for now. We can add it later.
+                gui = new VRUI.VRUI({
+                    width: guiWidth, height: guiHeight,
+                    mode: {
+                        template: layout
+                    } 
+                }, null);
+                gui.addToScene(scene)
+                gui.enableMouse(camera, renderer);
+
+                let button1 = new VRUI.view.ImageButton({
+                    innerMaterial: tex
+                }, {
+                    width: 1.0,
+                    aspectRatio: 1.0,
+                    align: 'center'
+                });
+
+                for (let i = 0; i < 10; ++i) gui.add(button1.clone());
+                gui.refresh();
+                    
+            }
+        </script>
+    </body>
+</html>
