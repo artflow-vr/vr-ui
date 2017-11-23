@@ -66,7 +66,7 @@
                     }
                 }, null);
                 gui.enableMouse(camera, renderer);
-                gui.addToScene(scene); // Adds the gui to the THREE.Scene elt.
+                gui.addToScene(scene); // Adds the GUI to the THREE.Scene elt.
 
                 // Callbacks applied on both buttons, telling whether the button
                 // is pressed or not.
@@ -91,13 +91,13 @@
                 // Layout, or add them directly to the UI. Adding them to the UI
                 // will add them to the parent layout of the current page, which
                 // is here the Horizontal Layout. You can read more about this
-                // by going looking at the doc, but there are several mode to
+                // by going looking at the doc, but there are several modes to
                 // simplify adding several elements one after the others.
                 let button3 = button1.clone();
                 gui.add([button1, button2]);
 
                 // Do not omit the line below, it will compute the bounds
-                // of the entire gui. Each time you make some changes, you
+                // of the entire GUI. Every time you make some changes, you
                 // have to call it. It could possibly be costly, according
                 // to how complex is the UI, so do not call it if not necessary.
                 gui.refresh();

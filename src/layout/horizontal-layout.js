@@ -55,7 +55,7 @@ export default class HorizontalLayout extends LinearLayout {
         };
 
         // Computes bounds by adding padding to the whole layout.
-        // The new width is the total width witout the padding width,
+        // The new width is the total width witout the padding width.
         // The new height is the total height witout the padding height.
         let paddedWidth = dimensions.width - ( padding.left + padding.right );
         let paddedHeight = dimensions.height - ( padding.top + padding.bottom );

@@ -97,7 +97,6 @@ export default class VerticalLayout extends LinearLayout {
      * Checks whether the layout is full or not.
      * Note: this function is O(n), because developer can remove elements by
      * hand.
-     *
      */
     isFull() {
 

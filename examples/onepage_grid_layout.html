@@ -77,20 +77,9 @@
                 });
 
                 for (let i = 0; i < 10; ++i) gui.add(button1.clone());
-
                 gui.refresh();
                     
             }
-
-            // Registers global events
-            window.addEventListener( 'resize', function () {
-
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize( window.innerWidth, window.innerHeight );
-
-            }, false );
-
         </script>
     </body>
 </html>

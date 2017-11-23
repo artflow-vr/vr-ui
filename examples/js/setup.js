@@ -12,7 +12,7 @@ function createBaseScene() {
 
     let scene = new THREE.Scene();
 
-    // Registers global events
+    // Registers global events.
     window.addEventListener( `resize`, function () {
 
         camera.aspect = window.innerWidth / window.innerHeight;

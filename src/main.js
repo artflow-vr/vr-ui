@@ -388,7 +388,7 @@ export default class VRUI {
      * inputObj.userData.vrui = {};
      * inputObj.userData.vrui.pressed = true; // or false
      *
-     * @param {*} trigger
+     * @param {Boolean} trigger - true to make input object activated.
      */
     setPressed( trigger ) {
 

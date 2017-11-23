@@ -138,7 +138,6 @@ export default class GridLayout extends AbstractLayout {
      * Checks whether the layout is full or not.
      * Note: this function is O(n), because developer can remove elements by
      * hand.
-     *
      */
     isFull() {
 
