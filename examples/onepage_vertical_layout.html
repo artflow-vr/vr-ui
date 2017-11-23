@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Simple Example</title>
+        <meta charset="UTF-8">
+        <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, minimal-ui" name="viewport" />
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+    </head>
+    <body>
+
+        <script type="text/javascript" src="https://cdn.rawgit.com/mrdoob/three.js/r82/build/three.min.js"></script>
+        <script type="text/javascript" src="js/setup.js"></script>
+        <script type="text/javascript" src="../build/vr-ui.js"></script>
+
+        <script type="text/javascript">
+
+            let VRUI = window.VRUI.default;
+
+            // We call the wrapper to create a scene. This is defined in the
+            // 'js/setup.js' script, and is useful for all samples.
+            let { camera, renderer, scene } = createBaseScene();
+
+            let gui = null;
+            load();
+
+            animate();
+            function animate() {
+
+                if (gui) gui.update();
+
+                renderer.render( scene, camera );
+                requestAnimationFrame( animate );
+
+            }
+
+            function load() {
+                
+                let loader = new THREE.TextureLoader();
+                loader.setPath('assets/');
+                let tex = loader.load('button.png', function(tex) {
+                    
+                    setupGUI(tex);
+
+                });
+                
+            }
+
+            function setupGUI(texture) {
+
+                let guiWidth = 0.2; // In Three.js units.
+                let guiHeight = 0.26; // In Three.js units.
+
+                // Creates the parent of all layouts in our UI.
+                let layout = new VRUI.layout.VerticalLayout(null, {
+                    background: 0x2c3e50
+                });
+
+                // Creates the UI, with an empty Horizontal Layout.
+                // You can also fill the layout before creating the GUI, there
+                // is no problem doing that.
+                gui = new VRUI.VRUI({
+                    width: guiWidth, height: guiHeight,
+                    mode: {
+                        template: layout
+                    }
+                }, null);
+                gui.enableMouse(camera, renderer);
+                gui.addToScene(scene); // Adds the GUI to the THREE.Scene elt.
+
+                // Callbacks applied on both buttons, telling whether the button
+                // is pressed or not.
+                let onChange = (state) => {
+                    let stateStr = state.pressed ? 'pressed' : 'released';
+                    console.log('Button has been '+ stateStr + '!')
+                }
+
+                let button1 = new VRUI.view.ImageButton({
+                    id: 'myButton',
+                    innerMaterial: texture
+                }, {
+                    height: 0.5,
+                    aspectRatio: 1.0,
+                    align: 'top'
+                }).onChange(onChange);
+
+                let button2 = button1.clone();
+                button2.onChange(onChange);
+
+                // You can either add the buttons directly to the Horizontal
+                // Layout, or add them directly to the UI. Adding them to the UI
+                // will add them to the parent layout of the current page, which
+                // is here the Horizontal Layout. You can read more about this
+                // by going looking at the doc, but there are several modes to
+                // simplify adding several elements one after the others.
+                gui.add([button1, button2]);
+
+                // Do not omit the line below, it will compute the bounds
+                // of the entire GUI. Every time you make some changes, you
+                // have to call it. It could possibly be costly, according
+                // to how complex is the UI, so do not call it if not necessary.
+                gui.refresh();
+
+            }
+
+        </script>
+    </body>
+</html>

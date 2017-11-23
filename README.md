@@ -9,6 +9,25 @@ Simple &amp; flexible 3D user interface.
 
 **VRUI** is greatly influenced by [dat.gui](https://github.com/dataarts/dat.gui), and [dat.guiVR](https://github.com/dataarts/dat.guiVR).
 
+## Features
+
+### Multiple layouts
+
+As stated above, the UI support several layout, that can be combined together, such as the **Horizontal Layout**, **Vertical Layout**, or the **Grid Layout**.
+
+### Pages
+
+For now, we support multiple pages, but without animation when changing from one to another (this will be out soon). Pages can also be created when the previous one is full, if you specify so.
+
+<p align="center">
+  <img width="350" src="https://user-images.githubusercontent.com/8783766/33181626-2dc423e2-d071-11e7-8999-796089b08d98.gif">
+</p>
+
+### Object3D as an input
+
+You can use any **THREE.Object3D** element as an input, by just calling `VRUI.addInput()`
+
+
 ## How it works
 
 **VRUI** works on the same principle as the [Android Layout System](https://developer.android.com/guide/topics/ui/declaring-layout.html), allowing to create a very large number of different interfaces. You can use *layouts* (grid, linear, ...) in which you insert *views* (slider, checkbox, button, ...).
@@ -110,6 +129,10 @@ In a nutshell, do not hesitate!
 * [ ] Add helper to create in few lines a datgui like UI
 * [ ] Add option to keep element aspect ratio
 * [ ] Add animation
+* [ ] Add getters / setters to element, and ImageButton to simplify usage
+* [ ] Add paging system
+* [ ] Allow different meshes to be used with ImageButton, Slider, etc... This would allow to add meshes with particular form and UVs
+* [ ] Fix refresh not working when called several times
 
 * [X] Add slider view
 * [X] Fix GridLayout not spacing items as expected

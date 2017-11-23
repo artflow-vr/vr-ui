@@ -29,9 +29,9 @@ import AbstractLayout from './abstract-layout';
 
 export default class LinearLayout extends AbstractLayout {
 
-    constructor( options ) {
+    constructor( data, style ) {
 
-        super( options );
+        super( data, style );
 
     }
 

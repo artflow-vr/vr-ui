@@ -31,7 +31,7 @@ import VRUI from './main';
 import * as layout from './layout/layout';
 import * as view from './view/view';
 
-export {
+export default {
     VRUI,
     layout,
     view

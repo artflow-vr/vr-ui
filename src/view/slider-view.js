@@ -31,15 +31,9 @@ import { MaterialFactory, createMaterial } from '../utils/material';
 import { PLANE_GEOM } from '../utils/geometry-factory';
 
 import {
-    checkAndClone,
-    setUndefinedProps,
-    IS_INSTANCE_OF
+    setUndefinedProps
 } from '../utils/property-check';
 
-let PROP_TO_CHECK = {
-    background: { "data": [THREE.Material, THREE.Texture, `number`], "function": IS_INSTANCE_OF },
-    handle: { "data": [THREE.Material, THREE.Texture, `number`], "function": IS_INSTANCE_OF }
-};
 
 let MIN_VALUE = 0.0;
 let MAX_VALUE = 1.0;
@@ -51,11 +45,9 @@ export default class SliderView extends ElementView {
 
     constructor( data, style ) {
 
-        super( new THREE.Group(), style );
+        super( data, new THREE.Group(), style );
         this.type = `slider`;
 
-        this.data = {};
-        checkAndClone( data, PROP_TO_CHECK, this.data );
         setUndefinedProps( {
             background: Colors.MARK_CHECKBOX,
             handle: Colors.BACK_CHECKBOX
@@ -118,10 +110,10 @@ export default class SliderView extends ElementView {
 
     _intersect( raycaster, state ) {
 
-        if ( !this._checkHover( raycaster, this.backgroundMesh,
-            this._onHoverEnter, this._onHoverExit ) ) {
-            return false;
-        }
+        let intersectionInfo = this._checkHover( raycaster, this.backgroundMesh,
+            this._onHoverEnter, this._onHoverExit );
+
+        if ( !intersectionInfo ) return null;
 
         if ( state.pressed ) {
             let point = this._lastIntersect;
@@ -132,15 +124,16 @@ export default class SliderView extends ElementView {
 
             if ( this._onChange ) {
                 this._onChange( this, {
-                    pressed: this.pressed,
-                    value: this._value
+                    pressed: state.pressed,
+                    value: this._value,
+                    info: intersectionInfo
                 } );
             }
             if ( this.listenTo )
                 this.listenTo.object[ this.listenTo.propID ] = this._value;
         }
 
-        return true;
+        return intersectionInfo;
 
     }
 

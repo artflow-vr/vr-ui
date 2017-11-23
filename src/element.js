@@ -33,6 +33,7 @@ import { checkAndClone, IS_IN_RANGE, IS_IN_LIST, IS_INSTANCE_OF } from './utils/
 let PROP_TO_CHECK = {
     width: { "data": [0.0, 1.0], "function": IS_IN_RANGE },
     height: { "data": [0.0, 1.0], "function": IS_IN_RANGE },
+    aspectRatio: { "data": [0.0, 100.0], "function": IS_IN_RANGE },
     depth: { "data": [0.0, 1.0], "function": IS_IN_RANGE },
     padding: {
         top: { "data": [0.0, 0.49], "function": IS_IN_RANGE },
@@ -65,17 +66,22 @@ const PROP_TO = {
 export default class Element {
 
     /**
-     * Creates an instance of Element. An elment can be added to any layout.
+     * Creates an instance of Element. An element can be added to any layout.
      *
      * @param {Object} [style] - Style properties. e.g: { width: 1.0, ... }
      * @memberof Element
      */
-    constructor( style ) {
+    constructor( data = null, style ) {
 
         // The 'type' variable is useful to make some special checks
         // according to the element we are in. It avoids to make call
         // to instance of.
         this.type = `element`;
+
+        // The 'data' attribute is useful to store extra data for any type of
+        // element. For instance, the `id' attribute is used when searching
+        // for a given item in the hierarchy.
+        this.data = data ? Object.assign( {}, data ) : {};
 
         this.group = new THREE.Group();
         this.group.position.z = 0.001; // prevents z-fighting
@@ -83,8 +89,8 @@ export default class Element {
 
         // Reference to parent.
         this.parent = null;
-
         this.hover = false;
+        this.visible = true;
 
         this._dimensions = {
             margin: {},
@@ -115,8 +121,6 @@ export default class Element {
         if ( style ) this.set( style );
 
         this._setStyleForUndefined( {
-            width: 1.0,
-            height: 1.0,
             depth: 0.0,
             padding: { top: 0.0, bottom: 0.0, left: 0.0, right: 0.0 },
             margin: { top: 0.0, bottom: 0.0, left: 0.0, right: 0.0 },
@@ -189,6 +193,18 @@ export default class Element {
 
     }
 
+    setVisible( toggle ) {
+
+        this.group.traverse( function ( child ) {
+
+            if ( child instanceof THREE.Object3D ) child.visible = toggle;
+
+        } );
+
+        this.visible = toggle;
+
+    }
+
     /**
      * Checks whether the element is hovered or not. If changes happen,
      * this method will call the onHoverEnter / onHoverExit callbacks.
@@ -205,23 +221,32 @@ export default class Element {
      */
     _checkHover( raycaster, object, onHoverEnter, onHoverExit ) {
 
+        if ( !this.visible ) return null;
+
         let obj = raycaster.intersectObject( object, false );
         if ( obj.length === 0 ) {
             if ( this.hover ) {
                 this.hover = false;
-                if ( onHoverExit ) onHoverExit( this );
+                if ( onHoverExit ) {
+                    onHoverExit( this, {
+                        info: this._lastIntersect
+                    } );
+                }
             }
-            return false;
+            return null;
         }
 
         this._lastIntersect = obj[ 0 ];
-        //console.log( this._lastIntersect );
         if ( !this.hover ) {
-            if ( onHoverEnter ) onHoverEnter( this );
+            if ( onHoverEnter ) {
+                onHoverEnter( this, {
+                    info: this._lastIntersect
+                } );
+            }
             this.hover = true;
         }
 
-        return true;
+        return this._lastIntersect;
 
     }
 
@@ -240,10 +265,31 @@ export default class Element {
         let maxWidth = maxEltWidth || this._parentDimensions.width;
         let maxHeight = maxEltHeight || this._parentDimensions.height;
 
+        let style = this.style;
         let dimensions = this._dimensions;
 
-        dimensions.width = this.style.width * maxWidth;
-        dimensions.height = this.style.height * maxHeight;
+        if ( style.aspectRatio && !style.width && !style.height ) {
+            style.width = 1.0;
+            style.height = 1.0;
+
+            let warnMsg = `aspectRatio provided, but missing`;
+            warnMsg = ` width or height properties.`;
+            console.warn( `Element.refresh(): ` + warnMsg );
+        }
+
+        dimensions.width = null;
+        dimensions.height = null;
+
+        // TODO: What should we do if the specified base size is larger
+        // than the other one that is allowed?
+        if ( style.aspectRatio ) {
+            if ( style.width )
+                dimensions.height = style.aspectRatio * style.width * maxWidth;
+            else
+                dimensions.width = style.aspectRatio * style.height * maxHeight;
+        }
+        dimensions.width = dimensions.width || ( ( style.width || 1.0 ) * maxWidth );
+        dimensions.height = dimensions.height || ( ( style.height || 1.0 ) * maxHeight );
         dimensions.halfW = dimensions.width / 2.0;
         dimensions.halfH = dimensions.height / 2.0;
 
@@ -268,6 +314,23 @@ export default class Element {
 
     }
 
+    /**
+     * Clones the properties that are commong to each element.
+     * For now, this only support the shallow copy.
+     * TODO: Support deep copy by using a boolean.
+     */
+    _clone( dest ) {
+
+        // TODO: add style parameter to clone, to allow to easily change
+        // the style of an object when cloning, instead of calling set by hand.
+
+        // Copies callback
+        dest.onChange( this._onChange );
+        dest.onHoverEnter( this._onHoverEnter );
+        dest.onHoverExit( this._onHoverExit );
+
+    }
+
     _updateBackground( background ) {
 
         if ( !background ) {
@@ -287,7 +350,8 @@ export default class Element {
 
         for ( let k in style ) {
             let element = style[ k ];
-            if ( typeof element === `object` ) {
+            if ( element !== null && element !== undefined &&
+                 typeof element === `object` ) {
                 if ( !element ) {
                     writeTo[ k ] = null;
                     continue;

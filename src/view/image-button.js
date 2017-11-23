@@ -31,23 +31,25 @@ import { MaterialFactory, createMaterial } from '../utils/material';
 
 export default class ImageButton extends ElementView {
 
-    constructor( imgOrMatOrColor, style ) {
+    constructor( data, style ) {
 
-        if ( !imgOrMatOrColor ) {
+        if ( !data || !data.innerMaterial ) {
             let errorMsg = `you did not provide any texture.`;
             throw Error( `ImageButton.ctor(): ` + errorMsg );
         }
 
-        let material = createMaterial( imgOrMatOrColor, MaterialFactory.IMAGE_DEFAULT );
+        let material = createMaterial( data.innerMaterial, MaterialFactory.IMAGE_DEFAULT );
 
-        super( new THREE.Mesh( PLANE_GEOM, material ), style );
+        super( data, new THREE.Mesh( PLANE_GEOM, material ), style );
         this.type = `button`;
 
     }
 
-    clone( imgOrMatOrColor ) {
+    clone() {
 
-        return new ImageButton( imgOrMatOrColor || this.mesh.material, this.style );
+        let button = new ImageButton( this.data, this.style );
+        this._clone( button );
+        return button;
 
     }
 

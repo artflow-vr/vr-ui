@@ -31,25 +31,16 @@ import { MaterialFactory, createMaterial } from '../utils/material';
 import { PLANE_GEOM } from '../utils/geometry-factory';
 
 import {
-    checkAndClone,
-    setUndefinedProps,
-    IS_INSTANCE_OF
+    setUndefinedProps
 } from '../utils/property-check';
-
-let PROP_TO_CHECK = {
-    check: { "data": [THREE.Material, THREE.Texture, `number`], "function": IS_INSTANCE_OF },
-    empty: { "data": [THREE.Material, THREE.Texture, `number`], "function": IS_INSTANCE_OF }
-};
 
 export default class CheckboxView extends ElementView {
 
     constructor( data, style ) {
 
-        super( new THREE.Group(), style );
+        super( data, new THREE.Group(), style );
         this.type = `checkbox`;
 
-        this.data = {};
-        checkAndClone( data, PROP_TO_CHECK, this.data );
         setUndefinedProps( {
             check: Colors.MARK_CHECKBOX,
             empty: Colors.BACK_CHECKBOX
@@ -94,7 +85,8 @@ export default class CheckboxView extends ElementView {
             if ( this._onChange ) {
                 this._onChange( this, {
                     pressed: this.pressed,
-                    state: this.checked
+                    state: this.checked,
+                    info: this._lastIntersect
                 } );
                 this.checked = !this.checked;
                 this.checkMesh.material.visible = this.checked;
@@ -103,14 +95,13 @@ export default class CheckboxView extends ElementView {
             }
         }
 
-        if ( !this._checkHover( raycaster, this.emptyMesh,
-            this._onHoverEnter, this._onHoverExit ) ) {
-            return false;
-        }
+        let intersectionInfo = this._checkHover( raycaster, this.emptyMesh,
+            this._onHoverEnter, this._onHoverExit );
+
+        if ( !intersectionInfo ) return null;
 
         this.pressed = state.pressed && !this.pressed;
-
-        return true;
+        return intersectionInfo;
 
     }
 

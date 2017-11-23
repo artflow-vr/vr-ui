@@ -1930,7 +1930,9 @@ export default function createText( str, color = 0xFFFFFF ) {
     texture.magFilter = THREE.LinearFilter;
     texture.generateMipmaps = false;
 
-    const material = new THREE.RawShaderMaterial( SDFShader( {
+    let shader = SDFShader;
+
+    const material = new THREE.RawShaderMaterial( shader( {
         side: THREE.DoubleSide,
         transparent: true,
         color: color,
