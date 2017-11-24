@@ -129,6 +129,7 @@ In a nutshell, do not hesitate!
     * [ ] Remove `color` extra data, and add it as a style property
     * [ ] Add helper to create in few lines a datgui like UI
     * [ ] Add getters / setters to element, and ImageButton to simplify usage
+    * [ ] Add method to show/hide UI in the VRUI class
 
 * Features
     * [ ] Add style to clone method to simplify element cloning with style changes
