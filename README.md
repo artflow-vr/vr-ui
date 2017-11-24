@@ -125,17 +125,12 @@ In a nutshell, do not hesitate!
 
 ## TODO
 
-* [ ] Remove `color` extra data, and add it as a style property
-* [ ] Add helper to create in few lines a datgui like UI
-* [ ] Add option to keep element aspect ratio
-* [ ] Add animation
-* [ ] Add getters / setters to element, and ImageButton to simplify usage
-* [ ] Add paging system
-* [ ] Allow different meshes to be used with ImageButton, Slider, etc... This would allow to add meshes with particular form and UVs
-* [ ] Fix refresh not working when called several times
+* API
+    * [ ] Remove `color` extra data, and add it as a style property
+    * [ ] Add helper to create in few lines a datgui like UI
+    * [ ] Add getters / setters to element, and ImageButton to simplify usage
 
-* [X] Add slider view
-* [X] Fix GridLayout not spacing items as expected
-* [X] Add text
-* [X] Prevent z-fighting by adding a small offset in z to the hierarchy
-* [X] Add clone methods to duplicate element with same style and properties
+* Features
+    * [ ] Add style to clone method to simplify element cloning with style changes
+    * [ ] Add animation
+    * [ ] Allow different meshes to be used with ImageButton, Slider, etc... This would allow to add meshes with particular form and UVs
