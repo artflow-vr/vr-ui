@@ -135,3 +135,6 @@ In a nutshell, do not hesitate!
     * [ ] Add style to clone method to simplify element cloning with style changes
     * [ ] Add animation
     * [ ] Allow different meshes to be used with ImageButton, Slider, etc... This would allow to add meshes with particular form and UVs
+    
+* Bugs
+    * [ ] Aligning / positionniong are wrongly computed in layouts. /!\ Should be fixed quickly
