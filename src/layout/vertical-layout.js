@@ -80,14 +80,16 @@ export default class VerticalLayout extends LinearLayout {
             // We can change horizontal placement in a VerticalLayout.
             // You can choose between 'left', 'right', and 'center'.
             switch ( elt.style.position ) {
+                case `left`:
+                    elt.group.position.x = padding.left;
+                    break;
                 case `right`:
-                    elt.group.position.x += dimensions.width - eltDim.width;
+                    elt.group.position.x = dimensions.width - eltDim.width - padding.right;
                     break;
                 case `center`:
-                    elt.group.position.x += dimensions.width * 0.5 - eltDim.halfW;
+                    elt.group.position.x = dimensions.halfW - eltDim.halfW;
                     break;
             }
-            elt.group.position.x += padding.left - padding.right;
 
         }
 
