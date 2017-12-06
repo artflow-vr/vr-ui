@@ -73,13 +73,11 @@ export default class GridLayout extends AbstractLayout {
         let maxEltHeightPad = paddedHeight / nbRows;
 
         let offset = {
-            x: padRel.left - padRel.right,
-            y: padRel.top - padRel.bottom
+            x: padRel.left,
+            y: - padRel.top
         };
 
         let initXOffset = offset.x;
-        let initYOffset = offset.y;
-        let yBase = initYOffset;
 
         // TODO: Fix positionning with padding not working.
         for ( let i = 0; i < this._elements.length; ++i ) {
@@ -87,41 +85,46 @@ export default class GridLayout extends AbstractLayout {
             elt.refresh( maxEltWidthPad, maxEltHeightPad );
             let eltDim = elt._dimensions;
 
-            let colIDX = i % nbColumns;
-            offset.x = initXOffset + ( i % nbColumns ) * maxEltWidthPad;
-            if ( colIDX === 0 && i !== 0 ) {
+            if ( i % nbColumns === 0 && i !== 0 ) {
                 offset.x = initXOffset;
-                yBase = initYOffset + maxEltHeightPad * ( i / nbColumns );
+                offset.y -= maxEltHeightPad;
             }
+
+            let itemOffset = {
+                x: 0.0,
+                y: 0.0
+            };
 
             switch ( elt.style.position ) {
                 case `left`:
-                    offset.x += padRel.left;
+                    // The UI has a top left coordinate system by default.
+                    // We do not need to do anything here.
                     break;
                 case `right`:
-                    offset.x += maxEltWidthPad - padRel.right - eltDim.width;
+                    itemOffset.x = maxEltWidthPad - eltDim.width;
                     break;
                 case `center`:
-                    offset.x += ( maxEltWidthPad * 0.5 ) - eltDim.halfW;
+                    itemOffset.x = maxEltWidthPad * 0.5 - eltDim.halfW;
                     break;
             }
 
             switch ( elt.style.align ) {
                 case `top`:
-                    offset.y = - yBase;
+                    // The UI has a top left coordinate system by default.
+                    // We do not need to do anything here.
                     break;
                 case `bottom`:
-                    offset.y = - maxEltHeightPad + eltDim.height - yBase;
+                    itemOffset.y = -maxEltHeightPad + eltDim.height;
                     break;
                 case `center`:
-                    offset.y = - ( maxEltHeightPad / 2 ) + eltDim.halfH - yBase;
+                    itemOffset.y = -maxEltHeightPad * 0.5 + eltDim.halfH;
                     break;
             }
 
-            elt.group.position.x = offset.x;
-            elt.group.position.y = offset.y;
+            elt.group.position.x = offset.x + itemOffset.x;
+            elt.group.position.y = offset.y + itemOffset.y;
 
-            //offset.x += maxEltWidth;
+            offset.x += maxEltWidthPad;
         }
 
     }
