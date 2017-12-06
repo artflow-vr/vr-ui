@@ -130,6 +130,7 @@ In a nutshell, do not hesitate!
     * [ ] Add helper to create in few lines a datgui like UI
     * [ ] Add getters / setters to element, and ImageButton to simplify usage
     * [ ] Add method to show/hide UI in the VRUI class
+    * [ ] Move VRUI data to Three.js userData object. Inheriting from Object3D is also a possibility.
 
 * Features
     * [ ] Add style to clone method to simplify element cloning with style changes
@@ -138,3 +139,6 @@ In a nutshell, do not hesitate!
     
 * Bugs
     * [ ] Aligning / positionniong are wrongly computed in layouts. /!\ Should be fixed quickly
+    
+* Others
+    * [ ] Improve the `refresh()` method in all layouts. It is sometimes very gross, and has been made quickly!
