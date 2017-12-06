@@ -32,6 +32,7 @@ export default class HorizontalLayout extends LinearLayout {
     constructor( data, style ) {
 
         super( data, style );
+        this.type = `horizontal-layout`;
 
     }
 
@@ -40,7 +41,6 @@ export default class HorizontalLayout extends LinearLayout {
         // TODO: Padding and marging are not working correctly.
 
         super.refresh( maxEltWidth, maxEltHeight );
-        this.type = `horizontal-layout`;
 
         let dimensions = this._dimensions;
         let maxHeight = this._dimensions.height;

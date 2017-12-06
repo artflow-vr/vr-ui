@@ -96,10 +96,6 @@ export default class GridLayout extends AbstractLayout {
             };
 
             switch ( elt.style.position ) {
-                case `left`:
-                    // The UI has a top left coordinate system by default.
-                    // We do not need to do anything here.
-                    break;
                 case `right`:
                     itemOffset.x = maxEltWidthPad - eltDim.width;
                     break;
