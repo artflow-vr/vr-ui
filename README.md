@@ -139,6 +139,8 @@ In a nutshell, do not hesitate!
     
 * Bugs
     * [ ] Aligning / positionniong are wrongly computed in layouts. /!\ Should be fixed quickly
+    * [ ] Padding does not seam to work with ImageButton
     
 * Others
     * [ ] Improve the `refresh()` method in all layouts. It is sometimes very gross, and has been made quickly!
+    * [ ] Add tests 
