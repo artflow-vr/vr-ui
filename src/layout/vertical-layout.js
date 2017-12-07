@@ -32,6 +32,7 @@ export default class VerticalLayout extends LinearLayout {
     constructor( data, style ) {
 
         super( data, style );
+        this.type = `vertical-layout`;
 
     }
 
@@ -40,7 +41,6 @@ export default class VerticalLayout extends LinearLayout {
         // TODO: Padding and marging are not working correctly.
 
         super.refresh( maxEltWidth, maxEltHeight );
-        this.type = `vertical-layout`;
 
         let dimensions = this._dimensions;
         let padding = dimensions.padding;
@@ -48,8 +48,7 @@ export default class VerticalLayout extends LinearLayout {
         let offset = {
             top: padding.top,
             bottom: padding.bottom,
-            right: padding.right,
-            left: padding.left
+            x: padding.left - padding.right
         };
 
         let horizontalPad = padding.right + padding.left;
@@ -60,7 +59,6 @@ export default class VerticalLayout extends LinearLayout {
 
         for ( let elt of this._elements ) {
             elt.refresh( maxWidthPerElt, maxHeightPerElt );
-
             let eltDim = elt._dimensions;
 
             switch ( elt.style.align ) {
@@ -69,6 +67,10 @@ export default class VerticalLayout extends LinearLayout {
                     elt.group.position.y = - offset.top;
                     offset.top += eltDim.height + eltDim.margin.bottom;
                     break;
+                case `center`:
+                    let warnMsg = `\'center\' is not supported yet with this layouts`;
+                    console.warn( `VerticalLayout.refresh(): ` + warnMsg );
+                    break;
                 case `bottom`:
                     offset.bottom += eltDim.margin.bottom;
                     elt.group.position.y = offset.bottom - dimensions.height + eltDim.height;
@@ -76,18 +78,17 @@ export default class VerticalLayout extends LinearLayout {
                     break;
             }
 
-            // For now, the library only handle simple positioning.
-            // We can change horizontal placement in a VerticalLayout.
-            // You can choose between 'left', 'right', and 'center'.
             switch ( elt.style.position ) {
+                // The UI has a top left coordinate system by default.
+                // We do not need to do anything here. We do not need the 'left'
+                // case.
                 case `right`:
-                    elt.group.position.x += dimensions.width - eltDim.width;
+                    elt.group.position.x = maxWidthPerElt - eltDim.width;
                     break;
                 case `center`:
-                    elt.group.position.x += dimensions.width * 0.5 - eltDim.halfW;
+                    elt.group.position.x = maxWidthPerElt * 0.5 - eltDim.halfW;
                     break;
             }
-            elt.group.position.x += padding.left - padding.right;
 
         }
 

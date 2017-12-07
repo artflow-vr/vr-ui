@@ -68,7 +68,12 @@
 
                 let button = new VRUI.view.ImageButton(
                     { innerMaterial: 0xFF0000 },
-                    { width: 1.0, aspectRatio: 1.0 }
+                    {
+                        width: 0.8,
+                        aspectRatio: 1.0,
+                        position: 'center',
+                        align: 'center',
+                    }
                 )
 
                 // Adds four buttons to the GridLayout. This will fill the first
@@ -76,14 +81,14 @@
                 // Be careful here! We want to add the button to the GridLayout,
                 // which is not directly the page, but one of the child of the page.
                 // We have to provide the layoutID parameter with the good value.
-                for (let i = 0; i < 5; ++i) 
-                    gui.add(button.clone(), 'gridLayout');
-
-                // Do not omit the line below, it will compute the bounds
-                // of the entire GUI. Each time you make some changes, you
-                // have to call it. It could possibly be costly, according
-                // to how complex is the UI, so do not call it if not necessary.
-                gui.refresh();
+                for (let i = 0; i < 5; ++i) {
+                    gui.add(button.clone(), 'gridLayout');                
+                    // Do not omit the line below, it will compute the bounds
+                    // of the entire GUI. Each time you make some changes, you
+                    // have to call it. It could possibly be costly, according
+                    // to how complex is the UI, so do not call it if not necessary.
+                    gui.refresh();
+                }
 
             }
 
@@ -93,7 +98,7 @@
                 // It could, for instance, be some buttons to switch between pages.
                 let button = new VRUI.view.ImageButton(
                     { innerMaterial: 0xFFFF00 },
-                    { height: 1.0, aspectRatio: 1.0, position: 'left' }
+                    { height: 1.0, aspectRatio: 1.0, position: 'center' }
                 ).onChange((s) => {
                     if (s.pressed) gui.nextPage();
                 });
@@ -113,7 +118,9 @@
                         columns: 2,        // Layout data
                         rows: 2            //
                     }, {
-                        height: 0.9
+                        height: 0.9,
+                        background: 0xFFFF00,
+                        padding: {left: 0.0, right: 0.0, top: 0.0, bottom: 0.0}
                     }
                 );
 
@@ -121,7 +128,7 @@
                 // have been defined above.
                 let parent = new VRUI.layout.VerticalLayout(null, {
                     background: 0x2c3e50,
-                    padding: {top: 0.1, bottom: 0.1, left: 0.1, right: 0.1}
+                    position: 'center'
                 });
                 parent.add(grid, bottom)
 

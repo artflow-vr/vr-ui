@@ -60,8 +60,6 @@ export default class GridLayout extends AbstractLayout {
 
         let nbRows = this.data.rows;
         let nbColumns = this.data.columns;
-        let hSpace = this.data.hSpace || 0.0;
-        let vSpace = this.data.vSpace || 0.0;
 
         // Computes bounds by adding padding to the whole grid.
         // The new width is the total width witout the padding width,
@@ -70,66 +68,59 @@ export default class GridLayout extends AbstractLayout {
         let paddedHeight = dimensions.height - ( padRel.top + padRel.bottom );
 
         // Computes the maximum size occupied by each element,
-        // without spacing.
-        let maxEltWidth = paddedWidth / nbColumns;
-        let maxEltHeight = paddedHeight / nbRows;
-
-        // Computes the space between each element, in world units.
-        let hSpaceRel = hSpace * paddedWidth;
-        let vSpaceRel = vSpace * paddedHeight;
-
-        // Computes the maximum size occupied by each element,
-        // in world units.
-        let maxWidthRel = maxEltWidth - hSpaceRel;
-        let maxHeightRel = maxEltHeight - vSpaceRel;
-
-        hSpaceRel /= 2.0;
-        vSpaceRel /= 2.0;
+        // taking padding into account.
+        let maxEltWidthPad = paddedWidth / nbColumns;
+        let maxEltHeightPad = paddedHeight / nbRows;
 
         let offset = {
-            x: hSpaceRel + ( dimensions.halfW - paddedWidth * 0.5 )
-                                                + padRel.left - padRel.right,
-            y: - vSpaceRel - ( dimensions.halfH - paddedHeight * 0.5 )
-                                                    + padRel.bottom - padRel.top
+            x: padRel.left,
+            y: - padRel.top
         };
 
         let initXOffset = offset.x;
 
+        // TODO: Fix positionning with padding not working.
         for ( let i = 0; i < this._elements.length; ++i ) {
             let elt = this._elements[ i ];
-            elt.refresh( maxWidthRel, maxHeightRel );
+            elt.refresh( maxEltWidthPad, maxEltHeightPad );
             let eltDim = elt._dimensions;
 
-            let colIDX = i % nbColumns;
-            if ( colIDX === 0 && i !== 0 ) {
+            if ( i % nbColumns === 0 && i !== 0 ) {
                 offset.x = initXOffset;
-                offset.y -= maxHeightRel + vSpaceRel;
+                offset.y -= maxEltHeightPad;
             }
+
+            let itemOffset = {
+                x: 0.0,
+                y: 0.0
+            };
 
             switch ( elt.style.position ) {
                 case `right`:
-                    elt.group.position.x = maxWidthRel - eltDim.width;
+                    itemOffset.x = maxEltWidthPad - eltDim.width;
                     break;
                 case `center`:
-                    elt.group.position.x = ( maxWidthRel / 2.0 ) - eltDim.halfW;
+                    itemOffset.x = maxEltWidthPad * 0.5 - eltDim.halfW;
                     break;
             }
 
             switch ( elt.style.align ) {
+                case `top`:
+                    // The UI has a top left coordinate system by default.
+                    // We do not need to do anything here.
+                    break;
                 case `bottom`:
-                    elt.group.position.y = - maxEltHeight + eltDim.height;
+                    itemOffset.y = -maxEltHeightPad + eltDim.height;
                     break;
                 case `center`:
-                    elt.group.position.y = - ( maxEltHeight / 2 ) + eltDim.halfH;
+                    itemOffset.y = -maxEltHeightPad * 0.5 + eltDim.halfH;
                     break;
             }
 
-            offset.x += hSpaceRel;
+            elt.group.position.x = offset.x + itemOffset.x;
+            elt.group.position.y = offset.y + itemOffset.y;
 
-            elt.group.position.x += offset.x;
-            elt.group.position.y += offset.y;
-
-            offset.x += maxWidthRel + hSpaceRel;
+            offset.x += maxEltWidthPad;
         }
 
     }

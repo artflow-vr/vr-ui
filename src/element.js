@@ -312,6 +312,10 @@ export default class Element {
         background.scale.x = dimensions.width;
         background.scale.y = dimensions.height;
 
+        // TODO: Padded child width and height computation
+        // should be moved here, instead of being computed in
+        // all layouts.
+
     }
 
     /**
