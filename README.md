@@ -131,6 +131,7 @@ In a nutshell, do not hesitate!
     * [ ] Add getters / setters to element, and ImageButton to simplify usage
     * [ ] Add method to show/hide UI in the VRUI class
     * [ ] Move VRUI data to Three.js userData object. Inheriting from Object3D is also a possibility.
+    * [ ] Removes duplicate list by only using Three.js group (this is linked to the TODO just above)
 
 * Features
     * [ ] Add style to clone method to simplify element cloning with style changes
