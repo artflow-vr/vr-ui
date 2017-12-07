@@ -53,7 +53,13 @@
 
                 // Creates the parent of all layouts in our UI.
                 let layout = new VRUI.layout.VerticalLayout(null, {
-                    background: 0x2c3e50
+                    background: 0x2c3e50,
+                    padding: {
+                        top: 0.1,
+                        left: 0.0,
+                        right: 0.1,
+                        bottom: 0.1
+                    }
                 });
 
                 // Creates the UI, with an empty Horizontal Layout.
@@ -81,7 +87,8 @@
                 }, {
                     height: 0.5,
                     aspectRatio: 1.0,
-                    align: 'top'
+                    align: 'top',
+                    position: 'center'
                 }).onChange(onChange);
 
                 let button2 = button1.clone();

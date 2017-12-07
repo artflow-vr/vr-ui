@@ -53,7 +53,11 @@
 
                 // Creates the parent of all layouts in our UI.
                 let layout = new VRUI.layout.HorizontalLayout(null, {
-                    background: 0x2c3e50
+                    background: 0x2c3e50,
+                    padding: {
+                        top: 0.2,
+                        bottom: 0.2
+                    }
                 });
 
                 // Creates the UI, with an empty Horizontal Layout.
@@ -79,8 +83,8 @@
                     id: 'myButton',
                     innerMaterial: texture
                 }, {
-                    height: 0.5,
                     width: 0.5,
+                    position: 'left',
                     align: 'center'
                 }).onChange(onChange);
 

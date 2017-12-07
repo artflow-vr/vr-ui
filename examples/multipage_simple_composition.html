@@ -68,7 +68,12 @@
 
                 let button = new VRUI.view.ImageButton(
                     { innerMaterial: 0xFF0000 },
-                    { width: 0.8, aspectRatio: 1.0, position: 'left', align: 'top' }
+                    {
+                        width: 0.8,
+                        aspectRatio: 1.0,
+                        position: 'center',
+                        align: 'center',
+                    }
                 )
 
                 // Adds four buttons to the GridLayout. This will fill the first
@@ -93,7 +98,7 @@
                 // It could, for instance, be some buttons to switch between pages.
                 let button = new VRUI.view.ImageButton(
                     { innerMaterial: 0xFFFF00 },
-                    { height: 1.0, aspectRatio: 1.0, position: 'left' }
+                    { height: 1.0, aspectRatio: 1.0, position: 'center' }
                 ).onChange((s) => {
                     if (s.pressed) gui.nextPage();
                 });
@@ -115,7 +120,7 @@
                     }, {
                         height: 0.9,
                         background: 0xFFFF00,
-                        padding: {left: 0.1, right: 0.1, top: 0.1, bottom: 0}
+                        padding: {left: 0.0, right: 0.0, top: 0.0, bottom: 0.0}
                     }
                 );
 

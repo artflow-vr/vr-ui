@@ -70,8 +70,11 @@ export default class HorizontalLayout extends LinearLayout {
                     elt.group.position.x = dimensions.width - offset.right;
                     offset.right += eltDim.margin.left;
                     break;
-                case `left`:
                 case `center`:
+                    let warnMsg = `\'center\' is not supported yet with this layouts`;
+                    console.warn( `HorizontalLayout.refresh(): ` + warnMsg );
+                    break;
+                case `left`:
                     offset.left += eltDim.margin.left;
                     elt.group.position.x = offset.left;
                     offset.left += eltDim.width;
@@ -88,7 +91,7 @@ export default class HorizontalLayout extends LinearLayout {
                         eltDim.height + offset.top;
                     break;
                 case `center`:
-                    elt.group.position.y = - ( paddedHeight * 0.5 ) + eltDim.halfH;
+                    elt.group.position.y = - ( maxHeight * 0.5 ) + eltDim.halfH;
                     break;
             }
 
