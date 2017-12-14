@@ -261,6 +261,7 @@ export default class VRUI {
     prevPage() {
 
         this._pageId = ( this._pageId - 1 ) % this.pages.length;
+        this._pageId = ( this._pageId < 0 ) ? this.pages.length - 1 : this._pageId;
         // Hides previous page
         this.currPage.setVisible( false );
         // TODO: Adds transition function chosen by the developer.
@@ -318,6 +319,7 @@ export default class VRUI {
             let coords = this._mouse.coords;
             coords.x = ( event.offsetX / this._mouse.renderer.domElement.width ) * 2 - 1;
             coords.y = - ( event.offsetY / this._mouse.renderer.domElement.height ) * 2 + 1;
+
         };
 
         this._mouse.up = () => {
