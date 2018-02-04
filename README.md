@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/artflow-vr/vr-ui.svg?branch=master)](https://travis-ci.org/artflow-vr/vr-ui)
+
 # vr-ui
 Simple &amp; flexible 3D user interface.
 
