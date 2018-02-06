@@ -1,9 +1,5 @@
-let THREE = require( `three` );
-document.THREE = THREE;
-
 import assert from 'assert';
-
-import HorizontalLayout from '../../../src/layout/horizontal-layout';
+import HorizontalLayout from 'layout/horizontal-layout';
 
 let tests = () => {
 
@@ -29,8 +25,12 @@ let tests = () => {
 
 };
 
-describe( `Layout`, () => {
+export default () => {
 
-    tests();
+    describe( `Layout`, () => {
 
-} );
+        tests();
+
+    } );
+
+};
