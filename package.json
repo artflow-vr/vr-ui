@@ -23,11 +23,10 @@
     "examples"
   ],
   "scripts": {
-    "build": "webpack --progress --config webpack.config.js",
-    "build-dev": "webpack --progress --config webpack.config.js",
+    "build": "webpack --progress --config webpack.config.js --config-name library",
     "dev": "webpack-dev-server --hot --inline",
     "lint": "eslint src",
-    "test": "mocha",
+    "test": "webpack --progress --config webpack.config.js --config-name test && node ./test/run.js",
     "prepublish": "yarn run lint && yarn run test && yarn run build"
   },
   "devDependencies": {
@@ -40,7 +39,8 @@
     "eslint-loader": "^1.9.0",
     "mocha": "^5.0.0",
     "path": "^0.12.7",
-    "webpack": "^2.6.1",
+    "three": "^0.89.0",
+    "webpack": "^3.0.0",
     "webpack-dev-server": "^2.4.5"
   },
   "dependencies": {

@@ -1,9 +1,19 @@
-describe('Simple', () => {
+import HorizontalLayout from 'layout/horizontal-layout';
 
-  describe('Pages', () => {
+let tests = () => {
 
-    
+  it ( `test`, () => {
+    //assert( true, `success` );
+  } );
 
-  })
+};
 
-})
+export default () => {
+
+  describe( `Simple`, () => {
+
+    tests();
+
+  } );
+
+};

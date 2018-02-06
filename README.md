@@ -133,16 +133,17 @@ In a nutshell, do not hesitate!
     * [ ] Add getters / setters to element, and ImageButton to simplify usage
     * [ ] Add method to show/hide UI in the VRUI class
     * [ ] Move VRUI data to Three.js userData object. Inheriting from Object3D is also a possibility.
+    * [ ] Put Horizontal and Vertical layout under same class and reuse code
 
 * Features
     * [ ] Add style to clone method to simplify element cloning with style changes
     * [ ] Add animation
     * [ ] Allow different meshes to be used with ImageButton, Slider, etc... This would allow to add meshes with particular form and UVs
-    
+
 * Bugs
     * [ ] Aligning / positionniong are wrongly computed in layouts. /!\ Should be fixed quickly
     * [ ] Padding does not seam to work with ImageButton
-    
+
 * Others
     * [ ] Improve the `refresh()` method in all layouts. It is sometimes very gross, and has been made quickly!
-    * [ ] Add tests 
+    * [ ] Add tests

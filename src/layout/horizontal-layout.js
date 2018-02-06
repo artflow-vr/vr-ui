@@ -38,8 +38,6 @@ export default class HorizontalLayout extends LinearLayout {
 
     refresh( maxEltWidth, maxEltHeight ) {
 
-        // TODO: Padding and marging are not working correctly.
-
         super.refresh( maxEltWidth, maxEltHeight );
 
         let dimensions = this._dimensions;
