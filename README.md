@@ -134,6 +134,7 @@ In a nutshell, do not hesitate!
     * [ ] Add method to show/hide UI in the VRUI class
     * [ ] Move VRUI data to Three.js userData object. Inheriting from Object3D is also a possibility.
     * [ ] Put Horizontal and Vertical layout under same class and reuse code
+    * [ ] VRUI with no data should throw an error
 
 * Features
     * [ ] Add style to clone method to simplify element cloning with style changes
@@ -146,4 +147,5 @@ In a nutshell, do not hesitate!
 
 * Others
     * [ ] Improve the `refresh()` method in all layouts. It is sometimes very gross, and has been made quickly!
+    * [ ] Move implementation to its own scope. The main entry should only be an interface!
     * [ ] Add tests
