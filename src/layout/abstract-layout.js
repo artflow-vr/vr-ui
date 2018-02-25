@@ -68,6 +68,8 @@ export default class AbstractLayout extends Element {
             throw Error( `AbstractLayout: add(): ` + errorMsg );
         }
 
+        // TODO: fix the case where element is an Array which is not
+        // behaving as wanted.
         if ( arguments.length > 0 )
             for ( let elt of arguments ) this._addItem( elt );
         else if ( element.constructor === Array )
