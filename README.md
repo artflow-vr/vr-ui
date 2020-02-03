@@ -1,3 +1,10 @@
+> STATUS: Discontinued.
+> 
+> I unfortunately don't have any VR headset to try that out anymore.
+> However, If the community really likes this library concept, and if enough people seem interested by it,
+> I can maybe find a headset and some free time to work on it!
+
+
 # vr-ui
 Simple &amp; flexible 3D user interface.
 
